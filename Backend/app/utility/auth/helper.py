@@ -1,0 +1,46 @@
+from datetime import datetime, timedelta, UTC, timezone
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+
+from core.config import settings
+
+
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+
+def verify_password( plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify( plain_password, hashed_password)
+
+
+def create_token(data: dict):
+    payload = data.copy() 
+    expire_minutes = getattr(settings, "access_token_expire_minutes", 60)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=expire_minutes)
+    payload.update({"exp": expire})
+    token = jwt.encode(
+        payload,
+        getattr(settings, "secret_key", ""),
+        algorithm=getattr(settings, "algorithm", "HS256")
+    )
+    return token
+
+ 
+def verify_token(token: str) -> dict:
+    try:
+        payload = jwt.decode(
+            token,
+            getattr(settings, "secret_key", ""),
+            algorithms=[getattr(settings, "algorithm", "HS256")]
+        )
+        return {
+            "is_valid": True,
+            "data": payload
+        }
+    except JWTError:
+        return {
+            "is_valid": False,
+            "data": None
+        }
