@@ -3,34 +3,34 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 import cloudinary
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 ENV_FILE = BASE_DIR / ".env"
 
 
 class Settings(BaseSettings):
-    api_title: str = "PeripheralsTalk API"
-    api_version: str = "0.1.0"
-    api_description: str = "FastAPI backend for PeripheralsTalk"
+    api_title: str
+    api_version: str
+    api_description: str
 
-    database_url: str = "sqlite+aiosqlite:///./peripheralstalk.db"
-    database_echo: bool = False
-    secret_key: str = "CHANGE_ME_SECRET"
-    internal_api_key: str = ""
-    algorithm: str = "HS256"
-    access_token_expire_minutes: int = 60
+    database_url: str
+    database_echo: bool
+    secret_key: str
+    internal_api_key: str
+    algorithm: str
+    access_token_expire_minutes: int
 
-    cloudinary_cloud_name: str = ""
-    cloudinary_api_key: str = ""
-    cloudinary_api_secret: str = ""
+    cloudinary_cloud_name: str
+    cloudinary_api_key: str
+    cloudinary_api_secret: str
 
-    smtp_host: str = "smtp-relay.brevo.com"
-    smtp_port: int = 587
-    smtp_username: str = ""
-    smtp_password: str = ""
-    mail_from: str = "no-reply@example.com"
+    smtp_host: str
+    smtp_port: int
+    smtp_username: str
+    smtp_password: str
+    mail_from: str
 
-    debug: bool = True
-    environment: str = "development"
+    debug: bool
+    environment: str
 
     model_config = SettingsConfigDict(
         env_file=ENV_FILE,
