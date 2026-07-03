@@ -2,7 +2,7 @@ from hashlib import sha256
 from slowapi import Limiter
 from fastapi import Request
 
-from app.utility.auth import verify_token
+from app.utility.auth import validate_user_access
 
 
 def rate_limit_key(request: Request) -> str:
@@ -11,9 +11,11 @@ def rate_limit_key(request: Request) -> str:
     auth = request.headers.get("Authorization")
     if auth and auth.startswith("Bearer "):
         token = auth[7:].strip()
-        response = verify_token(token)
+        response = validate_user_access(token)
         if response["is_valid"]:
-            return token
+            user_data = response["data"]
+            user_id = user_data["user_id"]
+            return f"{user_id}"
 
     # 2. Guest: IP + device ID
     ip = request.client.host or "unknown"
@@ -22,7 +24,7 @@ def rate_limit_key(request: Request) -> str:
         return f"{ip}:{device_id}"
 
     # 3. Last resort: IP only
-    return ip
+    return f"{ip}"
 
 
 limiter = Limiter(key_func=rate_limit_key)

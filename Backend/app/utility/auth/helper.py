@@ -43,3 +43,22 @@ def verify_token(token: str) -> dict:
             "is_valid": False,
             "data": None
         }
+    
+def validate_user_access(token: str) -> dict:
+    """
+    Validates the user access based on the provided JWT token.
+    Returns a dictionary with 'is_valid' and 'data' keys.
+    """
+    response = verify_token(token)
+    if response["is_valid"]:
+        user_data = response["data"]
+        # You can add additional checks here, e.g., check user roles, permissions, etc.
+        return {
+            "is_valid": True,
+            "data": user_data
+        }
+    else:
+        return {
+            "is_valid": False,
+            "data": None
+        }
