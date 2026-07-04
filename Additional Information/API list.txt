@@ -72,3 +72,4 @@ POST    /api/v1/repository/documents        # Add an article (Admin only)
 GET     /api/v1/repository/documents        # Returns access list of protected internal papers[compact version] (Student, Mod, Admin)
 GET     /api/v1/repository/documents/:id    # Returns link of a specific protected internal paper[compact version] (Student, Mod, Admin)
 PATCH   /api/v1/repository/documents/:id    # Update a specific protected internal paper[compact version] (Mod, Admin)
+
