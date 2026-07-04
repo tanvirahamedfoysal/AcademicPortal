@@ -60,10 +60,10 @@ DELETE  /api/v1/collaborators/:id           # Deletes a collaborator profile (Ad
 7. CONTACT API
 ======================================================
 GET     /api/v1/contact/meta           # Returns direct contact info / Mam's email (Public)
-POST    /api/v1/contact                # Post a message to Madam
-GET     /api/v1/contact                #
-GET     /api/v1/contact/:id            # 
-DELETE  /api/v1/contact/:id            # 
+POST    /api/v1/contact                # Post a message to Admin
+GET     /api/v1/contact                # Get all message[compact version] (Admin)
+GET     /api/v1/contact/:id            # Get details of a message (Admin)
+DELETE  /api/v1/contact/:id            # Delete a message (Admin)
 
 ======================================================
 8. RESEARCH PAPER REPOSITORY API
