@@ -1,0 +1,74 @@
+======================================================
+1. AUTHENTICATION & ACCOUNT API
+======================================================
+POST    /api/v1/auth/login                  # Authenticates user, returns JWT (Public)
+POST    /api/v1/auth/register               # Student self-registration, status PENDING (Visitor)
+POST    /api/v1/auth/request-register-otp   # OTP for account register
+POST    /api/v1/auth/password-reset-request # Triggers password reset email (All)
+POST    /api/v1/auth/request-reset-otp      # OTP to reset password
+PATCH   /api/v1/auth/password-reset         # Validates token and updates password (All)
+
+======================================================
+2. ADMIN MANAGEMENT API
+======================================================
+POST    /api/v1/admin/moderators            # Create a new moderator account (Admin)
+DELETE  /api/v1/admin/moderators/:id        # Permanently delete a moderator (Admin)
+DELETE  /api/v1/admin/students/:id          # Hard-delete a student account (Admin)
+GET     /api/v1/admin/audit-logs            # Read paginated system log file (Admin)
+
+======================================================
+3. USER & PROFILE MANAGEMENT API
+======================================================
+GET     /api/v1/profiles/me                 # Returns logged-in user's profile metadata (Logged In)
+PATCH   /api/v1/profiles/admin/me           # Update self info (Admin)
+PATCH   /api/v1/profiles/student/me         # Update self info like thesis, links, pic (Student/moderator)
+PATCH   /api/v1/profiles/students/:id       # Correct student metadata or update status (Admin, Mod)
+GET     /api/v1/moderators                  # Lists all moderators [compact payload] (Admin)
+GET     /api/v1/moderators/:id              # Get single moderator [full payload] (Admin)
+GET     /api/v1/students/pending            # Fetch pending student registrations[compact payload] (Admin, Mod)
+GET     /api/v1/students/pending/:id        # Fetch a pending student registrations (Admin, Mod)
+PATCH   /api/v1/students/:id/verify         # Approve a pending student registration (Admin, Mod)
+DELETE  /api/v1/students/:id/delete         # Delete a pending student registration (Admin, Mod)
+
+======================================================
+4. CONTENT & PORTFOLIO MANAGEMENT API
+======================================================
+GET     /api/v1/portfolio          # Fetch portfolio section data [e.g., academic, teaching] (Public)
+PUT     /api/v1/portfolio          # Replace section data block (Admin)
+
+======================================================
+5. ARTICLE & RESEARCH UPDATES API
+======================================================
+GET     /api/v1/articles                    # Paginated list of active public articles[query parameters like active, inactive or default all] (Admin, Mod)
+GET     /api/v1/articles/:id                # Fetches full detailed content of a single article (Admin, Moderator)
+POST    /api/v1/articles                    # Creates an article [Mods default to DRAFT] (Admin, Mod)
+PATCH   /api/v1/articles/:id                # Modifies text [Mods edit own drafts only] (Admin, Mod)
+DELETE  /api/v1/articles/:id                # Permanent erasure (Admin)
+PATCH   /api/v1/articles/:id/make-active    # Workflow changer [e.g., DRAFT to ACTIVE] (Admin)
+GET     /api/v1/articles/published          # List of active public articles (Public)
+GET     /api/v1/articles/published/:id      # Fetches full detailed content of a single article (Public)
+
+======================================================
+6. COLLABORATOR MANAGEMENT API
+======================================================
+GET     /api/v1/collaborators               # Returns raw lookup array of collaborators (Public)
+POST    /api/v1/collaborators               # Add a new collaborator profile (Admin, Mod)
+PATCH   /api/v1/collaborators/:id           # Edit specific collaborator details (Admin, Mod)
+DELETE  /api/v1/collaborators/:id           # Deletes a collaborator profile (Admin)
+
+======================================================
+7. CONTACT API
+======================================================
+GET     /api/v1/contact/meta           # Returns direct contact info / Mam's email (Public)
+POST    /api/v1/contact                # Post a message to Madam
+GET     /api/v1/contact                #
+GET     /api/v1/contact/:id            # 
+DELETE  /api/v1/contact/:id            # 
+
+======================================================
+8. RESEARCH PAPER REPOSITORY API
+======================================================
+POST    /api/v1/repository/documents        # Add an article (Admin only)
+GET     /api/v1/repository/documents        # Returns access list of protected internal papers[compact version] (Student, Mod, Admin)
+GET     /api/v1/repository/documents/:id    # Returns link of a specific protected internal paper[compact version] (Student, Mod, Admin)
+PATCH   /api/v1/repository/documents/:id    # Update a specific protected internal paper[compact version] (Mod, Admin)
