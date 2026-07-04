@@ -27,8 +27,8 @@ GET     /api/v1/moderators                  # Lists all moderators [compact payl
 GET     /api/v1/moderators/:id              # Get single moderator [full payload] (Admin)
 GET     /api/v1/students/pending            # Fetch pending student registrations[compact payload] (Admin, Mod)
 GET     /api/v1/students/pending/:id        # Fetch a pending student registrations (Admin, Mod)
+DELETE  /api/v1/students/pending/:id        # Delete a pending student registration (Admin, Mod)
 PATCH   /api/v1/students/:id/verify         # Approve a pending student registration (Admin, Mod)
-DELETE  /api/v1/students/:id/delete         # Delete a pending student registration (Admin, Mod)
 
 ======================================================
 4. CONTENT & PORTFOLIO MANAGEMENT API
