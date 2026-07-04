@@ -2,9 +2,8 @@
 1. AUTHENTICATION & ACCOUNT API
 ======================================================
 POST    /api/v1/auth/login                  # Authenticates user, returns JWT (Public)
-POST    /api/v1/auth/register               # Student self-registration, status PENDING (Visitor)
 POST    /api/v1/auth/request-register-otp   # OTP for account register
-POST    /api/v1/auth/password-reset-request # Triggers password reset email (All)
+POST    /api/v1/auth/register               # Student self-registration, status PENDING (Visitor)
 POST    /api/v1/auth/request-reset-otp      # OTP to reset password
 PATCH   /api/v1/auth/password-reset         # Validates token and updates password (All)
 
