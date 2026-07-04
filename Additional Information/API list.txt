@@ -71,9 +71,32 @@ POST    /api/v1/repository/documents        # Add an article (Admin only)
 GET     /api/v1/repository/documents        # Returns access list of protected internal papers[compact version] (Student, Mod, Admin)
 GET     /api/v1/repository/documents/:id    # Returns link of a specific protected internal paper[compact version] (Student, Mod, Admin)
 PATCH   /api/v1/repository/documents/:id    # Update a specific protected internal paper[compact version] (Mod, Admin)
-
+//
+DELETE /api/v1/repository/documents/:id     # Delete a protected internal paper (Admin)
 
 ======================================================
 9. Utility
 ======================================================
 POST    /api/v1/utility/image               # Upload image and get url and public id 
+//
+DELETE /api/v1/utility/image                # Delete an image from cloud storage using its public_id (Admin/Mod)
+ 
+//
+======================================================
+10. Notice Board
+======================================================
+GET    /api/v1/notices                    # Fetch list of active notices for the homepage (Public)
+POST   /api/v1/notices                    # Create a new notice (Admin)
+PATCH  /api/v1/notices/:id                # Update a specific notice (Admin)
+DELETE /api/v1/notices/:id                # Remove a notice (Admin)
+
+//
+======================================================
+11. Alumni
+======================================================
+Student Directory:
+GET    /api/v1/students                  # Fetch list of all VERIFIED students/alumni [status=current/alumni, batch] (Public)
+GET    /api/v1/students/:id              # Fetch public profile details of a specific verified student (Public)
+
+Batch Management:
+GET    /api/v1/batches                   # List all student batches/years (Public/Admin)
