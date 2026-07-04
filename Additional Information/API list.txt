@@ -72,3 +72,8 @@ GET     /api/v1/repository/documents        # Returns access list of protected i
 GET     /api/v1/repository/documents/:id    # Returns link of a specific protected internal paper[compact version] (Student, Mod, Admin)
 PATCH   /api/v1/repository/documents/:id    # Update a specific protected internal paper[compact version] (Mod, Admin)
 
+
+======================================================
+9. Utility
+======================================================
+POST    /api/v1/utility/image               # Upload image and get url and public id 
