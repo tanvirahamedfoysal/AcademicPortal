@@ -1,6 +1,7 @@
-from typing import Any
 from fastapi import APIRouter
 
+from app.db import engine
+from app.utility import limiter
 from app.schema.v1.auth import UserRegister, ValidateUsername, RequestOTP, UserLogin
 
 
@@ -13,7 +14,7 @@ async def login(payload: UserLogin):
 
 
 @router.get("/validate-username")
-async def validate_username(user: ValidateUsername):
+async def validate_username(payload: ValidateUsername):
 	return {"message": "Not implemented yet"}
 
 
@@ -33,6 +34,6 @@ async def request_password_reset_otp(payload: RequestOTP):
 
 
 @router.patch("/password-reset")
-async def reset_password(payload: dict[str, Any]):
+async def reset_password(payload: RequestOTP):
 	return {"message": "Not implemented yet"}
 
