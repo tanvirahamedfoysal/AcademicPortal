@@ -12,6 +12,22 @@ class UserRegister(BaseModel):
         if '@' in value:
             raise ValueError("Username can't contain '@' symbol.")
         return value
+    
+
+class ValidateUsername(BaseModel):
+    username: str
+
+    @field_validator("username")
+    @classmethod
+    def validate_username(cls, value: str) -> str:
+        if '@' in value:
+            raise ValueError("Username can't contain '@' symbol.")
+        return value
+    
+
+class RequestOTP(BaseModel):
+    email: EmailStr
+
 
 class UserLogin(BaseModel):
     credential: str

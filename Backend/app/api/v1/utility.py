@@ -1,3 +1,10 @@
+from fastapi import APIRouter
+
+
+router = APIRouter()
+
+
+__all__ = ["router"]
 from sqlalchemy import text
 from time import perf_counter
 from fastapi import APIRouter, Request
