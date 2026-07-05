@@ -79,7 +79,6 @@ POST    /api/v1/repository/documents        # Add an article (Admin only)
 GET     /api/v1/repository/documents        # Returns access list of protected internal papers[compact version] (Student, Mod, Admin)
 GET     /api/v1/repository/documents/:id    # Returns link of a specific protected internal paper[compact version] (Student, Mod, Admin)
 PATCH   /api/v1/repository/documents/:id    # Update a specific protected internal paper[compact version] (Mod, Admin)
-//
 DELETE /api/v1/repository/documents/:id     # Delete a protected internal paper (Admin)
 
 
@@ -87,12 +86,10 @@ DELETE /api/v1/repository/documents/:id     # Delete a protected internal paper 
 9. Utility
 ======================================================
 POST    /api/v1/utility/image               # Upload image and get url and public id 
-//
 DELETE /api/v1/utility/image                # Delete an image from cloud storage using its public_id (Admin/Mod)
 N.B: json {info of all photo}
 
 
-//
 ======================================================
 11. Alumni
 ======================================================

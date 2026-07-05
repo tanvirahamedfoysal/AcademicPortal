@@ -21,9 +21,7 @@ async def lifespan(app: FastAPI):
         print(f"🚀 Starting {settings.api_title}")
     except Exception as exc:
         print("Warning: failed to initialize settings on startup:", exc)
-
     yield
-
     print(f"🛑 Shutting down {settings.api_title}")
 
 
@@ -42,6 +40,8 @@ app.add_exception_handler(
     _rate_limit_exceeded_handler,
 )
 app.add_middleware(SlowAPIMiddleware)
+
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -52,6 +52,8 @@ app.add_middleware(
 if settings.environment == "production":
     app.add_middleware(HTTPSRedirectMiddleware)
 
+
+# Routers
 app.include_router(router, prefix="/api")
 
 
