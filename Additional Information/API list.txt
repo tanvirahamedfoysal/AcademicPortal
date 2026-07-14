@@ -1,13 +1,16 @@
 ======================================================
 1. AUTHENTICATION & ACCOUNT API
 ======================================================
-POST    /api/v1/auth/validate-token                  # Check if token is valid
+GET     /api/v1/auth/validate-token                  # Check if token is valid
 POST    /api/v1/auth/login                           # Authenticate user and return JWT (Public)
 GET     /api/v1/auth/validate-username               # Check username availability/validity (Public)
 POST    /api/v1/auth/register/request-otp            # Send OTP for student registration (Public)
 POST    /api/v1/auth/register                        # Register a new student (initial status: PENDING) (Public)
 POST    /api/v1/auth/password-reset/request-otp      # Send OTP for password reset (Public)
 PATCH   /api/v1/auth/password-reset                  # Verify OTP and reset password (Public)
+
+GET     /api/v1/auth/validate-email                  # Check if this email valid 
+
 
 
 ======================================================
@@ -17,16 +20,18 @@ GET     /api/v1/profile/me                           # Get current user's profil
 PATCH   /api/v1/profile/me                           # Update current user's profile (Authenticated)
 # Note: Editable fields depend on the user's role (Admin/Moderator/Student).
 
+POST    /api/v1/profile/change-username              # Change username after validating it 
+POST    /api/v1/profile/change-email                 # Chnage email after validating it 
+GET     /api/v1/profile/me/last-update                # Check when a profile updated last by jwt 
+
 
 ======================================================
 3. STUDENT MANAGEMENT API
 ======================================================
 GET     /api/v1/students                            # List verified students/alumni (Public)
 GET     /api/v1/students/:id                        # Get public profile of a verified student (Public)
-
 PATCH   /api/v1/students/:id                        # Update student information (Admin, Moderator)
 DELETE  /api/v1/students/:id                        # Permanently delete a student (Admin)
-
 GET     /api/v1/students/pending                    # List pending student registrations (Admin, Moderator)
 GET     /api/v1/students/pending/:id                # Get pending registration details (Admin, Moderator)
 DELETE  /api/v1/students/pending/:id                # Reject/delete pending registration (Admin, Moderator)
@@ -58,9 +63,10 @@ POST    /api/v1/articles                            # Create an article (Moderat
 PATCH   /api/v1/articles/:id                        # Update an article (Moderator can edit own drafts only)
 PATCH   /api/v1/articles/:id/status                 # Change article status (Admin)
 DELETE  /api/v1/articles/:id                        # Permanently delete an article (Admin)
-
 GET     /api/v1/articles/public                     # List published articles (Public)
 GET     /api/v1/articles/public/:id                 # Get published article details (Public)
+
+GET     /api/v1/articles/:id/last-update            # Get the last update UTC time for a specific atricle
 
 
 ======================================================

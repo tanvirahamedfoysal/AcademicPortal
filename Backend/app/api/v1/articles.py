@@ -47,3 +47,8 @@ async def update_article_status(article_id: str, payload: dict[str, Any]):
 async def delete_article(article_id: str):
 	return {"message": "Not implemented yet"}
 
+
+@router.get("/{article_id}/last-update")
+async def get_article_last_update(article_id: str):
+	return {"message": "Not implemented yet"}
+

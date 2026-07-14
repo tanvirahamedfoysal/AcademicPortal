@@ -21,7 +21,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
-@router.post("/validate-token")
+@router.get("/validate-token")
 async def validate_token(
 	token: str = Depends(oauth2_scheme)
 ):
@@ -86,7 +86,6 @@ async def login(
             "user_updated_at": user["user_updated_at"].isoformat() if user["user_updated_at"] else None
         }
 
-        # Add student-specific details only if it's a student account
         if profile_type == "USER":
             user_profile["student_batch"] = user["student_batch"]
             user_profile["student_updated_at"] = (
@@ -114,7 +113,7 @@ async def login(
         )
 	
 
-@router.post("/validate-username")
+@router.get("/validate-username")
 async def validate_username(
 	payload: ValidateUsername,
 	db: AsyncSession = Depends(get_db)
@@ -421,3 +420,23 @@ async def reset_password(
 	except Exception as e:
 		await db.rollback()
 		raise HTTPException(status_code=500, detail="Failed to process reset request")
+	
+
+@router.get("/validate-email")
+async def validate_email(
+	email: str,
+	db: AsyncSession = Depends(get_db)
+):
+	return {
+		"message": "Not implementd  yet"
+    }
+	existing_user = await db.execute(
+		
+		text("SELECT id FROM users WHERE email = :email"),
+		{"email": email}
+	)
+	user = existing_user.mappings().first()
+	if not user:
+		raise HTTPException(status_code=404, detail="Email not found")
+	return {"is_successful": True, "message": "Email is valid"}
+
