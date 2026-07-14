@@ -1,8 +1,8 @@
-"""seed initial admin data
+"""Seed Initial Admin Data
 
-Revision ID: 48e780967049
-Revises: 1fbedeb75f8e
-Create Date: 2026-07-14 12:50:40.250432
+Revision ID: 0c4af57dc788
+Revises: 697f8f6c5051
+Create Date: 2026-07-14 18:33:34.453374
 
 """
 from typing import Sequence, Union
@@ -15,8 +15,8 @@ from app.utility.auth import hash_password
 
 
 # revision identifiers, used by Alembic.
-revision: str = '48e780967049'
-down_revision: Union[str, Sequence[str], None] = '1fbedeb75f8e'
+revision: str = '0c4af57dc788'
+down_revision: Union[str, Sequence[str], None] = '697f8f6c5051'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -61,5 +61,11 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    """Downgrade schema."""
-    pass
+    connection = op.get_bind()
+    connection.execute(
+        text("DELETE FROM admin_info WHERE id = 1;")
+    )
+    connection.execute(
+        text("DELETE FROM users WHERE username = :username;"),
+        {"username": settings.admin_username}
+    )

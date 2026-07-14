@@ -1,5 +1,4 @@
--- Run once, connected as a role allowed to alter the database.
-ALTER DATABASE academic_portal SET TIME ZONE 'Asia/Dhaka';
+
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
@@ -79,6 +78,7 @@ CREATE TABLE IF NOT EXISTS email_otps (
     purpose otp_purpose NOT NULL,
     expires_at TIMESTAMPTZ NOT NULL,
     is_used BOOLEAN NOT NULL DEFAULT FALSE,
+    is_valid BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

@@ -1,6 +1,7 @@
 ======================================================
 1. AUTHENTICATION & ACCOUNT API
 ======================================================
+POST    /api/v1/auth/validate-token                  # Check if token is valid
 POST    /api/v1/auth/login                           # Authenticate user and return JWT (Public)
 GET     /api/v1/auth/validate-username               # Check username availability/validity (Public)
 POST    /api/v1/auth/register/request-otp            # Send OTP for student registration (Public)

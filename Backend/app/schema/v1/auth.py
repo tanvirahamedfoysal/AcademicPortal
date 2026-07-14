@@ -5,6 +5,8 @@ class UserRegister(BaseModel):
     username: str
     email: EmailStr
     password: str
+    otp: str
+    student_batch: str
 
     @field_validator("username")
     @classmethod
@@ -27,6 +29,12 @@ class ValidateUsername(BaseModel):
 
 class RequestOTP(BaseModel):
     email: EmailStr
+
+
+class ResetOTP(BaseModel):
+    email: EmailStr
+    otp: str
+    new_password: str
 
 
 class UserLogin(BaseModel):
