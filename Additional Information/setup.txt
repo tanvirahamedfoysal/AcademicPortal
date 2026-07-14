@@ -1,6 +1,6 @@
-1: setup migration from local machine to target database
+Setup migration from local machine to target database
 
-uv run alembic upgrade head
+    uv run alembic upgrade head
 
 
 
