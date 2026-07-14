@@ -1,0 +1,9 @@
+1: setup migration from local machine to target database
+
+uv run alembic upgrade head
+
+Steps: 
+    1. Create and commit migration
+    2. Run alembic upgrade head against production database
+    3. Deploy new code with fastapi deploy
+

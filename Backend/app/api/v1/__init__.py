@@ -16,16 +16,16 @@ from .utility import router as utility_router
 
 router = APIRouter()
 
-router.include_router(auth_router)
-router.include_router(profile_router)
-router.include_router(students_router)
-router.include_router(moderators_router)
-router.include_router(portfolio_router)
 router.include_router(articles_router)
+router.include_router(auth_router)
 router.include_router(collaborators_router)
 router.include_router(contact_router)
-router.include_router(repository_router)
 router.include_router(images_router)
+router.include_router(moderators_router)
+router.include_router(portfolio_router)
+router.include_router(profile_router)
+router.include_router(repository_router)
+router.include_router(students_router)
 router.include_router(system_router)
 router.include_router(utility_router)
 

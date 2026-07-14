@@ -95,7 +95,7 @@ DELETE  /api/v1/repository/documents/:id            # Delete repository document
 ======================================================
 10. IMAGE UPLOAD API
 ======================================================
-POST    /api/v1/images                              # Upload image and return URL + public_id (Authenticated)
+POST    /api/v1/images                              # Upload image and return URL (Authenticated)
 DELETE  /api/v1/images                              # Delete image using public_urls (Admin, Moderator)
 Request Body:
     {
@@ -110,3 +110,5 @@ Request Body:
 11. SYSTEM API
 ======================================================
 GET     /api/v1/system/audit-logs                   # Get paginated audit/system logs (Admin)
+
+

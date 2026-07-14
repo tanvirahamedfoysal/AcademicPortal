@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 
 dependencies = [
+    "alembic>=1.18.5",
     "asyncpg>=0.31.0",
     "cloudinary>=1.44.4",
     "fastapi-cloud-cli>=0.21.0",

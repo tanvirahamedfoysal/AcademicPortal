@@ -10,8 +10,10 @@ class Settings(BaseSettings):
     api_version: str
     api_description: str
 
+    admin_name: str
     admin_email: str
     admin_username: str
+    admin_password: str
 
     database_url: str
     database_echo: bool
@@ -24,6 +26,8 @@ class Settings(BaseSettings):
     cloudinary_api_key: str
     cloudinary_api_secret: str
 
+    default_profile_image_url: str
+
     smtp_host: str
     smtp_port: int
     smtp_username: str
@@ -31,7 +35,6 @@ class Settings(BaseSettings):
     mail_from: str
 
     debug: bool
-    environment: str
 
     model_config = SettingsConfigDict(
         env_file=ENV_FILE,
