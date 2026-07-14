@@ -2,8 +2,5 @@
 
 uv run alembic upgrade head
 
-Steps: 
-    1. Create and commit migration
-    2. Run alembic upgrade head against production database
-    3. Deploy new code with fastapi deploy
+
 
