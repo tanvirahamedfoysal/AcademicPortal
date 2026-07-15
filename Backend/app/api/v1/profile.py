@@ -91,7 +91,7 @@ async def update_me(
 	return {"message": "Not implemented yet"}
 
 
-@router.post("change-username")
+@router.post("/change-username")
 async def change_username(
 	token: str = Depends(oauth2_scheme),
 	db: AsyncSession = Depends(get_db),
@@ -100,7 +100,7 @@ async def change_username(
 	return {"message": "Not implemented yet"}
 
 
-@router.post("change-email")
+@router.post("/change-email")
 async def change_email(
 	token: str = Depends(oauth2_scheme),
 	db: AsyncSession = Depends(get_db),
