@@ -7,7 +7,7 @@ from app.utility import limiter
 
 
 router = APIRouter(prefix="/utility", tags=["utility"])
-
+ 
 
 @router.get("/health")
 @limiter.limit("5/minute")

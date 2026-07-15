@@ -32,12 +32,15 @@ async def upload_image(
         raise HTTPException(status_code=500, detail="Failed to insert asset into database")
 	
 
+
+
 @router.delete("")
 async def delete_images(
     payload: DeleteImagesPayload,
     db: AsyncSession = Depends(get_db)
 ):
     try:
+        # 1. Fetch both public_id AND url from the database
         query = text("""
             SELECT public_id, url
             FROM assets
@@ -55,7 +58,9 @@ async def delete_images(
                 detail="No matching assets found for the provided URLs"
             )
             
-        public_ids = [row.public_id for row in rows]
+        # Create a helper map to look up urls by their public_id
+        asset_map = {row.public_id: row.url for row in rows}
+        public_ids = list(asset_map.keys())
         
     except HTTPException:
         raise
@@ -66,6 +71,7 @@ async def delete_images(
     deleted_from_cloudinary = []
     failed_cloudinary = []
 
+    # 2. Delete from Cloudinary
     for p_id in public_ids:
         try:
             res = await remove_asset(p_id)
@@ -77,6 +83,7 @@ async def delete_images(
             print(f"Cloudinary delete failed for {p_id}: {cloud_err}")
             failed_cloudinary.append(p_id)
 
+    # 3. Clean up successfully deleted records from the DB
     if deleted_from_cloudinary:
         try:
             delete_query = text("""
@@ -92,7 +99,10 @@ async def delete_images(
             print(f"Database row deletion failed: {db_err}")
             raise HTTPException(status_code=500, detail="Cloudinary cleared but DB tracking update failed")
 
+    # 4. Map the failed public_ids back to their database URLs
+    not_deleted_urls = [asset_map[p_id] for p_id in failed_cloudinary]
+
     return {
         "message": "Images deletion processing complete.",
-        "failed_or_skipped": failed_cloudinary
+        "not_deleted_urls": not_deleted_urls
     }
