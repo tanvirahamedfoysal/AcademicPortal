@@ -11,14 +11,26 @@ router = APIRouter(prefix="/images", tags=["images"])
 
 
 @router.post("")
-async def upload_image(file: UploadFile = File(...)):
+async def upload_image(
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db)
+):
     result = await upload_asset(file)
-    return result
-# return result
-# {
-#   "url": "https://res.cloudinary.com/dqaj2you5/image/upload/v1784084646/AcademicPortal/rcan7i2awcdtkjiobqsb.jpg",
-#   "public_id": "AcademicPortal/rcan7i2awcdtkjiobqsb"
-# }
+    try: 
+        query = text("""
+			INSERT INTO assets (name, public_id, url)
+			VALUES (:name, :public_id, :url)
+		""")
+        await db.execute(query, {"name": file.filename, "public_id": result["public_id"], "url": result["url"]})
+        await db.commit()
+        return {
+			"url": result["url"],
+		}
+    except Exception as e:
+        await db.rollback()
+        print(f"Database insertion error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to insert asset into database")
+	
 
 
 
@@ -67,7 +79,6 @@ async def delete_images(
             print(f"Cloudinary delete failed for {p_id}: {cloud_err}")
             failed_cloudinary.append(p_id)
 
-    # 3. If any assets were cleared out of Cloudinary, delete them from the database
     if deleted_from_cloudinary:
         try:
             delete_query = text("""
@@ -85,6 +96,5 @@ async def delete_images(
 
     return {
         "message": "Images deletion processing complete.",
-        "successfully_deleted": deleted_from_cloudinary,
         "failed_or_skipped": failed_cloudinary
     }
