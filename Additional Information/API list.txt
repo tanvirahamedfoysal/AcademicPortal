@@ -22,29 +22,29 @@ PATCH   /api/v1/profile/me                           # Update current user's pro
 
 POST    /api/v1/profile/change-username              # Change username after validating it 
 POST    /api/v1/profile/change-email                 # Chnage email after validating it 
-GET     /api/v1/profile/me/last-update                # Check when a profile updated last by jwt 
+GET     /api/v1/profile/me/last-update               # Check when a profile updated last by jwt 
 
 
 ======================================================
 3. STUDENT MANAGEMENT API
 ======================================================
 GET     /api/v1/students                            # List verified students/alumni (Public)
-GET     /api/v1/students/:id                        # Get public profile of a verified student (Public)
-PATCH   /api/v1/students/:id                        # Update student information (Admin, Moderator)
-DELETE  /api/v1/students/:id                        # Permanently delete a student (Admin)
+GET     /api/v1/students/:uuid                        # Get public profile of a verified student (Public)
+PATCH   /api/v1/students/:uuid                        # Update student information (Admin, Moderator)
+DELETE  /api/v1/students/:uuid                        # Permanently delete a student (Admin)
 GET     /api/v1/students/pending                    # List pending student registrations (Admin, Moderator)
-GET     /api/v1/students/pending/:id                # Get pending registration details (Admin, Moderator)
-DELETE  /api/v1/students/pending/:id                # Reject/delete pending registration (Admin, Moderator)
-PATCH   /api/v1/students/pending/:id/verify         # Approve pending registration (Admin, Moderator)
+GET     /api/v1/students/pending/:uuid                # Get pending registration details (Admin, Moderator)
+DELETE  /api/v1/students/pending/:uuid                # Reject/delete pending registration (Admin, Moderator)
+PATCH   /api/v1/students/pending/:uuid/verify         # Approve pending registration (Admin, Moderator)
 
 
 ======================================================
 4. MODERATOR MANAGEMENT API
 ======================================================
-GET     /api/v1/moderators                          # List moderators (compact payload) (Admin)
-GET     /api/v1/moderators/:id                      # Get moderator details (Admin)
-POST    /api/v1/moderators                          # Create a moderator account (Admin)
-DELETE  /api/v1/moderators/:id                      # Delete a moderator (Admin)
+GET     /api/v1/moderators                              # List moderators (compact payload)
+GET     /api/v1/moderators/:uuid                        # Get moderator details
+POST    /api/v1/moderators/:uuid                        # Create a moderator account (Admin)
+DELETE  /api/v1/moderators/:uuid                        # Delete a moderator (Admin)
 
 
 ======================================================

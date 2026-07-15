@@ -14,17 +14,17 @@ async def list_moderators():
 	return {"message": "Not implemented yet"}
 
 
-@router.get("/{moderator_id}")
-async def get_moderator(moderator_id: str):
+@router.get("/{uuid}")
+async def get_moderator(uuid: str):
 	return {"message": "Not implemented yet"}
 
 
-@router.post("")
-async def create_moderator(payload: dict[str, Any]):
+@router.post("/{uuid}")
+async def create_moderator(uuid: str):
 	return {"message": "Not implemented yet"}
 
 
-@router.delete("/{moderator_id}")
-async def delete_moderator(moderator_id: str):
+@router.delete("/{uuid}")
+async def delete_moderator(uuid: str):
 	return {"message": "Not implemented yet"}
 

@@ -13,18 +13,18 @@ async def list_pending_students():
 	return {"message": "Not implemented yet"}
 
 
-@router.get("/pending/{student_id}")
-async def get_pending_student(student_id: str):
+@router.get("/pending/{uuid}")
+async def get_pending_student(uuid: str):
 	return {"message": "Not implemented yet"}
 
 
-@router.delete("/pending/{student_id}")
-async def delete_pending_student(student_id: str):
+@router.delete("/pending/{uuid}")
+async def delete_pending_student(uuid: str):
 	return {"message": "Not implemented yet"}
 
 
-@router.patch("/pending/{student_id}/verify")
-async def verify_pending_student(student_id: str):
+@router.patch("/pending/{uuid}/verify")
+async def verify_pending_student(uuid: str):
 	return {"message": "Not implemented yet"}
 
 
@@ -33,17 +33,17 @@ async def list_students():
 	return {"message": "Not implemented yet"}
 
 
-@router.get("/{student_id}")
-async def get_student(student_id: str):
+@router.get("/{uuid}")
+async def get_student(uuid: str):
 	return {"message": "Not implemented yet"}
 
 
-@router.patch("/{student_id}")
-async def update_student(student_id: str, payload: dict[str, Any]):
+@router.patch("/{uuid}")
+async def update_student(uuid: str, payload: dict[str, Any]):
 	return {"message": "Not implemented yet"}
 
 
-@router.delete("/{student_id}")
-async def delete_student(student_id: str):
+@router.delete("/{uuid}")
+async def delete_student(uuid: str):
 	return {"message": "Not implemented yet"}
 

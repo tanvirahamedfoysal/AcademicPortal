@@ -115,3 +115,4 @@ async def get_me_last_update(
 	db: AsyncSession = Depends(get_db)
 ):
 	return {"message": "Not implemented yet"}
+

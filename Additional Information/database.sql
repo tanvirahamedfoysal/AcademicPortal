@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS collaborators (
     bio TEXT,
     organization TEXT,
     website_url TEXT,
-    image_id INTEGER REFERENCES assets(id) ON DELETE SET NULL,
+    image_url TEXT,
     created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
     updated_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
