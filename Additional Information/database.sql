@@ -136,6 +136,14 @@ CREATE TABLE IF NOT EXISTS admin_info (
     CONSTRAINT admin_info_singleton_chk CHECK (id = 1)
 );
 
+CREATE TABLE contact_messages (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 CREATE INDEX IF NOT EXISTS ix_users_image_id ON users (image_id);
 CREATE INDEX IF NOT EXISTS ix_collaborators_created_by ON collaborators (created_by);
 CREATE INDEX IF NOT EXISTS ix_collaborators_updated_by ON collaborators (updated_by);
