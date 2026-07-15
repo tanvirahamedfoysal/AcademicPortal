@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_db
 from app.utility import limiter
 from app.utility.auth import create_access_token, hash_password, verify_password, verify_token
-from app.schema.v1.auth import UserRegister, ValidateUsername, RequestOTP, ResetOTP, UserLogin
+from app.schema.v1.auth import UserRegister, ValidateUsername, RequestOTP, ResetOTP, UserLogin, EmailVerification
 from app.utility.brevo import send_email
 from app.utility.time import bd_now, utc_now
 from app.core.config import settings
@@ -113,23 +113,31 @@ async def login(
         )
 	
 
-@router.get("/validate-username")
+@router.post("/validate-username")
 async def validate_username(
 	payload: ValidateUsername,
 	db: AsyncSession = Depends(get_db)
 ):
 	try:
-		await db.execute(
+		# 1. Store the execution result
+		query_result = await db.execute(
 			text("""
 				SELECT username
 				FROM users
 				WHERE username = :username
+				LIMIT 1
 			"""),
 			{"username": payload.username}
 		)
-		result = await db.fetch_one()
+		
+		# 2. Extract the first row or None using scalar_one_or_none()
+		result = query_result.scalar_one_or_none()
+
 	except Exception as e:
-		raise HTTPException(status_code=500, detail="Failed to process reset request")
+		raise HTTPException(
+			status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+			detail="Failed to process username validation request"
+		)
 	
 	if not result:
 		return {"is_available": True, "message": "Username is available"}
@@ -413,21 +421,35 @@ async def reset_password(
 		raise HTTPException(status_code=500, detail="Failed to process reset request")
 	
 
-@router.get("/validate-email")
+@router.post("/validate-email")
 async def validate_email(
-	email: str,
+	payload: EmailVerification,
 	db: AsyncSession = Depends(get_db)
 ):
-	return {
-		"message": "Not implementd  yet"
-    }
-	existing_user = await db.execute(
+	try:
+		# 1. Store the execution result
+		query_result = await db.execute(
+			text("""
+				SELECT email
+				FROM users
+				WHERE email = :email
+				LIMIT 1
+			"""),
+			{"email": payload.email}
+		)
 		
-		text("SELECT id FROM users WHERE email = :email"),
-		{"email": email}
-	)
-	user = existing_user.mappings().first()
-	if not user:
-		raise HTTPException(status_code=404, detail="Email not found")
-	return {"is_successful": True, "message": "Email is valid"}
+		# 2. Extract the first row or None using scalar()
+		result = query_result.scalar_one_or_none()
 
+	except Exception as e:
+		# It's highly recommended to print/log the actual error here during development
+		# print(f"Database error: {e}") 
+		raise HTTPException(
+			status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+			detail="Failed to process reset request"
+		)
+	
+	if not result:
+		return {"is_available": True, "message": "Email is available"}
+	
+	return {"is_available": False, "message": "Email is already taken"}
