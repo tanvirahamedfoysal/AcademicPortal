@@ -195,7 +195,6 @@ async def register_student(
     db: AsyncSession = Depends(get_db)
 ):
     try:
-        # 1. Check if the email or username is already taken
         check_existing = await db.execute(
             text("""
                 SELECT username, email FROM users 
@@ -210,7 +209,6 @@ async def register_student(
             if existing_record["username"] == payload.username:
                 raise HTTPException(status_code=400, detail="Username is already taken")
 
-        # 2. Validate the Registration OTP
         otp_query = await db.execute(
             text("""
                 SELECT otp FROM email_otps
@@ -229,7 +227,6 @@ async def register_student(
         if db_record["otp"] != payload.otp:
             raise HTTPException(status_code=400, detail="Invalid OTP")
 
-        # 3. Create the Base User Record (Set to ACTIVE and STUDENT)
         user_result = await db.execute(
             text("""
                 INSERT INTO users (name, username, email, hashed_password, role, status)
@@ -246,13 +243,11 @@ async def register_student(
         new_user = user_result.mappings().first()
         user_id = new_user["id"]
 
-        # 4. Convert and validate student_batch
         try:
             batch_integer = int(payload.student_batch)
         except ValueError:
             raise HTTPException(status_code=400, detail="Student batch must be a valid number string (e.g., '2026')")
 
-        # 5. Automatically create the associated Student Record
         student_result = await db.execute(
             text("""
                 INSERT INTO students (id, student_batch)
@@ -266,7 +261,6 @@ async def register_student(
         )
         new_student = student_result.mappings().first()
 
-        # 6. Burn the verified OTP
         await db.execute(
             text("""
                 UPDATE email_otps
@@ -277,11 +271,8 @@ async def register_student(
             {"email": payload.email}
         )
 
-        # Commit transaction atomically
         await db.commit()
 
-        # 7. Package the user profile including student details and fallback image
-        # Using fallback configuration for default image url
         profile_image_url = settings.default_profile_image_url if 'settings' in globals() else None
 
         return {
