@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_db
 from app.utility import limiter
 from app.utility.auth import create_access_token, hash_password, verify_password, verify_token
-from app.schema.v1.auth import UserRegister, ValidateUsername, RequestOTP, ResetOTP, UserLogin, EmailVerification
+from app.schema.v1.auth import UserRegister, ValidateUsername, RequestOTP, ResetOTP, EmailVerification
 from app.utility.brevo import send_email
 from app.utility.time import bd_now, utc_now
 from app.core.config import settings
