@@ -41,18 +41,17 @@ async def login(
         result = await db.execute(
             text("""
                 SELECT 
-                    u.uuid, 
-                    u.email, 
-                    u.hashed_password, 
-                    u.status, 
-                    u.role as user_role,
-                    u.updated_at as user_updated_at,
-                    s.student_batch,
-                    s.updated_at as student_updated_at,
-                    a.url as image_url
-                FROM users u
-                LEFT JOIN students s ON u.id = s.id
-                LEFT JOIN assets a ON u.image_id = a.id
+					u.uuid, 
+					u.email, 
+					u.hashed_password, 
+					u.status, 
+					u.role as user_role,
+					u.updated_at as user_updated_at,
+					s.student_batch,
+					s.updated_at as student_updated_at,
+					u.image_url
+				FROM users u
+				LEFT JOIN students s ON u.id = s.id
                 WHERE u.username = :credential OR u.email = :credential
             """),
             {"credential": form_data.username}
@@ -71,7 +70,7 @@ async def login(
                 detail="Invalid credentials"
             )
 
-        profile_type = "USER" if user["student_batch"] is not None else "ADMIN"
+        profile_type = "STUDENT" if user["student_batch"] is not None else "ADMIN"
         
         profile_image = user["image_url"] or settings.default_profile_image_url
         
@@ -86,7 +85,7 @@ async def login(
             "user_updated_at": user["user_updated_at"].isoformat() if user["user_updated_at"] else None
         }
 
-        if profile_type == "USER":
+        if profile_type == "STUDENT":
             user_profile["student_batch"] = user["student_batch"]
             user_profile["student_updated_at"] = (
                 user["student_updated_at"].isoformat() if user["student_updated_at"] else None

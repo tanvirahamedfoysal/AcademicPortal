@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS users (
     hashed_password TEXT NOT NULL,
     role account_role NOT NULL DEFAULT 'STUDENT',
     status account_status NOT NULL DEFAULT 'PENDING',
-    image_id INTEGER REFERENCES assets(id) ON DELETE SET NULL,
+    image_url TEXT,
     address TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()

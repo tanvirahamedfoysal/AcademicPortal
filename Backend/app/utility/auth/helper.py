@@ -50,7 +50,7 @@ def validate_user_access(token: str) -> dict:
     response = verify_token(token)
     if response["is_valid"]:
         user_data = response["data"]
-        if user_data.get("user_role") in ["USER", "ADMIN", "MODERATOR"]:
+        if user_data.get("user_role") in ["STUDENT", "ADMIN", "MODERATOR"]:
             return {
                 "is_valid": True,
                 "data": user_data

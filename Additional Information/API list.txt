@@ -3,13 +3,12 @@
 ======================================================
 GET     /api/v1/auth/validate-token                  # Check if token is valid
 POST    /api/v1/auth/login                           # Authenticate user and return JWT (Public)
-GET     /api/v1/auth/validate-username               # Check username availability/validity (Public)
+POST     /api/v1/auth/validate-username              # Check username availability/validity (Public)
 POST    /api/v1/auth/register/request-otp            # Send OTP for student registration (Public)
 POST    /api/v1/auth/register                        # Register a new student (initial status: PENDING) (Public)
 POST    /api/v1/auth/password-reset/request-otp      # Send OTP for password reset (Public)
 PATCH   /api/v1/auth/password-reset                  # Verify OTP and reset password (Public)
-
-GET     /api/v1/auth/validate-email                  # Check if this email valid 
+POST     /api/v1/auth/validate-email                 # Check if this email valid 
 
 
 
