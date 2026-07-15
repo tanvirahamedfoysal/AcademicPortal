@@ -32,8 +32,6 @@ async def upload_image(
         raise HTTPException(status_code=500, detail="Failed to insert asset into database")
 	
 
-
-
 @router.delete("")
 async def delete_images(
     payload: DeleteImagesPayload,
