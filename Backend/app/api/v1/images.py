@@ -1,20 +1,90 @@
-from typing import Any
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from sqlalchemy import text, bindparam
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from fastapi import APIRouter
-
-from app.db import engine
+from app.db import get_db
 from app.utility import limiter
-
+from app.utility.cloudinary import upload_asset, remove_asset
+from app.schema.v1.images import DeleteImagesPayload
 
 router = APIRouter(prefix="/images", tags=["images"])
 
 
 @router.post("")
-async def upload_image(payload: dict[str, Any]):
-	return {"message": "Not implemented yet"}
+async def upload_image(file: UploadFile = File(...)):
+    result = await upload_asset(file)
+    return result
+# return result
+# {
+#   "url": "https://res.cloudinary.com/dqaj2you5/image/upload/v1784084646/AcademicPortal/rcan7i2awcdtkjiobqsb.jpg",
+#   "public_id": "AcademicPortal/rcan7i2awcdtkjiobqsb"
+# }
+
 
 
 @router.delete("")
-async def delete_images(payload: dict[str, list[str]]):
-	return {"message": "Not implemented yet"}
+async def delete_images(
+    payload: DeleteImagesPayload,
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        query = text("""
+            SELECT public_id, url
+            FROM assets
+            WHERE url IN :urls
+        """).bindparams(
+            bindparam("urls", expanding=True)
+        )
+        
+        result = await db.execute(query, {"urls": payload.urls})
+        rows = result.fetchall()
+        
+        if not rows:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail="No matching assets found for the provided URLs"
+            )
+            
+        public_ids = [row.public_id for row in rows]
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Database lookup error: {e}")
+        raise HTTPException(status_code=500, detail="Database lookup failed")
 
+    deleted_from_cloudinary = []
+    failed_cloudinary = []
+
+    for p_id in public_ids:
+        try:
+            res = await remove_asset(p_id)
+            if res.get("result") == "ok" or res.get("result") == "not found":
+                deleted_from_cloudinary.append(p_id)
+            else:
+                failed_cloudinary.append(p_id)
+        except Exception as cloud_err:
+            print(f"Cloudinary delete failed for {p_id}: {cloud_err}")
+            failed_cloudinary.append(p_id)
+
+    # 3. If any assets were cleared out of Cloudinary, delete them from the database
+    if deleted_from_cloudinary:
+        try:
+            delete_query = text("""
+                DELETE FROM assets
+                WHERE public_id IN :deleted_ids
+            """).bindparams(
+                bindparam("deleted_ids", expanding=True)
+            )
+            await db.execute(delete_query, {"deleted_ids": deleted_from_cloudinary})
+            await db.commit()
+        except Exception as db_err:
+            await db.rollback()
+            print(f"Database row deletion failed: {db_err}")
+            raise HTTPException(status_code=500, detail="Cloudinary cleared but DB tracking update failed")
+
+    return {
+        "message": "Images deletion processing complete.",
+        "successfully_deleted": deleted_from_cloudinary,
+        "failed_or_skipped": failed_cloudinary
+    }
