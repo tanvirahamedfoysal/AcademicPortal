@@ -1,21 +1,27 @@
-export default function AdminDashboard(){
- const cards=[
-  ['Pending Registrations','18'],
-  ['Draft Articles','7'],
-  ['Unread Messages','12'],
-  ['Active Lab Members','84']
- ];
- return (
- <main className="p-8">
-  <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-  <div className="grid md:grid-cols-4 gap-5 mt-8">
-   {cards.map(c=>
-    <div className="border rounded-xl p-5" key={c[0]}>
-     <p className="text-gray-500">{c[0]}</p>
-     <h2 className="text-3xl font-bold text-blue-600">{c[1]}</h2>
-    </div>
-   )}
-  </div>
- </main>
- )
+import StatCard from '@/components/dashboard/StatCard';
+import Sidebar from '@/components/layout/Sidebar';
+
+export default function Dashboard(){
+return <div className="flex">
+<Sidebar/>
+<main className="p-8 flex-1">
+<h1 className="text-3xl font-bold">Admin Dashboard</h1>
+
+<div className="grid md:grid-cols-4 gap-5 mt-8">
+<StatCard title="Pending Registrations" value="18"/>
+<StatCard title="Draft Articles" value="7"/>
+<StatCard title="Unread Messages" value="12"/>
+<StatCard title="Active Researchers" value="84"/>
+</div>
+
+<div className="bg-white rounded-xl border mt-8 p-6">
+<h2 className="font-bold text-xl">Recent Activity</h2>
+<ul className="mt-4 space-y-3">
+<li>Moderator verified student profile</li>
+<li>New research article submitted</li>
+<li>Repository document uploaded</li>
+</ul>
+</div>
+</main>
+</div>
 }

@@ -1,12 +1,17 @@
-# Academic Research Portal Frontend
+Academic Research Portal Frontend v2
 
-Next.js + TypeScript frontend architecture.
+Implemented:
+- Next.js architecture
+- Admin dashboard UI
+- Sidebar navigation
+- API client
+- Cache engine foundation
+- IndexedDB/local cache preparation
+- TypeScript structures
 
-Features:
-- Admin dashboard
-- Student dashboard
-- API layer
-- Cache manager foundation
-- PWA ready structure
-
-Connect API endpoints inside lib/api.
+Next stage:
+- Full FastAPI endpoint mapping
+- Student portal
+- Repository viewer
+- PWA service worker
+- Offline synchronization
