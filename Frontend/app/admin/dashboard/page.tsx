@@ -1,26 +1,22 @@
 import StatCard from '@/components/dashboard/StatCard';
-import Sidebar from '@/components/layout/Sidebar';
+import AdminSidebar from '@/components/layout/AdminSidebar';
 
-export default function Dashboard(){
+export default function Page(){
 return <div className="flex">
-<Sidebar/>
+<AdminSidebar/>
 <main className="p-8 flex-1">
-<h1 className="text-3xl font-bold">Admin Dashboard</h1>
+<h1 className="text-3xl font-bold">Dashboard</h1>
 
 <div className="grid md:grid-cols-4 gap-5 mt-8">
-<StatCard title="Pending Registrations" value="18"/>
-<StatCard title="Draft Articles" value="7"/>
-<StatCard title="Unread Messages" value="12"/>
-<StatCard title="Active Researchers" value="84"/>
+<StatCard title="Students" value="0"/>
+<StatCard title="Articles" value="0"/>
+<StatCard title="Documents" value="0"/>
+<StatCard title="Messages" value="0"/>
 </div>
 
-<div className="bg-white rounded-xl border mt-8 p-6">
-<h2 className="font-bold text-xl">Recent Activity</h2>
-<ul className="mt-4 space-y-3">
-<li>Moderator verified student profile</li>
-<li>New research article submitted</li>
-<li>Repository document uploaded</li>
-</ul>
+<div className="bg-white border rounded-xl p-6 mt-8">
+<h2 className="font-bold">Recent Activity</h2>
+<p className="mt-3 text-gray-500">Connected to FastAPI audit system.</p>
 </div>
 </main>
 </div>
