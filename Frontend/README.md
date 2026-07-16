@@ -1,12 +1,20 @@
-Academic Research Portal
+Academic Research Portal V5 Beta
+
+This release is a UI beta.
 
 Implemented:
-- Next.js 15 structure
-- TypeScript
-- Admin dashboard UI
-- FastAPI API client
-- Article API service
-- Student API service
-- Repository API service
-- updated_at cache synchronization foundation
-- Zustand authentication store
+- Professional landing page
+- Admin dashboard
+- Student dashboard
+- Researcher directory
+- Sidebar navigation
+- Dashboard cards
+- API client foundation
+- Cache foundation
+
+Next stage:
+- Complete FastAPI CRUD integration
+- Authentication
+- Repository management
+- Article workflow
+- PWA/offline cache

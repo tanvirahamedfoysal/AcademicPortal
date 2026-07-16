@@ -1,7 +1,7 @@
 import Sidebar from "@/components/layout/Sidebar";
-import Metric from "@/components/dashboard/Metric";
+import StatCard from "@/components/dashboard/StatCard";
 
-export default function Dashboard(){
+export default function AdminDashboard(){
 
 return <div className="flex">
 
@@ -10,47 +10,48 @@ return <div className="flex">
 <main className="flex-1 p-10">
 
 <h1 className="text-4xl font-bold">
-Welcome Admin 👋
+Welcome Admin
 </h1>
 
-<p className="text-gray-500 mt-2">
+<p className="text-slate-500 mt-2">
 Research management overview
 </p>
 
-<div className="grid grid-cols-4 gap-6 mt-10">
-<Metric title="Students" value="842" icon="👨‍🎓"/>
-<Metric title="Researchers" value="126" icon="🔬"/>
-<Metric title="Articles" value="540" icon="📄"/>
-<Metric title="Documents" value="1200" icon="📚"/>
+<div className="grid md:grid-cols-4 gap-6 mt-10">
+<StatCard title="Students" value="842"/>
+<StatCard title="Researchers" value="126"/>
+<StatCard title="Articles" value="540"/>
+<StatCard title="Documents" value="12000"/>
 </div>
 
 
-<div className="grid grid-cols-2 gap-8 mt-10">
+<div className="grid md:grid-cols-2 gap-6 mt-10">
 
-<div className="card">
-<h2 className="font-bold text-xl">
+<div className="panel">
+<h2 className="text-xl font-bold">
+Student Verification Queue
+</h2>
+
+<table className="w-full mt-5">
+<tbody>
+<tr><td>Ahmed Karim</td><td>Pending</td></tr>
+<tr><td>Maria Islam</td><td>Active</td></tr>
+</tbody>
+</table>
+
+</div>
+
+
+<div className="panel">
+<h2 className="text-xl font-bold">
 Recent Activity
 </h2>
-<ul className="mt-5 space-y-4">
+
+<ul className="mt-5 space-y-3">
 <li>New article submitted</li>
-<li>Student verification completed</li>
 <li>Repository updated</li>
+<li>Researcher profile verified</li>
 </ul>
-</div>
-
-
-<div className="card">
-<h2 className="font-bold text-xl">
-Active Notices
-</h2>
-
-<div className="mt-5 bg-blue-50 p-4 rounded-xl">
-Research seminar tomorrow
-</div>
-
-<div className="mt-3 bg-blue-50 p-4 rounded-xl">
-New registration opened
-</div>
 
 </div>
 

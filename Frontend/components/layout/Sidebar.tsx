@@ -1,18 +1,26 @@
+const links=[
+"Dashboard",
+"Students",
+"Researchers",
+"Articles",
+"Repository",
+"Messages",
+"Audit Logs",
+"Settings"
+];
+
 export default function Sidebar(){
-return <aside className="w-72 bg-white min-h-screen border-r p-7">
-<h1 className="text-2xl font-bold text-blue-600">
-⚡ Academic Portal
+return <aside className="w-72 min-h-screen bg-white border-r p-8">
+<h1 className="text-xl font-bold text-blue-600">
+Academic Portal
 </h1>
 
-<nav className="mt-10 space-y-4 text-gray-700">
-<div>Dashboard</div>
-<div>Researchers</div>
-<div>Students</div>
-<div>Publications</div>
-<div>Repository</div>
-<div>Messages</div>
-<div>Audit Logs</div>
-<div>Settings</div>
-</nav>
+<div className="mt-10 space-y-3">
+{links.map(x=>
+<div key={x}
+className="p-3 rounded-lg hover:bg-blue-50">
+{x}
+</div>)}
+</div>
 </aside>
 }

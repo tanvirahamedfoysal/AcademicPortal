@@ -1,19 +1,19 @@
 {
-"name":"academic-research-portal-v4",
-"version":"4.0.0",
-"private":true,
-"scripts":{"dev":"next dev","build":"next build","start":"next start"},
-"dependencies":{
-"next":"15.0.0",
-"react":"19.0.0",
-"react-dom":"19.0.0",
-"lucide-react":"latest",
-"axios":"latest",
-"zustand":"latest",
-"@tanstack/react-query":"latest"
-},
-"devDependencies":{
-"typescript":"latest",
-"tailwindcss":"latest"
-}
+ "name":"academic-research-portal-v5-beta",
+ "version":"5.0.0",
+ "private":true,
+ "scripts":{"dev":"next dev","build":"next build","start":"next start"},
+ "dependencies":{
+  "next":"15.0.0",
+  "react":"19.0.0",
+  "react-dom":"19.0.0",
+  "lucide-react":"latest",
+  "axios":"latest",
+  "zustand":"latest",
+  "@tanstack/react-query":"latest"
+ },
+ "devDependencies":{
+  "typescript":"latest",
+  "tailwindcss":"latest"
+ }
 }
