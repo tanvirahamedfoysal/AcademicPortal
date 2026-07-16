@@ -2,7 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+*{box-sizing:border-box}
+
 body{
-background:#f8fafc;
-color:#0f172a;
+margin:0;
+background:#f5f7fb;
+font-family:Inter,Arial,sans-serif;
+color:#111827;
+}
+
+.card{
+background:white;
+border:1px solid #e5e7eb;
+border-radius:18px;
+padding:20px;
+box-shadow:0 8px 25px rgba(0,0,0,.04);
 }

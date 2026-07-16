@@ -1,18 +1,18 @@
-const menu=[
-'Dashboard',
-'Students',
-'Moderators',
-'Collaborators',
-'Articles',
-'Repository',
-'Inbox',
-'Audit Logs',
-'Settings'
-];
-
 export default function Sidebar(){
-return <aside className="w-64 min-h-screen bg-white border-r p-5">
-<h2 className="font-bold text-xl mb-8">Admin Center</h2>
-{menu.map(x=><div key={x} className="py-3 text-gray-700">{x}</div>)}
+return <aside className="w-72 bg-white min-h-screen border-r p-7">
+<h1 className="text-2xl font-bold text-blue-600">
+⚡ Academic Portal
+</h1>
+
+<nav className="mt-10 space-y-4 text-gray-700">
+<div>Dashboard</div>
+<div>Researchers</div>
+<div>Students</div>
+<div>Publications</div>
+<div>Repository</div>
+<div>Messages</div>
+<div>Audit Logs</div>
+<div>Settings</div>
+</nav>
 </aside>
 }
