@@ -1,6 +1,4 @@
-Academic Research Portal V5 Beta
-
-This release is a UI beta.
+Academic Research Portal
 
 Implemented:
 - Professional landing page
@@ -11,10 +9,3 @@ Implemented:
 - Dashboard cards
 - API client foundation
 - Cache foundation
-
-Next stage:
-- Complete FastAPI CRUD integration
-- Authentication
-- Repository management
-- Article workflow
-- PWA/offline cache
