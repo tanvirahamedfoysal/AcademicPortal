@@ -184,6 +184,7 @@ async def change_email(
 	db: AsyncSession = Depends(get_db),
 	payload: dict[str, Any] = None
 ):
+	return {"message": "Not implemented yet"}
 	response = validate_user_access(token)
 	if not response["is_valid"]:
 		raise HTTPException(

@@ -1,4 +1,3 @@
-from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import text
@@ -313,3 +312,5 @@ async def get_article_last_update(
         raise
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid article ID format")
+    
+    
