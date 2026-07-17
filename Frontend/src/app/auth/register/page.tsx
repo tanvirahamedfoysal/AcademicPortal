@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Users } from 'lucide-react';
-import RegisterForm from '../../../forms/RegisterForm';
+import RegisterForm from '../../../forms/RegisterForm'; // Make sure this path is correct!
 
 export const metadata = {
   title: 'Create Account - Academic Research Portal',
@@ -23,6 +23,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="p-8">
+          {}
           <RegisterForm />
         </div>
 

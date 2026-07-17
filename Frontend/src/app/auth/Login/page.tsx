@@ -26,11 +26,17 @@ export default function LoginPage() {
           <LoginForm />
         </div>
 
-        <div className="px-8 py-4 bg-slate-50 border-t border-slate-100 text-center">
+        <div className="px-8 py-4 bg-slate-50 border-t border-slate-100 flex flex-col space-y-3 text-center">
           <p className="text-sm text-slate-600">
             Forgot your password?{' '}
             <Link href="/auth/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
               Reset it here
+            </Link>
+          </p>
+          <p className="text-sm text-slate-600">
+            Don't have an account?{' '}
+            <Link href="/auth/register" className="font-medium text-blue-600 hover:text-blue-500">
+              Register here
             </Link>
           </p>
         </div>
