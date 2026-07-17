@@ -10,6 +10,7 @@
  "dependencies": {
   "@tanstack/react-query": "latest",
   "axios": "latest",
+  "framer-motion": "^12.42.2",
   "lucide-react": "latest",
   "next": "15.0.0",
   "react": "19.0.0",
