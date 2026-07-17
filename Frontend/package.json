@@ -9,6 +9,7 @@
  },
  "dependencies": {
   "@tanstack/react-query": "latest",
+  "@tanstack/react-query-devtools": "^5.101.2",
   "axios": "latest",
   "framer-motion": "^12.42.2",
   "lucide-react": "latest",
