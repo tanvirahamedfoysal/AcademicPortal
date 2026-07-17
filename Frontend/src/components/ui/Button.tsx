@@ -1,31 +1,30 @@
-// src/components/ui/Button.tsx
 'use client';
 
-
 import { motion, HTMLMotionProps } from 'framer-motion';
-import { ButtonHTMLAttributes, forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { Loader2 } from 'lucide-react';
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
+  children?: React.ReactNode; 
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { 
-      className = '', 
-      variant = 'primary', 
-      size = 'md', 
-      isLoading = false, 
-      children, 
-      disabled, 
-      ...props 
-    }, 
+    {
+      className = '',
+      variant = 'primary',
+      size = 'md',
+      isLoading = false,
+      children,
+      disabled,
+      ...props
+    },
     ref
   ) => {
-    const baseStyles = 'inline-flex items-center justify-center font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:pointer-events-none';
+    const baseStyles = 'inline-flex items-center justify-center font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:pointer-events-none origin-center';
     
     const variants = {
       primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 shadow-sm',
@@ -49,15 +48,18 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ].filter(Boolean).join(' ');
 
     return (
-      <button
+      <motion.button
         ref={ref}
         className={combinedClasses}
         disabled={disabled || isLoading}
+        whileHover={{ scale: disabled || isLoading ? 1 : 1.02 }}
+        whileTap={{ scale: disabled || isLoading ? 1 : 0.97 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
         {...props}
       >
         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {children}
-      </button>
+      </motion.button>
     );
   }
 );
