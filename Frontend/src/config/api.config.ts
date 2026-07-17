@@ -1,0 +1,13 @@
+export const API_CONFIG = {
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://academic-portal-16620c77.fastapicloud.dev",
+  timeout: 10000,
+  endpoints: {
+    auth: {
+      login: '/login',
+      validate: '/validate-token'
+    },
+    profile: {
+      me: '/profile/me'
+    }
+  }
+};
