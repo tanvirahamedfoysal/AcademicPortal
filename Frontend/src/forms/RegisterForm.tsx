@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, User, Loader2 } from 'lucide-react';
+import { Mail, Lock, User, AtSign, Loader2 } from 'lucide-react';
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -12,10 +12,13 @@ export default function RegisterForm() {
     e.preventDefault();
     setIsLoading(true);
     
-    // TODO: Wire up your actual registration API/Auth logic here
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    console.log('Ready to send to FastAPI:', data);
+
     setTimeout(() => {
       setIsLoading(false);
-      router.push('/auth/login'); // Redirect to login after successful registration
+      router.push('/auth/login'); 
     }, 1500);
   };
 
@@ -36,6 +39,26 @@ export default function RegisterForm() {
             required
             className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent sm:text-sm transition-colors"
             placeholder="Dr. Jane Doe"
+          />
+        </div>
+      </div>
+
+      {}
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="username">
+          Username
+        </label>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <AtSign className="h-5 w-5 text-slate-400" />
+          </div>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            required
+            className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent sm:text-sm transition-colors"
+            placeholder="johndoe123"
           />
         </div>
       </div>
