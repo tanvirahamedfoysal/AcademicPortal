@@ -5,7 +5,19 @@ import { User } from '../types/user';
 
 export const authService = {
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
-    const response = await api.post<LoginResponse>(API_CONFIG.endpoints.auth.login, credentials);
+    const formData = new URLSearchParams();
+    formData.append('username', credentials.username);
+    formData.append('password', credentials.password);
+
+    const response = await api.post<LoginResponse>(
+      API_CONFIG.endpoints.auth.login, 
+      formData,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+    );
     return response.data;
   },
 
