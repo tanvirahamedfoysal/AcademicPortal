@@ -12,9 +12,13 @@ export function useLogin() {
       
       localStorage.setItem('token', access_token);
       
-      const user = await authService.getMe();
-      
-      return { token: access_token, user };
+      try {
+        const user = await authService.getMe();
+        return { token: access_token, user };
+      } catch (error) {
+        console.error("FAILED TO FETCH PROFILE:", error);
+        throw new Error("Login succeeded, but failed to fetch user profile.");
+      }
     },
     onSuccess: ({ token, user }) => {
       setAuth(user, token);

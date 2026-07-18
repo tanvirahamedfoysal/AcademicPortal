@@ -28,7 +28,6 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Clear auth state if token is invalid/expired
       useAuthStore.getState().logout();
       if (typeof window !== 'undefined') {
         window.location.href = '/auth/login';
