@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, User, AtSign, Loader2, Clock, CheckCircle2, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Mail, Lock, User, AtSign, Loader2, Clock, CheckCircle2, ArrowLeft, RefreshCw, GraduationCap } from 'lucide-react';
 
 const OTP_LIFETIME_SECONDS = 120;
 
@@ -60,8 +60,21 @@ export default function RegisterForm() {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [studentBatch, setStudentBatch] = useState('');
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
+
+  const parseFastApiError = (payload: any, defaultMessage: string) => {
+    if (payload.detail) {
+      if (Array.isArray(payload.detail)) {
+        return payload.detail
+          .map((err: any) => `${err.loc[err.loc.length - 1]}: ${err.msg}`)
+          .join(' | ');
+      }
+      return payload.detail;
+    }
+    return payload.message || defaultMessage;
+  };
 
   const handleRequestOtp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -76,11 +89,11 @@ export default function RegisterForm() {
       });
       
       const userPayload = await userRes.json().catch(() => ({}));
-      if (userRes.ok && userPayload.is_valid === false) {
-        throw new Error(userPayload.message || "Username is already taken.");
-      }
       if (!userRes.ok) {
-        throw new Error("Unable to validate the username.");
+        throw new Error(parseFastApiError(userPayload, "Unable to validate the username."));
+      }
+      if (userPayload.is_valid === false) {
+        throw new Error(userPayload.message || "Username is already taken.");
       }
 
       const otpRes = await fetch("/api/auth/register/request-otp", {
@@ -91,7 +104,7 @@ export default function RegisterForm() {
       
       const otpPayload = await otpRes.json().catch(() => ({}));
       if (!otpRes.ok) {
-        throw new Error(otpPayload.message || "Failed to send verification OTP.");
+        throw new Error(parseFastApiError(otpPayload, "Failed to send verification OTP."));
       }
 
       setOtp('');
@@ -124,6 +137,7 @@ export default function RegisterForm() {
           name: name.trim(),
           username: username.trim(),
           email: email.trim().toLowerCase(),
+          student_batch: studentBatch.trim(),
           password,
           otp: otp.trim(),
         }),
@@ -131,7 +145,7 @@ export default function RegisterForm() {
 
       const payload = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(payload.message || "Registration failed.");
+        throw new Error(parseFastApiError(payload, "Registration failed."));
       }
 
       countdown.clear();
@@ -155,7 +169,11 @@ export default function RegisterForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim().toLowerCase() }),
       });
-      if (!otpRes.ok) throw new Error("Failed to resend OTP.");
+      const otpPayload = await otpRes.json().catch(() => ({}));
+      
+      if (!otpRes.ok) {
+        throw new Error(parseFastApiError(otpPayload, "Failed to resend OTP."));
+      }
       
       setOtp('');
       countdown.start();
@@ -169,7 +187,6 @@ export default function RegisterForm() {
 
   return (
     <div className="w-full">
-      {}
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg">
           {error}
@@ -235,6 +252,26 @@ export default function RegisterForm() {
                 required
                 className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent sm:text-sm transition-colors"
                 placeholder="researcher@university.edu"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="studentBatch">
+              Student Batch
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <GraduationCap className="h-5 w-5 text-slate-400" />
+              </div>
+              <input
+                id="studentBatch"
+                value={studentBatch}
+                onChange={(e) => setStudentBatch(e.target.value)}
+                type="text"
+                required
+                className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent sm:text-sm transition-colors"
+                placeholder="e.g. 2024 or 10th"
               />
             </div>
           </div>
