@@ -4,24 +4,27 @@ import { LoginCredentials, LoginResponse } from '../types/auth';
 import { User } from '../types/user';
 
 export const authService = {
-login: async (credentials: LoginCredentials) => {
-  const formData = new URLSearchParams();
-  formData.append('username', credentials.username);
-  formData.append('password', credentials.password);
-  const response = await fetch(`${API_CONFIG.baseURL}${API_CONFIG.endpoints.auth.login}`, {
+  login: async (credentials: LoginCredentials) => {
+  const response = await fetch('/api/auth/login', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json', 
     },
-    body: formData.toString(),
+    body: JSON.stringify(credentials),
   });
 
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.detail || 'Login failed');
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.detail || 'Login failed');
   }
 
-  return response.json();
+  const data = await response.json();
+  
+  if (data.access_token) {
+    localStorage.setItem('token', data.access_token);
+  }
+
+  return data;
 },
 
   getMe: async (): Promise<User> => {

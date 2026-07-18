@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { useLogin } from '../hooks/useAuth';
+import { authService } from '../services/auth.service'; 
 
 export default function LoginForm() {
   const router = useRouter();
@@ -12,20 +13,27 @@ export default function LoginForm() {
   
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
+  const [profileError, setProfileError] = useState(false); 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!username || !password) return;
+    setProfileError(false);
 
     loginMutation.mutate(
       { username, password },
       {
-        onSuccess: ({ user }) => {
-          // Redirect based on the user's role retrieved from /profile/me
-          if (user.role === 'ADMIN') {
-            router.push('/admin/dashboard');
-          } else {
-            router.push('/student/dashboard');
+        onSuccess: async () => {
+          try {
+            const user = await authService.getMe();
+            
+            if (user.role === 'ADMIN') {
+              router.push('/admin/dashboard');
+            } else {
+              router.push('/student/dashboard');
+            }
+          } catch (error) {
+            console.error("Failed to fetch user profile", error);
+            setProfileError(true);
           }
         },
       }
@@ -34,17 +42,20 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5 w-full">
-      {loginMutation.isError && (
+      {(loginMutation.isError || profileError) && (
         <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm flex items-start gap-2">
           <AlertCircle size={16} className="shrink-0 mt-0.5" />
           <p>
-            {loginMutation.error instanceof Error 
-              ? "Invalid username or password. Please try again." 
-              : "An unexpected error occurred."}
+            {profileError 
+              ? "Login successful, but failed to load user profile."
+              : loginMutation.error instanceof Error 
+                ? "Invalid username or password. Please try again." 
+                : "An unexpected error occurred."}
           </p>
         </div>
       )}
 
+      {}
       <div className="space-y-1">
         <label className="text-sm font-medium text-slate-700" htmlFor="username">
           Username
