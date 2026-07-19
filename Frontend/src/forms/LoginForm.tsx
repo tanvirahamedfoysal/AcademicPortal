@@ -13,6 +13,7 @@ export default function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [profileError, setProfileError] = useState(false); 
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!username || !password) return;
@@ -23,10 +24,22 @@ export default function LoginForm() {
       {
         onSuccess: async () => {
           try {
-            const user = await authService.getMe();
+            const response = (await authService.getMe()) as any;
             
-            if (user.role === 'ADMIN') {
-              router.push('/admin/dashboard');
+            const userData = response.data ? response.data : response; 
+            
+            const displayName = userData.email || userData.username || 'Admin';
+            const userRole = userData.user_role || userData.role; 
+
+            localStorage.setItem('user_name', displayName);
+            localStorage.setItem('user_role', userRole);
+            
+            const role = userRole?.toUpperCase();
+
+            if (role === 'ADMIN') {
+              router.push('/admin/portfolio');
+            } else if (role === 'MODERATOR') {
+              router.push('/admin/articles');
             } else {
               router.push('/student/dashboard');
             }
@@ -54,7 +67,6 @@ export default function LoginForm() {
         </div>
       )}
 
-      {}
       <div className="space-y-1">
         <label className="text-sm font-medium text-slate-700" htmlFor="username">
           Username
