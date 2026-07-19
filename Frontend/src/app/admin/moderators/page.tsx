@@ -5,11 +5,13 @@ import { Loader2, Search, Plus, Shield, Trash2, X, UserCheck, Mail, ArrowUpCircl
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Moderator {
-  id: string;
-  username: string;
+  id?: string;
+  uuid?: string;
+  username?: string;
+  name?: string;
   email: string;
-  is_active: boolean;
-  created_at: string;
+  is_active?: boolean;
+  created_at?: string;
 }
 
 interface Student {
@@ -25,12 +27,10 @@ export default function AdminModeratorsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   
-  // Custom Addition Modal State vars
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({ email: '', username: '', password: '' });
 
-  // Promotion from Student List Modal State vars
   const [isPromoteModalOpen, setIsPromoteModalOpen] = useState(false);
   const [activeStudents, setActiveStudents] = useState<Student[]>([]);
   const [isStudentsLoading, setIsStudentsLoading] = useState(false);
@@ -96,14 +96,15 @@ export default function AdminModeratorsPage() {
     }
   };
 
-  const handleRevoke = async (id: string) => {
+  const handleRevoke = async (identifier: string) => {
+    if (!identifier) return;
     if (!confirm("Are you sure you want to revoke moderator privileges for this user?")) return;
     
-    setActionLoading(id);
+    setActionLoading(identifier);
     try {
-      const res = await fetch(`/api/v1/moderators/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/v1/moderators/${identifier}`, { method: 'DELETE' });
       if (res.ok) {
-        setModerators(prev => prev.filter(mod => mod.id !== id));
+        setModerators(prev => prev.filter(mod => (mod.id || mod.uuid) !== identifier));
       }
     } catch (error) {
       console.error("Failed to revoke moderator:", error);
@@ -140,10 +141,12 @@ export default function AdminModeratorsPage() {
     }
   };
 
-  const filteredModerators = moderators.filter(mod => 
-    mod.username?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    mod.email?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredModerators = moderators.filter(mod => {
+    const searchString = searchQuery.toLowerCase();
+    const nameMatch = (mod.username || mod.name || '').toLowerCase().includes(searchString);
+    const emailMatch = (mod.email || '').toLowerCase().includes(searchString);
+    return nameMatch || emailMatch;
+  });
 
   const filteredStudents = activeStudents.filter(s => 
     s.name?.toLowerCase().includes(studentSearchQuery.toLowerCase()) || 
@@ -220,47 +223,53 @@ export default function AdminModeratorsPage() {
                 </tr>
               ) : (
                 <AnimatePresence>
-                  {filteredModerators.map((mod) => (
-                    <motion.tr 
-                      key={mod.id}
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, height: 0 }}
-                      className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="h-9 w-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm">
-                            {mod.username?.charAt(0).toUpperCase() || 'M'}
-                          </div>
-                          <div>
-                            <div className="font-medium text-slate-900">{mod.username}</div>
-                            <div className="text-sm text-slate-500 flex items-center gap-1">
-                              <Mail className="h-3 w-3" /> {mod.email}
+                  {}
+                  {filteredModerators.map((mod, index) => {
+                    const uniqueIdentifier = mod.id || mod.uuid || `fallback-key-${index}`;
+                    const displayName = mod.username || mod.name || 'Unknown User';
+                    
+                    return (
+                      <motion.tr 
+                        key={uniqueIdentifier}
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, height: 0 }}
+                        className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
+                      >
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="h-9 w-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm">
+                              {displayName.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <div className="font-medium text-slate-900">{displayName}</div>
+                              <div className="text-sm text-slate-500 flex items-center gap-1">
+                                <Mail className="h-3 w-3" /> {mod.email}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                          mod.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'
-                        }`}>
-                          <span className={`h-1.5 w-1.5 rounded-full ${mod.is_active ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
-                          {mod.is_active ? 'Active' : 'Inactive'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-slate-500 whitespace-nowrap">
-                        {mod.created_at ? new Date(mod.created_at).toLocaleDateString() : 'N/A'}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <button
-                          onClick={() => handleRevoke(mod.id)}
-                          disabled={actionLoading === mod.id}
-                          className="px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 font-medium"
-                        >
-                          {actionLoading === mod.id ? <Loader2 className="h-4 w-4 animate-spin inline" /> : 'Revoke Access'}
-                        </button>
-                      </td>
-                    </motion.tr>
-                  ))}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                            mod.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'
+                          }`}>
+                            <span className={`h-1.5 w-1.5 rounded-full ${mod.is_active ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
+                            {mod.is_active ? 'Active' : 'Inactive'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-500 whitespace-nowrap">
+                          {mod.created_at ? new Date(mod.created_at).toLocaleDateString() : 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <button
+                            onClick={() => handleRevoke(uniqueIdentifier)}
+                            disabled={actionLoading === uniqueIdentifier}
+                            className="px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 font-medium"
+                          >
+                            {actionLoading === uniqueIdentifier ? <Loader2 className="h-4 w-4 animate-spin inline" /> : 'Revoke Access'}
+                          </button>
+                        </td>
+                      </motion.tr>
+                    );
+                  })}
                 </AnimatePresence>
               )}
             </tbody>
@@ -268,7 +277,7 @@ export default function AdminModeratorsPage() {
         </div>
       </div>
 
-      {/* Manual Input Account Creation Modal */}
+      {}
       <AnimatePresence>
         {isModalOpen && (
           <>
@@ -333,7 +342,7 @@ export default function AdminModeratorsPage() {
         )}
       </AnimatePresence>
 
-      {/* Select Student from List Pop Up Modal */}
+      {}
       <AnimatePresence>
         {isPromoteModalOpen && (
           <>
