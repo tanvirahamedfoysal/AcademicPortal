@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Loader2, Check, X, Trash2, Search, UserCheck, Clock, ShieldAlert } from 'lucide-react';
+import { Loader2, Check, X, Trash2, Search, UserCheck, Clock, ShieldAlert, ArrowUpCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Student {
@@ -46,6 +46,29 @@ export default function AdminStudentsPage() {
       console.error("Failed to fetch students data:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handlePromoteToModerator = async (uuid: string, name: string) => {
+    if (!confirm(`Are you sure you want to promote ${name} to a Moderator? They will be notified upon their next login.`)) return;
+    
+    setActionLoading(uuid);
+    try {
+      const res = await fetch(`/api/v1/students/${uuid}/promote`, { 
+        method: 'POST' 
+      });
+      
+      if (res.ok) {
+        alert(`${name} has been successfully promoted to Moderator.`);
+        setActiveStudents(prev => prev.filter(s => s.uuid !== uuid));
+      } else {
+        const errorData = await res.json();
+        alert(errorData.detail || "Failed to promote student.");
+      }
+    } catch (error) {
+      console.error("Failed to promote student:", error);
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -215,14 +238,24 @@ export default function AdminStudentsPage() {
                               </button>
                             </>
                           ) : (
-                            <button
-                              onClick={() => handleDeleteActive(student.uuid)}
-                              disabled={actionLoading === student.uuid}
-                              className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-                              title="Delete Account"
-                            >
-                              {actionLoading === student.uuid ? <Loader2 className="h-5 w-5 animate-spin" /> : <Trash2 className="h-5 w-5" />}
-                            </button>
+                            <>
+                              <button
+                                onClick={() => handlePromoteToModerator(student.uuid, student.name)}
+                                disabled={actionLoading === student.uuid}
+                                className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors disabled:opacity-50"
+                                title="Promote to Moderator"
+                              >
+                                {actionLoading === student.uuid ? <Loader2 className="h-5 w-5 animate-spin" /> : <ArrowUpCircle className="h-5 w-5" />}
+                              </button>
+                              <button
+                                onClick={() => handleDeleteActive(student.uuid)}
+                                disabled={actionLoading === student.uuid}
+                                className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                                title="Delete Account"
+                              >
+                                {actionLoading === student.uuid ? <Loader2 className="h-5 w-5 animate-spin" /> : <Trash2 className="h-5 w-5" />}
+                              </button>
+                            </>
                           )}
                         </div>
                       </td>

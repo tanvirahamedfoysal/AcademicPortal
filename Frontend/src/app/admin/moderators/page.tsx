@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Loader2, Search, Plus, Shield, Trash2, X, UserCheck, Mail } from 'lucide-react';
+import { Loader2, Search, Plus, Shield, Trash2, X, UserCheck, Mail, ArrowUpCircle, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Moderator {
@@ -21,6 +21,11 @@ export default function AdminModeratorsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({ email: '', username: '', password: '' });
+
+  const [isPromoteModalOpen, setIsPromoteModalOpen] = useState(false);
+  const [activeStudents, setActiveStudents] = useState<any[]>([]);
+  const [isStudentsLoading, setIsStudentsLoading] = useState(false);
+  const [studentSearchQuery, setStudentSearchQuery] = useState('');
 
   useEffect(() => {
     fetchModerators();
@@ -91,6 +96,49 @@ export default function AdminModeratorsPage() {
     mod.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const openPromoteModal = async () => {
+    setIsPromoteModalOpen(true);
+    setIsStudentsLoading(true);
+    try {
+      const res = await fetch('/api/v1/students');
+      if (res.ok) {
+        const data = await res.json();
+        setActiveStudents(Array.isArray(data) ? data : (data.data || []));
+      }
+    } catch (error) {
+      console.error("Failed to fetch students for promotion:", error);
+    } finally {
+      setIsStudentsLoading(false);
+    }
+  };
+
+  const handlePromoteFromModal = async (uuid: string, name: string) => {
+    if (!confirm(`Promote ${name} to Moderator?`)) return;
+    
+    setIsStudentsLoading(true); 
+    try {
+      const res = await fetch(`/api/v1/students/${uuid}/promote`, { method: 'POST' });
+      
+      if (res.ok) {
+        alert(`${name} promoted successfully.`);
+        setIsPromoteModalOpen(false);
+        fetchModerators(); 
+      } else {
+        const errorData = await res.json();
+        alert(errorData.detail || "Failed to promote student.");
+      }
+    } catch (error) {
+      console.error("Failed to promote student:", error);
+    } finally {
+      setIsStudentsLoading(false);
+    }
+  };
+
+  const filteredStudents = activeStudents.filter(s => 
+    s.name.toLowerCase().includes(studentSearchQuery.toLowerCase()) || 
+    s.email.toLowerCase().includes(studentSearchQuery.toLowerCase())
+  );
+
   return (
     <div className="max-w-6xl mx-auto pb-12 relative">
       {}
@@ -103,7 +151,8 @@ export default function AdminModeratorsPage() {
           <p className="text-sm text-slate-500 mt-1">Manage users with elevated platform privileges.</p>
         </div>
         
-        <div className="flex gap-3">
+        {}
+        <div className="flex gap-3 items-start">
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
             <input
@@ -114,13 +163,22 @@ export default function AdminModeratorsPage() {
               className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:border-transparent text-sm"
             />
           </div>
-          <button 
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm whitespace-nowrap shadow-sm"
-          >
-            <Plus className="h-4 w-4" />
-            Add Moderator
-          </button>
+          <div className="flex flex-col gap-2">
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm whitespace-nowrap shadow-sm"
+            >
+              <Plus className="h-4 w-4" />
+              Add Moderator
+            </button>
+            <button 
+              onClick={openPromoteModal}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-white border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors font-medium text-sm whitespace-nowrap shadow-sm"
+            >
+              <ArrowUpCircle className="h-4 w-4" />
+              Make Moderator
+            </button>
+          </div>
         </div>
       </div>
 
@@ -260,6 +318,73 @@ export default function AdminModeratorsPage() {
                   </button>
                 </div>
               </form>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isPromoteModalOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-slate-900/40 z-40 backdrop-blur-sm"
+              onClick={() => setIsPromoteModalOpen(false)}
+            />
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-2xl shadow-xl z-50 p-6 max-h-[80vh] flex flex-col"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Users className="h-5 w-5 text-indigo-600" />
+                  Select Student to Promote
+                </h3>
+                <button onClick={() => setIsPromoteModalOpen(false)} className="text-slate-400 hover:text-slate-700">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search students..."
+                  value={studentSearchQuery}
+                  onChange={(e) => setStudentSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-600 outline-none text-sm"
+                />
+              </div>
+
+              <div className="overflow-y-auto flex-1 border border-slate-100 rounded-lg p-2">
+                {isStudentsLoading && activeStudents.length === 0 ? (
+                  <div className="flex justify-center items-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+                  </div>
+                ) : filteredStudents.length === 0 ? (
+                  <div className="text-center py-8 text-sm text-slate-500">
+                    No students found.
+                  </div>
+                ) : (
+                  <ul className="space-y-1">
+                    {filteredStudents.map(student => (
+                      <li key={student.uuid} className="flex justify-between items-center p-3 hover:bg-slate-50 rounded-lg border border-transparent hover:border-slate-100 transition-colors">
+                        <div>
+                          <p className="text-sm font-medium text-slate-900">{student.name}</p>
+                          <p className="text-xs text-slate-500">{student.email}</p>
+                        </div>
+                        <button
+                          onClick={() => handlePromoteFromModal(student.uuid, student.name)}
+                          disabled={isStudentsLoading}
+                          className="px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white rounded-md text-xs font-medium transition-colors disabled:opacity-50"
+                        >
+                          Promote
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </motion.div>
           </>
         )}
