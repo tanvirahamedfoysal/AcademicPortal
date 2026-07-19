@@ -54,8 +54,9 @@ export default function AdminStudentsPage() {
     
     setActionLoading(uuid);
     try {
-      const res = await fetch(`/api/v1/students/${uuid}/promote`, { 
-        method: 'POST' 
+      const res = await fetch(`/api/v1/moderators/${uuid}`, { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
       });
       
       if (res.ok) {
@@ -140,7 +141,6 @@ export default function AdminStudentsPage() {
         </div>
       </div>
 
-      {}
       <div className="flex space-x-1 bg-slate-200/50 p-1 rounded-xl mb-6 max-w-sm">
         <button
           onClick={() => setActiveTab('pending')}
@@ -167,7 +167,6 @@ export default function AdminStudentsPage() {
         </button>
       </div>
 
-      {}
       <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">

@@ -12,18 +12,27 @@ interface Moderator {
   created_at: string;
 }
 
+interface Student {
+  uuid: string;
+  name: string;
+  username: string;
+  email: string;
+}
+
 export default function AdminModeratorsPage() {
   const [moderators, setModerators] = useState<Moderator[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   
+  // Custom Addition Modal State vars
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({ email: '', username: '', password: '' });
 
+  // Promotion from Student List Modal State vars
   const [isPromoteModalOpen, setIsPromoteModalOpen] = useState(false);
-  const [activeStudents, setActiveStudents] = useState<any[]>([]);
+  const [activeStudents, setActiveStudents] = useState<Student[]>([]);
   const [isStudentsLoading, setIsStudentsLoading] = useState(false);
   const [studentSearchQuery, setStudentSearchQuery] = useState('');
 
@@ -46,6 +55,47 @@ export default function AdminModeratorsPage() {
     }
   };
 
+  const openPromoteModal = async () => {
+    setIsPromoteModalOpen(true);
+    setIsStudentsLoading(true);
+    try {
+      const res = await fetch('/api/v1/students');
+      if (res.ok) {
+        const data = await res.json();
+        setActiveStudents(Array.isArray(data) ? data : (data.data || []));
+      }
+    } catch (error) {
+      console.error("Failed to fetch student catalog data:", error);
+    } finally {
+      setIsStudentsLoading(false);
+    }
+  };
+
+  const handlePromoteFromModal = async (uuid: string, name: string) => {
+    if (!confirm(`Are you sure you want to promote ${name} to a Moderator role?`)) return;
+    
+    setIsStudentsLoading(true);
+    try {
+      const res = await fetch(`/api/v1/moderators/${uuid}`, { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (res.ok) {
+        alert(`${name} has been successfully promoted to Platform Moderator.`);
+        setIsPromoteModalOpen(false);
+        fetchModerators();
+      } else {
+        const errorData = await res.json();
+        alert(errorData.detail || "Failed to promote structural user type.");
+      }
+    } catch (error) {
+      console.error("Promotion interaction failure:", error);
+    } finally {
+      setIsStudentsLoading(false);
+    }
+  };
+
   const handleRevoke = async (id: string) => {
     if (!confirm("Are you sure you want to revoke moderator privileges for this user?")) return;
     
@@ -62,7 +112,7 @@ export default function AdminModeratorsPage() {
     }
   };
 
- const handleAddModerator = async (e: React.FormEvent) => {
+  const handleAddModerator = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
 
@@ -75,8 +125,7 @@ export default function AdminModeratorsPage() {
 
       if (res.ok) {
         const responseData = await res.json();
-        const newMod = responseData.data || responseData; 
-        
+        const newMod = responseData.data || responseData;
         setModerators(prev => [newMod, ...prev]);
         setIsModalOpen(false);
         setFormData({ email: '', username: '', password: '' });
@@ -92,56 +141,18 @@ export default function AdminModeratorsPage() {
   };
 
   const filteredModerators = moderators.filter(mod => 
-    mod.username.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    mod.email.toLowerCase().includes(searchQuery.toLowerCase())
+    mod.username?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    mod.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const openPromoteModal = async () => {
-    setIsPromoteModalOpen(true);
-    setIsStudentsLoading(true);
-    try {
-      const res = await fetch('/api/v1/students');
-      if (res.ok) {
-        const data = await res.json();
-        setActiveStudents(Array.isArray(data) ? data : (data.data || []));
-      }
-    } catch (error) {
-      console.error("Failed to fetch students for promotion:", error);
-    } finally {
-      setIsStudentsLoading(false);
-    }
-  };
-
-  const handlePromoteFromModal = async (uuid: string, name: string) => {
-    if (!confirm(`Promote ${name} to Moderator?`)) return;
-    
-    setIsStudentsLoading(true); 
-    try {
-      const res = await fetch(`/api/v1/students/${uuid}/promote`, { method: 'POST' });
-      
-      if (res.ok) {
-        alert(`${name} promoted successfully.`);
-        setIsPromoteModalOpen(false);
-        fetchModerators(); 
-      } else {
-        const errorData = await res.json();
-        alert(errorData.detail || "Failed to promote student.");
-      }
-    } catch (error) {
-      console.error("Failed to promote student:", error);
-    } finally {
-      setIsStudentsLoading(false);
-    }
-  };
-
   const filteredStudents = activeStudents.filter(s => 
-    s.name.toLowerCase().includes(studentSearchQuery.toLowerCase()) || 
-    s.email.toLowerCase().includes(studentSearchQuery.toLowerCase())
+    s.name?.toLowerCase().includes(studentSearchQuery.toLowerCase()) || 
+    s.email?.toLowerCase().includes(studentSearchQuery.toLowerCase()) ||
+    s.username?.toLowerCase().includes(studentSearchQuery.toLowerCase())
   );
 
   return (
     <div className="max-w-6xl mx-auto pb-12 relative">
-      {}
       <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -151,7 +162,6 @@ export default function AdminModeratorsPage() {
           <p className="text-sm text-slate-500 mt-1">Manage users with elevated platform privileges.</p>
         </div>
         
-        {}
         <div className="flex gap-3 items-start">
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -163,17 +173,18 @@ export default function AdminModeratorsPage() {
               className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:border-transparent text-sm"
             />
           </div>
+          
           <div className="flex flex-col gap-2">
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm whitespace-nowrap shadow-sm"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm whitespace-nowrap shadow-sm w-full"
             >
               <Plus className="h-4 w-4" />
               Add Moderator
             </button>
             <button 
               onClick={openPromoteModal}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-white border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors font-medium text-sm whitespace-nowrap shadow-sm"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-white border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors font-medium text-sm whitespace-nowrap shadow-sm w-full"
             >
               <ArrowUpCircle className="h-4 w-4" />
               Make Moderator
@@ -182,7 +193,6 @@ export default function AdminModeratorsPage() {
         </div>
       </div>
 
-      {}
       <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -219,7 +229,7 @@ export default function AdminModeratorsPage() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="h-9 w-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm">
-                            {mod.username.charAt(0).toUpperCase()}
+                            {mod.username?.charAt(0).toUpperCase() || 'M'}
                           </div>
                           <div>
                             <div className="font-medium text-slate-900">{mod.username}</div>
@@ -238,7 +248,7 @@ export default function AdminModeratorsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-500 whitespace-nowrap">
-                        {new Date(mod.created_at).toLocaleDateString()}
+                        {mod.created_at ? new Date(mod.created_at).toLocaleDateString() : 'N/A'}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <button
@@ -258,7 +268,7 @@ export default function AdminModeratorsPage() {
         </div>
       </div>
 
-      {}
+      {/* Manual Input Account Creation Modal */}
       <AnimatePresence>
         {isModalOpen && (
           <>
@@ -323,6 +333,7 @@ export default function AdminModeratorsPage() {
         )}
       </AnimatePresence>
 
+      {/* Select Student from List Pop Up Modal */}
       <AnimatePresence>
         {isPromoteModalOpen && (
           <>
@@ -349,7 +360,7 @@ export default function AdminModeratorsPage() {
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Search students..."
+                  placeholder="Search students by name, email, or username..."
                   value={studentSearchQuery}
                   onChange={(e) => setStudentSearchQuery(e.target.value)}
                   className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-600 outline-none text-sm"
@@ -363,7 +374,7 @@ export default function AdminModeratorsPage() {
                   </div>
                 ) : filteredStudents.length === 0 ? (
                   <div className="text-center py-8 text-sm text-slate-500">
-                    No students found.
+                    No active students found matching search parameter.
                   </div>
                 ) : (
                   <ul className="space-y-1">
@@ -371,7 +382,7 @@ export default function AdminModeratorsPage() {
                       <li key={student.uuid} className="flex justify-between items-center p-3 hover:bg-slate-50 rounded-lg border border-transparent hover:border-slate-100 transition-colors">
                         <div>
                           <p className="text-sm font-medium text-slate-900">{student.name}</p>
-                          <p className="text-xs text-slate-500">{student.email}</p>
+                          <p className="text-xs text-slate-500">@{student.username} • {student.email}</p>
                         </div>
                         <button
                           onClick={() => handlePromoteFromModal(student.uuid, student.name)}
