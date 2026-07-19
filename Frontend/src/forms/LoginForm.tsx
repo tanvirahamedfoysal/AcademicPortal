@@ -39,7 +39,7 @@ export default function LoginForm() {
             if (role === 'ADMIN') {
               router.push('/admin/portfolio');
             } else if (role === 'MODERATOR') {
-              router.push('/admin/articles');
+              router.push('/moderator');
             } else {
               router.push('/student/dashboard');
             }
