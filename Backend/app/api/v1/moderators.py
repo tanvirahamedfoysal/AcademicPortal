@@ -177,3 +177,61 @@ async def delete_moderator(
 			status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
 			detail=f"Error removing moderator status: {str(e)}"
 		)
+	
+
+@router.get("/interested-to-be-moderator")
+async def list_interested_moderators(
+	db: AsyncSession = Depends(get_db)
+):
+	return {"message": "Not implemented yet"}
+	try:
+		pass
+		
+	except Exception as e:
+		raise HTTPException(
+			status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+			detail=f"Error retrieving interested moderators: {str(e)}"
+		)
+	
+
+@router.post("/request-to-be-moderator")
+async def request_to_be_moderator(
+	db: AsyncSession = Depends(get_db)
+):
+	return {"message": "Not implemented yet"}
+	try:
+		pass
+		
+	except Exception as e:
+		raise HTTPException(
+			status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+			detail=f"Error processing moderator request: {str(e)}"
+		)
+	
+@router.delete("/request-to-be-moderator")
+async def delete_request_to_be_moderator(
+	db: AsyncSession = Depends(get_db)
+):
+	return {"message": "Not implemented yet"}
+	try:
+		pass
+		
+	except Exception as e:
+		raise HTTPException(
+			status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+			detail=f"Error deleting moderator request: {str(e)}"
+		)
+	
+@router.get("/if-interested-to-be-moderator")
+async def check_if_interested_to_be_moderator(
+	db: AsyncSession = Depends(get_db)
+):
+	return {"message": "Not implemented yet"}
+	try:
+		pass
+		
+	except Exception as e:
+		raise HTTPException(
+			status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+			detail=f"Error checking moderator interest: {str(e)}"
+		)
