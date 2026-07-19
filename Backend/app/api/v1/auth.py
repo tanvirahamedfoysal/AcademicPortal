@@ -237,7 +237,7 @@ async def register_student(
         user_result = await db.execute(
             text("""
                 INSERT INTO users (name, username, email, hashed_password, role, status)
-                VALUES (:name, :username, :email, :hashed_password, 'STUDENT', 'ACTIVE')
+                VALUES (:name, :username, :email, :hashed_password, 'STUDENT', 'PENDING')
                 RETURNING id, uuid, role, status, updated_at
             """),
             {

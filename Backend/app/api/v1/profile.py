@@ -40,11 +40,11 @@ async def get_me(
 					u.updated_at as user_updated_at,
 					s.student_batch,
 					s.updated_at as student_updated_at,
-					a.url as image_url
+					u.image_url  -- Updated to pull directly from the users table
 				FROM users u
 				LEFT JOIN students s ON u.id = s.id
-				LEFT JOIN assets a ON u.image_id = a.id
-				WHERE u.uuid = :uuid
+				-- Removed the LEFT JOIN to assets table
+				WHERE u.uuid = :uuid 
 			"""),
 			{"uuid": uuid}
 		)
