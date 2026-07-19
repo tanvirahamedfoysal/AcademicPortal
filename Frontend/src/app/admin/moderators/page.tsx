@@ -32,7 +32,7 @@ export default function AdminModeratorsPage() {
       const res = await fetch('/api/v1/moderators');
       if (res.ok) {
         const data = await res.json();
-        setModerators(data);
+        setModerators(Array.isArray(data) ? data : (data.data || []));
       }
     } catch (error) {
       console.error("Failed to fetch moderators:", error);
@@ -57,7 +57,7 @@ export default function AdminModeratorsPage() {
     }
   };
 
-  const handleAddModerator = async (e: React.FormEvent) => {
+ const handleAddModerator = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
 
@@ -69,10 +69,12 @@ export default function AdminModeratorsPage() {
       });
 
       if (res.ok) {
-        const newMod = await res.json();
+        const responseData = await res.json();
+        const newMod = responseData.data || responseData; 
+        
         setModerators(prev => [newMod, ...prev]);
         setIsModalOpen(false);
-        setFormData({ email: '', username: '', password: '' }); // Reset
+        setFormData({ email: '', username: '', password: '' });
       } else {
         const errorData = await res.json();
         alert(errorData.detail || "Failed to add moderator");

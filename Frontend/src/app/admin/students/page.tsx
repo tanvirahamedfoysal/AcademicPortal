@@ -34,8 +34,14 @@ export default function AdminStudentsPage() {
         fetch('/api/v1/students')
       ]);
 
-      if (pendingRes.ok) setPendingStudents(await pendingRes.json());
-      if (activeRes.ok) setActiveStudents(await activeRes.json());
+      if (pendingRes.ok) {
+        const pendingData = await pendingRes.json();
+        setPendingStudents(Array.isArray(pendingData) ? pendingData : (pendingData.data || []));
+      }
+      if (activeRes.ok) {
+        const activeData = await activeRes.json();
+        setActiveStudents(Array.isArray(activeData) ? activeData : (activeData.data || []));
+      }
     } catch (error) {
       console.error("Failed to fetch students data:", error);
     } finally {

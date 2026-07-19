@@ -32,7 +32,7 @@ export default function AdminCollaboratorsPage() {
       const res = await fetch('/api/v1/collaborators');
       if (res.ok) {
         const data = await res.json();
-        setCollaborators(data);
+        setCollaborators(Array.isArray(data) ? data : (data.data || []));
       }
     } catch (error) {
       console.error("Failed to fetch collaborators:", error);
@@ -86,7 +86,9 @@ export default function AdminCollaboratorsPage() {
       });
 
       if (res.ok) {
-        const savedData = await res.json();
+        const responseData = await res.json();
+        const savedData = responseData.data || responseData; 
+
         if (editingId) {
           setCollaborators(prev => prev.map(c => c.id === editingId ? savedData : c));
         } else {
