@@ -39,9 +39,9 @@ export default function LoginForm() {
             if (role === 'ADMIN') {
               router.push('/admin/portfolio');
             } else if (role === 'MODERATOR') {
-              router.push('/moderator');
+              router.push('/moderator/profile');
             } else {
-              router.push('/student/dashboard');
+              router.push('/student/profile');
             }
           } catch (error) {
             console.error("Failed to fetch user profile", error);
