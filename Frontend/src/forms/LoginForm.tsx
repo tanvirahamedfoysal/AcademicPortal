@@ -37,11 +37,11 @@ export default function LoginForm() {
             const role = userRole?.toUpperCase();
 
             if (role === 'ADMIN') {
-              router.push('/admin/portfolio');
+              router.push('/');
             } else if (role === 'MODERATOR') {
-              router.push('/moderator/profile');
+              router.push('/');
             } else {
-              router.push('/student/profile');
+              router.push('/');
             }
           } catch (error) {
             console.error("Failed to fetch user profile", error);
