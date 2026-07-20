@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import QueryProvider from '../providers/QueryProvider';
+import HomeFloatingButton from '@/components/HomeFloatingButton';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -25,6 +26,7 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-slate-50 text-slate-900 min-h-screen flex flex-col">
         <QueryProvider>
           {children}
+          <HomeFloatingButton />
         </QueryProvider>
       </body>
     </html>
