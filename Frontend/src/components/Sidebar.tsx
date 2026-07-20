@@ -26,9 +26,9 @@ interface SidebarProps {
 const navigationConfig = [
   { name: 'Portfolio', pathSegment: '/portfolio', icon: Briefcase, allowedRoles: ['admin'] },
   { name: 'Articles', pathSegment: '/articles', icon: FileText, allowedRoles: ['admin', 'moderator', 'student'] },
-  { name: 'Collaborators', pathSegment: '/collaborators', icon: Users, allowedRoles: ['admin', 'moderator'] },
+  { name: 'Collaborators', pathSegment: '/collaborators', icon: Users, allowedRoles: ['admin', 'moderator', 'student'] },
   { name: 'Moderators', pathSegment: '/moderators', icon: ShieldCheck, allowedRoles: ['admin'] },
-  { name: 'Students', pathSegment: '/students', icon: GraduationCap, allowedRoles: ['admin', 'moderator'] },
+  { name: 'Students', pathSegment: '/students', icon: GraduationCap, allowedRoles: ['admin', 'moderator', 'student'] },
   { name: 'Repository', pathSegment: '/repository', icon: FolderArchive, allowedRoles: ['admin', 'moderator', 'student'] },
   { name: 'Messages', pathSegment: '/messages', icon: Inbox, allowedRoles: ['admin', 'moderator', 'student'] },
   { name: 'Profile Settings', pathSegment: '/profile', icon: Settings, allowedRoles: ['admin', 'moderator', 'student'] },
