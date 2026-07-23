@@ -2,13 +2,15 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError, DataError
 from sqlalchemy import text
 
 from app.db import get_db
 from app.utility import limiter
+from app.utility.time import utc_now
 from app.core.config import settings
-from app.utility.auth import verify_token, validate_user_access
-from app.schema.v1.profile import UpdateProfile, ChangeUsername
+from app.utility.auth import verify_token, validate_user_access, hash_password
+from app.schema.v1.profile import UpdateProfile, ChangeUsername, ChangeEmail
 
 
 router = APIRouter(prefix="/profile", tags=["profile"])
@@ -85,11 +87,120 @@ async def get_me(
 
 @router.patch("/me")
 async def update_me(
-	token: str = Depends(oauth2_scheme),
-	db: AsyncSession = Depends(get_db),
-	payload: dict[str, Any] = None
+    payload: UpdateProfile,
+    token: str = Depends(oauth2_scheme),
+    db: AsyncSession = Depends(get_db)
 ):
-	return {"message": "Not implemented yet"}
+    # 1. Validate Token
+    auth = validate_user_access(token)
+    if not auth["is_valid"]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=auth.get("message", "Invalid or expired token")
+        )
+        
+    user_uuid = auth["data"]["uuid"]
+
+    # 2. Extract only provided fields
+    update_data = payload.model_dump(exclude_unset=True)
+    if not update_data:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="No valid fields provided for update."
+        )
+
+    # 3. Handle Special Fields (Password & Type Casting)
+    if "password" in update_data:
+        raw_password = update_data.pop("password")
+        # Apply your actual hashing function here
+        update_data["hashed_password"] = hash_password(raw_password)
+
+    if "student_batch" in update_data and update_data["student_batch"] is not None:
+        try:
+            # Cast the string to int for the DB
+            update_data["student_batch"] = int(update_data["student_batch"])
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="student_batch must be a valid number."
+            )
+
+    try:
+        # 4. Get the internal user ID and Role
+        check_query = text("SELECT id, role FROM users WHERE uuid = CAST(:uuid AS UUID)")
+        result = await db.execute(check_query, {"uuid": user_uuid})
+        user_row = result.mappings().first()
+        
+        if not user_row:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, 
+                detail="User not found."
+            )
+            
+        user_id = user_row["id"]
+        user_role = user_row["role"]
+
+        # 5. Filter allowed fields mapping to respective tables
+        valid_user_fields = {"name", "bio", "mobile_number", "image_url", "hashed_password"}
+        valid_student_fields = {"student_batch"}
+        
+        user_updates = {k: v for k, v in update_data.items() if k in valid_user_fields}
+        student_updates = {k: v for k, v in update_data.items() if k in valid_student_fields}
+
+        # Prevent non-students from updating student_batch
+        if student_updates and user_role != "STUDENT" and user_role != "MODERATOR":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only students can update student-specific fields like batch."
+            )
+
+        current_time = utc_now()
+
+        # 6. Execute Dynamic Updates
+        if user_updates:
+            set_clauses = [f"{k} = :{k}" for k in user_updates.keys()]
+            set_clauses.append("updated_at = :current_time")
+            
+            update_user_query = text(f"UPDATE users SET {', '.join(set_clauses)} WHERE id = :id")
+            await db.execute(update_user_query, {"id": user_id, "current_time": current_time, **user_updates})
+
+        if student_updates:
+            set_clauses = [f"{k} = :{k}" for k in student_updates.keys()]
+            set_clauses.append("updated_at = :current_time")
+            
+            update_student_query = text(f"UPDATE students SET {', '.join(set_clauses)} WHERE id = :id")
+            await db.execute(update_student_query, {"id": user_id, "current_time": current_time, **student_updates})
+
+        await db.commit()
+        return {"message": "Profile updated successfully."}
+        
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, 
+            detail="Database conflict. The email or other unique value might already exist."
+        )
+    except DataError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Invalid data format provided."
+        )
+    except HTTPException:
+        await db.rollback()
+        raise
+    except SQLAlchemyError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="A database error occurred while updating your profile."
+        )
+    except Exception:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="An unexpected error occurred."
+        )
 
 
 
@@ -176,15 +287,12 @@ async def change_username(
 
 
 ##########
-##########
-##########
 @router.post("/change-email")
 async def change_email(
 	token: str = Depends(oauth2_scheme),
 	db: AsyncSession = Depends(get_db),
-	payload: dict[str, Any] = None
+	payload: ChangeEmail = None
 ):
-	return {"message": "Not implemented yet"}
 	response = validate_user_access(token)
 	if not response["is_valid"]:
 		raise HTTPException(
@@ -197,7 +305,8 @@ async def change_email(
 			status_code=status.HTTP_403_FORBIDDEN,
 			detail="Admin is not allowed to change their username"
 		)
-	pass
+	
+	return {"message": "Not implemented yet"}
 
 
 @router.get("/me/last-update")
