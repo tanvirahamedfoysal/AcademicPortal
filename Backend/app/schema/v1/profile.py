@@ -23,5 +23,6 @@ class ChangeUsername(BaseModel):
     
 
 class ChangeEmail(BaseModel):
-    new_email: EmailStr | None = None
+    new_email: EmailStr
+    otp: str
 
