@@ -1,5 +1,4 @@
 
-
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -108,7 +107,7 @@ CREATE TABLE IF NOT EXISTS articles (
 
 CREATE TABLE IF NOT EXISTS audit_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    actor_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    actor_id UUID REFERENCES users(uuid) ON DELETE SET NULL,
     action TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -144,6 +143,13 @@ CREATE TABLE contact_messages (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE tobe_moderator_requests (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS ix_tobe_moderator_requests_user_id ON tobe_moderator_requests (user_id);
 CREATE INDEX IF NOT EXISTS ix_users_image_id ON users (image_id);
 CREATE INDEX IF NOT EXISTS ix_collaborators_created_by ON collaborators (created_by);
 CREATE INDEX IF NOT EXISTS ix_collaborators_updated_by ON collaborators (updated_by);

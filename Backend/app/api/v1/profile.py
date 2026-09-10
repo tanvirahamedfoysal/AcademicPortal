@@ -1,7 +1,6 @@
-from datetime import timedelta
 import random
-from typing import Any
-from urllib import response
+from datetime import timedelta
+
 from fastapi import APIRouter, Depends, HTTPException, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession

@@ -1,12 +1,18 @@
+from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_db
 from app.utility import limiter
+from app.utility.auth import validate_user_access, validate_admin_access
+from app.utility.time import bd_now
 
 
 router = APIRouter(prefix="/moderators", tags=["moderators"])
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
 @router.get("")
@@ -40,9 +46,78 @@ async def list_moderators(
 		)
 	
 
-@router.get("/{uuid}")
+@router.get("/interested-to-be-moderator")
+async def list_interested_moderators(
+	db: AsyncSession = Depends(get_db),
+	token: str = Depends(oauth2_scheme)
+):
+	auth = validate_admin_access(token)
+	if not auth["is_valid"]:
+		raise HTTPException(status_code=401, detail="Invalid token")
+	try:
+		# Query users who have requested to be moderators
+		response = await db.execute(
+			text("""
+				SELECT 
+					u.uuid,
+					u.name,
+					u.email,
+					u.mobile_number,
+					r.created_at AS request_created_at
+				FROM tobe_moderator_requests r
+				JOIN users u ON r.user_id = u.id
+				ORDER BY r.created_at DESC
+			""")
+		)
+		# 1. Fetch all rows
+		rows = response.mappings().all()
+		
+		# 2. Convert to standard dictionaries and apply your bd_now() function
+		interested_users = []
+		for row in rows:
+			user_dict = dict(row)
+			# Apply your custom function to the datetime object
+			user_dict["request_created_at"] = bd_now(user_dict["request_created_at"])
+			interested_users.append(user_dict)
+
+		return {"data": interested_users}
+		
+	except Exception as e:
+		print(str(e))
+		raise HTTPException(
+			status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+			detail="Error retrieving interested moderators",
+		)
+	
+
+@router.get("/if-interested-to-be-moderator")
+async def check_if_interested_to_be_moderator(
+	db: AsyncSession = Depends(get_db)
+):
+	return {"message": "Not implemented yet"}
+
+
+@router.post("/request-to-be-moderator", status_code=status.HTTP_201_CREATED)
+async def request_to_be_moderator(
+	db: AsyncSession = Depends(get_db)
+):
+	return {"message": "Not implemented yet"}
+
+	
+@router.delete("/request-to-be-moderator", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_request_to_be_moderator(
+	db: AsyncSession = Depends(get_db)
+):
+	return {"message": "Not implemented yet"}
+
+
+# ==========================================
+# DYNAMIC ROUTES (Protected by :uuid converter)
+# ==========================================
+
+@router.get("/{uuid:uuid}")
 async def get_moderator(
-	uuid: str,
+	uuid: UUID,
 	db: AsyncSession = Depends(get_db)
 ):
 	try:
@@ -62,10 +137,9 @@ async def get_moderator(
 				FROM users
 				WHERE uuid = :uuid AND role = 'MODERATOR'
 			"""),
-			{"uuid": uuid}
+			{"uuid": str(uuid)}  # Cast to string for raw SQL compatibility
 		)
 		moderator = response.mappings().first()
-		
 		if not moderator:
 			raise HTTPException(
 				status_code=status.HTTP_404_NOT_FOUND,
@@ -83,9 +157,9 @@ async def get_moderator(
 		)
 
 
-@router.post("/{uuid}")
+@router.post("/{uuid:uuid}")
 async def create_moderator(
-	uuid: str,
+	uuid: UUID,
 	db: AsyncSession = Depends(get_db)
 ):
 	"""
@@ -103,7 +177,7 @@ async def create_moderator(
 				WHERE uuid = :uuid
 				RETURNING uuid, name, username, email, role, status
 			"""),
-			{"uuid": uuid}
+			{"uuid": str(uuid)}
 		)
 		updated_user = response.mappings().first()
 		
@@ -129,9 +203,9 @@ async def create_moderator(
 		)
 
 
-@router.delete("/{uuid}")
+@router.delete("/{uuid:uuid}")
 async def delete_moderator(
-	uuid: str,
+	uuid: UUID,
 	db: AsyncSession = Depends(get_db)
 ):
 	"""
@@ -153,7 +227,7 @@ async def delete_moderator(
 				WHERE uuid = :uuid AND role = 'MODERATOR'
 				RETURNING uuid, name, username, role
 			"""),
-			{"uuid": uuid}
+			{"uuid": str(uuid)}
 		)
 		demoted_user = response.mappings().first()
 		
@@ -177,61 +251,3 @@ async def delete_moderator(
 			status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
 			detail=f"Error removing moderator status: {str(e)}"
 		)
-	
-
-@router.get("/interested-to-be-moderator")
-async def list_interested_moderators(
-	db: AsyncSession = Depends(get_db)
-):
-	return {"message": "Not implemented yet"}
-	# try:
-	# 	pass
-		
-	# except Exception as e:
-	# 	raise HTTPException(
-	# 		status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-	# 		detail=f"Error retrieving interested moderators: {str(e)}"
-	# 	)
-	
-
-@router.post("/request-to-be-moderator")
-async def request_to_be_moderator(
-	db: AsyncSession = Depends(get_db)
-):
-	return {"message": "Not implemented yet"}
-	# try:
-	# 	pass
-		
-	# except Exception as e:
-	# 	raise HTTPException(
-	# 		status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-	# 		detail=f"Error processing moderator request: {str(e)}"
-	# 	)
-	
-@router.delete("/request-to-be-moderator")
-async def delete_request_to_be_moderator(
-	db: AsyncSession = Depends(get_db)
-):
-	return {"message": "Not implemented yet"}
-	# try:
-	# 	pass
-		
-	# except Exception as e:
-	# 	raise HTTPException(
-	# 		status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-	# 		detail=f"Error deleting moderator request: {str(e)}"
-	# 	)
-	
-@router.get("/if-interested-to-be-moderator")
-async def check_if_interested_to_be_moderator(
-	db: AsyncSession = Depends(get_db)
-):
-	return {"message": "Not implemented yet"}
-	# try:
-	# 	pass
-		
-	# except Exception as e:
-	# 	raise HTTPException(
-	# 		status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-	# 		detail=f"Error checking moderator interest: {str(e)}"
-	# 	)
