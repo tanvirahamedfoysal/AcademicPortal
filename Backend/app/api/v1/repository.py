@@ -19,8 +19,10 @@ async def list_repository_documents(
     try:
         query = text(
             """
-            SELECT id, name, url
-            FROM assets;
+            SELECT 
+                id, name, url
+            FROM 
+                assets;
             """
         )
         response = await db.execute(query)
@@ -42,8 +44,10 @@ async def create_repository_document(
     try:
         query = text(
             """
-            INSERT INTO assets (name, public_id, url)
-            VALUES (:name, :public_id, :url)
+            INSERT INTO 
+                assets (name, public_id, url)
+            VALUES 
+                (:name, :public_id, :url)
             """
         )
         await db.execute(

@@ -35,23 +35,18 @@ async def get_me(
         )
     uuid = access["data"]["uuid"]
     try:
+        query = text("""
+            SELECT 
+                u.uuid, u.email, u.hashed_password, u.status, u.role as user_role,
+                u.updated_at as user_updated_at, s.student_batch, s.updated_at as student_updated_at, u.image_url
+            FROM 
+                users u LEFT JOIN students s 
+                ON u.id = s.id
+            WHERE 
+                u.uuid = :uuid 
+        """)
         result = await db.execute(
-            text("""
-				SELECT 
-					u.uuid, 
-					u.email, 
-					u.hashed_password, 
-					u.status, 
-					u.role as user_role,
-					u.updated_at as user_updated_at,
-					s.student_batch,
-					s.updated_at as student_updated_at,
-					u.image_url  -- Updated to pull directly from the users table
-				FROM users u
-				LEFT JOIN students s ON u.id = s.id
-				-- Removed the LEFT JOIN to assets table
-				WHERE u.uuid = :uuid 
-			"""),
+            query,
             {"uuid": uuid},
         )
         user = result.mappings().first()
@@ -94,7 +89,7 @@ async def get_me(
 async def update_me(
     payload: UpdateProfile,
     token: str = Depends(oauth2_scheme),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_db)
 ):
     # 1. Validate Token
     auth = validate_user_access(token)
@@ -132,9 +127,14 @@ async def update_me(
 
     try:
         # 4. Get the internal user ID and Role
-        check_query = text(
-            "SELECT id, role FROM users WHERE uuid = CAST(:uuid AS UUID)"
-        )
+        check_query = text("""
+            SELECT 
+                id, role 
+            FROM 
+                users 
+            WHERE 
+                uuid = CAST(:uuid AS UUID)
+        """)
         result = await db.execute(check_query, {"uuid": user_uuid})
         user_row = result.mappings().first()
 
@@ -249,15 +249,16 @@ async def change_username(
 
     try:
         # 1. Check if the username already exists
-        check_query = await db.execute(
-            text("""
-				SELECT username
-				FROM users
-				WHERE username = :username
-				LIMIT 1
-			"""),
-            {"username": payload.username},
-        )
+        query = text("""
+            SELECT 
+                username
+            FROM 
+                users
+            WHERE 
+                username = :username
+            LIMIT 1
+        """)
+        check_query = await db.execute(query, {"username": payload.username})
 
         # 2. Extract the first row or None
         existing_username = check_query.scalar_one_or_none()
@@ -280,14 +281,22 @@ async def change_username(
 
     try:
         # 4. Perform the update if the username is available
+        query = text("""
+            UPDATE 
+                users
+            SET 
+                username = :username
+            WHERE 
+                uuid = :uuid
+            RETURNING 
+                uuid, username
+        """)
         update_query = await db.execute(
-            text("""
-				UPDATE users
-				SET username = :username
-				WHERE uuid = :uuid
-				RETURNING uuid, username
-			"""),
-            {"username": payload.username, "uuid": response["data"]["uuid"]},
+            query,  
+            {
+                "username": payload.username, 
+                "uuid": response["data"]["uuid"]
+            },
         )
         await db.commit()
         updated_user = update_query.mappings().first()
@@ -328,9 +337,15 @@ async def change_email_otp(
         )
 
     # Check if the user actually exists first
-    existing_user = await db.execute(
-        text("SELECT id FROM users WHERE email = :email"), {"email": email}
-    )
+    query = text("""
+        SELECT 
+            id 
+        FROM 
+            users 
+        WHERE 
+            email = :email
+    """)
+    existing_user = await db.execute(query, {"email": email})
     if existing_user.first():
         raise HTTPException(
             status_code=400, detail="Email already is used by another account."
@@ -342,22 +357,30 @@ async def change_email_otp(
     otp = str(random.randint(100000, 999999))
     expires_at = utc_now() + timedelta(minutes=2)
     try:
+        query = text("""
+            UPDATE 
+                email_otps
+            SET 
+                is_valid = FALSE
+            WHERE 
+                email = :email
+                AND purpose = 'CHANGE_EMAIL'
+        """)
+        await db.execute(query, {"email": email})
+
+        query = text("""
+            INSERT INTO 
+                email_otps (email, otp, purpose, expires_at, is_used)
+            VALUES 
+                (:email, :otp, 'CHANGE_EMAIL', :expires_at, FALSE)
+        """)
         await db.execute(
-            text("""
-				UPDATE email_otps
-				SET is_valid = FALSE
-				WHERE email = :email
-				AND purpose = 'CHANGE_EMAIL'
-			"""),
-            {"email": email},
-        )
-        await db.execute(
-            text("""
-				INSERT INTO email_otps
-				(email, otp, purpose, expires_at, is_used)
-				VALUES (:email, :otp, 'CHANGE_EMAIL', :expires_at, FALSE)
-			"""),
-            {"email": email, "otp": otp, "expires_at": expires_at},
+            query,
+            {
+                "email": email, 
+                "otp": otp, 
+                "expires_at": expires_at
+            },
         )
         await db.commit()
     except Exception:
@@ -396,9 +419,12 @@ async def change_email(
     try:
         # 1. Verify the OTP
         otp_query = text("""
-			SELECT id 
-			FROM email_otps
-			WHERE email = :email
+			SELECT 
+                id 
+			FROM 
+                email_otps
+			WHERE 
+                email = :email
 				AND otp = :otp
 				AND purpose = 'CHANGE_EMAIL'
 				AND is_used = FALSE
@@ -407,7 +433,6 @@ async def change_email(
 			ORDER BY created_at DESC
 			LIMIT 1
 		""")
-
         otp_result = await db.execute(
             otp_query,
             {
@@ -427,24 +452,32 @@ async def change_email(
         otp_id = otp_record["id"]
 
         # 2. Mark the OTP as used and invalid
+        query = text("""
+            UPDATE 
+                email_otps
+            SET 
+                is_used = TRUE, 
+                is_valid = FALSE
+            WHERE 
+                id = :otp_id
+        """)
         await db.execute(
-            text("""
-				UPDATE email_otps
-				SET is_used = TRUE, is_valid = FALSE
-				WHERE id = :otp_id
-			"""),
+            query,
             {"otp_id": otp_id},
         )
 
         # 3. Update User Email
         user_update_query = text("""
-			UPDATE users 
-			SET email = :new_email, 
+			UPDATE 
+                users 
+			SET 
+                email = :new_email, 
 				updated_at = :current_time
-			WHERE uuid = CAST(:uuid AS UUID)
-			RETURNING id
+			WHERE 
+                uuid = CAST(:uuid AS UUID)
+			RETURNING 
+                id
 		""")
-
         result = await db.execute(
             user_update_query,
             {
@@ -494,14 +527,17 @@ async def get_me_last_update(
         )
 
     try:
+        query = text("""
+            SELECT 
+                GREATEST(u.updated_at, COALESCE(s.updated_at, u.updated_at)) AS last_updated_at
+            FROM 
+                users u LEFT JOIN students s 
+                ON u.id = s.id
+            WHERE 
+                u.uuid = :uuid
+        """)
         result = await db.execute(
-            text("""
-				SELECT 
-					GREATEST(u.updated_at, COALESCE(s.updated_at, u.updated_at)) AS last_updated_at
-				FROM users u
-				LEFT JOIN students s ON u.id = s.id
-				WHERE u.uuid = :uuid
-			"""),
+            query,
             {"uuid": response["data"]["uuid"]},
         )
 

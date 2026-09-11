@@ -262,7 +262,8 @@ async def create_moderator(uuid: UUID, db: AsyncSession = Depends(get_db)):
     try:
         # Update the user's role to 'MODERATOR' and set status to 'ACTIVE'
         query = text("""
-			UPDATE users
+			UPDATE 
+				users
 			SET 
 				role = CAST('MODERATOR' AS account_role),
 				status = CAST('ACTIVE' AS account_status),

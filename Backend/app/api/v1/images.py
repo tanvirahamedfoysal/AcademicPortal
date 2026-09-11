@@ -18,8 +18,10 @@ async def upload_image(
     result = await upload_asset(file)
     try:
         query = text("""
-			INSERT INTO assets (name, public_id, url)
-			VALUES (:name, :public_id, :url)
+			INSERT INTO 
+                assets (name, public_id, url)
+			VALUES 
+                (:name, :public_id, :url)
 		""")
         await db.execute(
             query,
