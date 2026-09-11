@@ -8,9 +8,12 @@ from app.utility import limiter
 
 router = APIRouter(prefix="/utility", tags=["utility"])
 
+
 @router.get("/health")
 @limiter.limit("5/minute")
-async def db_debug(request: Request):
+async def db_debug(
+    request: Request
+):
     t1 = perf_counter()
     async with engine.connect() as conn:
         t2 = perf_counter()

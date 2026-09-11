@@ -12,56 +12,64 @@ router = APIRouter(prefix="/images", tags=["images"])
 
 @router.post("")
 async def upload_image(
-    file: UploadFile = File(...),
+    file: UploadFile = File(...), 
     db: AsyncSession = Depends(get_db)
 ):
     result = await upload_asset(file)
-    try: 
+    try:
         query = text("""
 			INSERT INTO assets (name, public_id, url)
 			VALUES (:name, :public_id, :url)
 		""")
-        await db.execute(query, {"name": file.filename, "public_id": result["public_id"], "url": result["url"]})
+        await db.execute(
+            query,
+            {
+                "name": file.filename,
+                "public_id": result["public_id"],
+                "url": result["url"],
+            },
+        )
         await db.commit()
         return {
-			"url": result["url"],
-		}
+            "url": result["url"],
+        }
     except Exception as e:
         await db.rollback()
         print(f"Database insertion error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to insert asset into database")
-	
-
+        raise HTTPException(
+            status_code=500, detail="Failed to insert asset into database"
+        )
 
 
 @router.delete("")
 async def delete_images(
-    payload: DeleteImagesPayload,
+    payload: DeleteImagesPayload, 
     db: AsyncSession = Depends(get_db)
 ):
     try:
         # 1. Fetch both public_id AND url from the database
         query = text("""
-            SELECT public_id, url
-            FROM assets
-            WHERE url IN :urls
-        """).bindparams(
-            bindparam("urls", expanding=True)
-        )
-        
+            SELECT 
+                public_id, url
+            FROM 
+                assets
+            WHERE 
+                url IN :urls
+        """).bindparams(bindparam("urls", expanding=True))
+
         result = await db.execute(query, {"urls": payload.urls})
         rows = result.fetchall()
-        
+
         if not rows:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, 
-                detail="No matching assets found for the provided URLs"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No matching assets found for the provided URLs",
             )
-            
+
         # Create a helper map to look up urls by their public_id
         asset_map = {row.public_id: row.url for row in rows}
         public_ids = list(asset_map.keys())
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -87,22 +95,25 @@ async def delete_images(
     if deleted_from_cloudinary:
         try:
             delete_query = text("""
-                DELETE FROM assets
-                WHERE public_id IN :deleted_ids
-            """).bindparams(
-                bindparam("deleted_ids", expanding=True)
-            )
+                DELETE FROM 
+                    assets
+                WHERE 
+                    public_id IN :deleted_ids
+            """).bindparams(bindparam("deleted_ids", expanding=True))
             await db.execute(delete_query, {"deleted_ids": deleted_from_cloudinary})
             await db.commit()
         except Exception as db_err:
             await db.rollback()
             print(f"Database row deletion failed: {db_err}")
-            raise HTTPException(status_code=500, detail="Cloudinary cleared but DB tracking update failed")
+            raise HTTPException(
+                status_code=500,
+                detail="Cloudinary cleared but DB tracking update failed",
+            )
 
     # 4. Map the failed public_ids back to their database URLs
     not_deleted_urls = [asset_map[p_id] for p_id in failed_cloudinary]
 
     return {
         "message": "Images deletion processing complete.",
-        "not_deleted_urls": not_deleted_urls
+        "not_deleted_urls": not_deleted_urls,
     }
