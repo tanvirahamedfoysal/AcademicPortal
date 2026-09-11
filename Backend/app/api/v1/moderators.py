@@ -297,7 +297,7 @@ async def create_moderator(uuid: UUID, db: AsyncSession = Depends(get_db)):
         )
 
 
-@router.delete("/{uuid:uuid}")
+@router.delete("/{uuid:uuid}", status_code=status.HTTP_201_CREATED)
 async def delete_moderator(uuid: UUID, db: AsyncSession = Depends(get_db)):
     """
     Demote their role back to 'STUDENT' (Safe & Recommended to avoid data orphans).

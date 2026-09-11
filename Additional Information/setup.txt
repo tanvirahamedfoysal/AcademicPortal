@@ -1,7 +1,3 @@
-Setup migration from local machine to target database
-
-    uv run alembic upgrade head
-
 
 
 To Manage Alembic:

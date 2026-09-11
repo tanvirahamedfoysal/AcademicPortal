@@ -10,7 +10,7 @@ from app.schema.v1.images import DeleteImagesPayload
 router = APIRouter(prefix="/images", tags=["images"])
 
 
-@router.post("")
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def upload_image(
     file: UploadFile = File(...), 
     db: AsyncSession = Depends(get_db)
@@ -43,7 +43,7 @@ async def upload_image(
         )
 
 
-@router.delete("")
+@router.delete("", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_images(
     payload: DeleteImagesPayload, 
     db: AsyncSession = Depends(get_db)

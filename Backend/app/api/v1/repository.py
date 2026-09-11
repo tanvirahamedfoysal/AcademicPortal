@@ -22,7 +22,9 @@ async def list_repository_documents(
             SELECT 
                 id, name, url
             FROM 
-                assets;
+                assets
+            WHERE 
+                asset_type = 'ARTICLE';
             """
         )
         response = await db.execute(query)
@@ -45,9 +47,9 @@ async def create_repository_document(
         query = text(
             """
             INSERT INTO 
-                assets (name, public_id, url)
+                assets (name, public_id, url, asset_type)
             VALUES 
-                (:name, :public_id, :url)
+                (:name, :public_id, :url, 'ARTICLE')
             """
         )
         await db.execute(
@@ -71,14 +73,17 @@ async def create_repository_document(
 @router.delete("/documents", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_repository_document(
     payload: DeleteResourcePayload,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_db)
 ):
     try:
         # 1. Fetch both public_id AND url from the database
         query = text("""
-            SELECT public_id, url
-            FROM assets
-            WHERE url IN :urls
+            SELECT 
+                public_id, url
+            FROM 
+                assets
+            WHERE 
+                url IN :urls
         """).bindparams(bindparam("urls", expanding=True))
 
         result = await db.execute(query, {"urls": payload.urls})
@@ -119,8 +124,10 @@ async def delete_repository_document(
     if deleted_from_cloudinary:
         try:
             delete_query = text("""
-                DELETE FROM assets
-                WHERE public_id IN :deleted_ids
+                DELETE FROM 
+                    assets
+                WHERE 
+                    public_id IN :deleted_ids
             """).bindparams(bindparam("deleted_ids", expanding=True))
             await db.execute(delete_query, {"deleted_ids": deleted_from_cloudinary})
             await db.commit()

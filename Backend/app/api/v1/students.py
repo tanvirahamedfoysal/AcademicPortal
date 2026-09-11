@@ -17,10 +17,14 @@ async def list_pending_students(
 ):
     try:
         query = text("""
-            SELECT u.uuid, u.name, u.email, u.image_url, u.status, s.student_batch, u.created_at
-            FROM users u
-            JOIN students s ON u.id = s.id
-            WHERE u.status = 'PENDING' AND u.role = 'STUDENT'
+            SELECT 
+                u.uuid, u.name, u.email, u.image_url, u.status, s.student_batch, u.created_at
+            FROM 
+                users u JOIN students s 
+                    ON u.id = s.id
+            WHERE 
+                u.status = 'PENDING' 
+                AND u.role = 'STUDENT'
         """)
         result = await db.execute(query)
 
@@ -139,7 +143,7 @@ async def delete_pending_student(
         )
 
 
-@router.patch("/pending/{uuid}/verify")
+@router.patch("/pending/{uuid}/verify", status_code=status.HTTP_202_ACCEPTED)
 async def verify_pending_student(
     uuid: str, 
     db: AsyncSession = Depends(get_db)
@@ -268,7 +272,7 @@ async def get_student(
         )
 
 
-@router.patch("/{uuid}")
+@router.patch("/{uuid}", status_code=status.HTTP_202_ACCEPTED)
 async def update_student(
     uuid: str, 
     payload: StudentUpdate, 

@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS assets (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     url TEXT NOT NULL UNIQUE,
+    asset_type TEXT,
     public_id TEXT NOT NULL UNIQUE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -145,7 +146,7 @@ CREATE TABLE contact_messages (
 
 CREATE TABLE tobe_moderator_requests (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(uuid) ON DELETE CASCADE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

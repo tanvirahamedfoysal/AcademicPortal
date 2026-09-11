@@ -85,7 +85,7 @@ async def get_me(
         )
 
 
-@router.patch("/me")
+@router.patch("/me", status_code=status.HTTP_202_ACCEPTED)
 async def update_me(
     payload: UpdateProfile,
     token: str = Depends(oauth2_scheme),
@@ -227,7 +227,7 @@ async def update_me(
         )
 
 
-@router.post("/change-username")
+@router.post("/change-username", status_code=status.HTTP_202_ACCEPTED)
 async def change_username(
     payload: ChangeUsername,
     token: str = Depends(oauth2_scheme),
@@ -317,7 +317,7 @@ async def change_username(
         )
 
 
-@router.post("/change-email-otp")
+@router.post("/change-email-otp", status_code=status.HTTP_202_ACCEPTED)
 async def change_email_otp(
     email: EmailStr,
     token: str = Depends(oauth2_scheme),
@@ -393,7 +393,7 @@ async def change_email_otp(
     return {"is_successful": True, "message": "If email exists, OTP sent"}
 
 
-@router.post("/change-email")
+@router.post("/change-email", status_code=status.HTTP_202_ACCEPTED)
 async def change_email(
     payload: ChangeEmail,
     token: str = Depends(oauth2_scheme),

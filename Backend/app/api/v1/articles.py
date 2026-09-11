@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_db
 from app.utility import limiter
 from app.utility.time import bd_now
-from app.utility.auth import verify_token, validate_user_access
+from app.utility.auth import validate_user_access, validate_moderator_access, validate_admin_access
 from app.schema.v1.articles import ArticleCreate, ArticleUpdate, ArticleStatusUpdate
 
 
@@ -26,10 +26,13 @@ async def list_public_articles(db: AsyncSession = Depends(get_db)):
                 a.published_at AS published_at, 
                 a.updated_at AS updated_at,
                 u.uuid AS author_uuid
-            FROM articles a
-            LEFT JOIN users u ON a.author_id = u.id
-            WHERE a.status = 'PUBLISHED'
-            ORDER BY a.published_at DESC
+            FROM 
+                articles a LEFT JOIN users u 
+                ON a.author_id = u.id
+            WHERE 
+                a.status = 'PUBLISHED'
+            ORDER BY 
+                a.published_at DESC
         """)
         result = await db.execute(query)
         return {"data": result.mappings().all()}
@@ -49,9 +52,12 @@ async def get_public_article(article_id: str, db: AsyncSession = Depends(get_db)
                 a.published_at AS published_at, 
                 a.updated_at AS updated_at,
                 u.uuid AS author_uuid
-            FROM articles a
-            LEFT JOIN users u ON a.author_id = u.id
-            WHERE a.id = CAST(:id AS UUID) AND a.status = 'PUBLISHED'
+            FROM 
+                articles a LEFT JOIN users u 
+                ON a.author_id = u.id
+            WHERE 
+                a.id = CAST(:id AS UUID) 
+                AND a.status = 'PUBLISHED'
         """)
         result = await db.execute(query, {"id": article_id})
         article = result.mappings().first()
@@ -86,9 +92,11 @@ async def list_articles(
                 a.status AS article_status, 
                 a.created_at AS created_at, 
                 a.updated_at AS updated_at
-            FROM articles a
-            JOIN users u ON a.author_id = u.id
-            WHERE u.uuid = CAST(:user_uuid AS UUID)
+            FROM 
+                articles a JOIN users u 
+                    ON a.author_id = u.id
+            WHERE 
+                u.uuid = CAST(:user_uuid AS UUID)
         """
         params = {"user_uuid": auth["data"]["uuid"]}
 
@@ -116,10 +124,14 @@ async def get_article(
 
     try:
         query = text("""
-            SELECT a.*, u.uuid AS author_uuid
-            FROM articles a
-            JOIN users u ON a.author_id = u.id
-            WHERE a.id = CAST(:id AS UUID) AND u.uuid = CAST(:user_uuid AS UUID)
+            SELECT 
+                a.*, u.uuid AS author_uuid
+            FROM 
+                articles a JOIN users u 
+                ON a.author_id = u.id
+            WHERE 
+                a.id = CAST(:id AS UUID) 
+                AND u.uuid = CAST(:user_uuid AS UUID)
         """)
         result = await db.execute(
             query, {"id": article_id, "user_uuid": auth["data"]["uuid"]}
@@ -137,7 +149,7 @@ async def get_article(
         raise HTTPException(status_code=400, detail="Invalid article ID format")
 
 
-@router.post("")
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def create_article(
     payload: ArticleCreate,
     token: str = Depends(oauth2_scheme),
@@ -149,13 +161,14 @@ async def create_article(
 
     try:
         query = text("""
-            INSERT INTO articles (author_id, title, body)
+            INSERT INTO 
+                articles (author_id, title, body)
             VALUES (
                 (SELECT id FROM users WHERE uuid = CAST(:user_uuid AS UUID)), 
-                :title, 
-                :body
+                :title, :body
             )
-            RETURNING id, title, status, created_at
+            RETURNING 
+                id, title, status, created_at
         """)
         result = await db.execute(
             query,
@@ -198,15 +211,19 @@ async def update_article(
         set_query = ", ".join(set_clauses)
 
         query = text(f"""
-            UPDATE articles a
-            SET {set_query}
-            FROM users u
-            WHERE a.author_id = u.id 
-              AND a.id = CAST(:id AS UUID) 
-              AND u.uuid = CAST(:user_uuid AS UUID)
-            RETURNING a.id, a.title, a.updated_at
+            UPDATE 
+                articles a
+            SET 
+                {set_query}
+            FROM 
+                users u
+            WHERE 
+                a.author_id = u.id 
+                AND a.id = CAST(:id AS UUID) 
+                AND u.uuid = CAST(:user_uuid AS UUID)
+            RETURNING 
+                a.id, a.title, a.updated_at
         """)
-
         params = {"id": article_id, "user_uuid": auth["data"]["uuid"], **update_data}
         result = await db.execute(query, params)
         await db.commit()
@@ -217,7 +234,10 @@ async def update_article(
                 status_code=404, detail="Article not found or unauthorized"
             )
 
-        return {"message": "Article updated successfully", "data": updated_article}
+        return {
+            "message": "Article updated successfully", 
+            "data": updated_article
+        }
     except HTTPException:
         raise
     except SQLAlchemyError:
@@ -243,15 +263,20 @@ async def update_article_status(
         )
 
         query = text(f"""
-            UPDATE articles a
-            SET status = CAST(:status AS article_status), 
+            UPDATE 
+                articles a
+            SET 
+                status = CAST(:status AS article_status), 
                 {published_clause}
                 updated_at = NOW()
-            FROM users u
-            WHERE a.author_id = u.id 
-              AND a.id = CAST(:id AS UUID) 
-              AND u.uuid = CAST(:user_uuid AS UUID)
-            RETURNING a.id, a.status, a.published_at
+            FROM 
+                users u
+            WHERE 
+                a.author_id = u.id 
+                AND a.id = CAST(:id AS UUID) 
+                AND u.uuid = CAST(:user_uuid AS UUID)
+            RETURNING 
+                a.id, a.status, a.published_at
         """)
 
         result = await db.execute(
@@ -284,7 +309,7 @@ async def update_article_status(
         )
 
 
-@router.delete("/{article_id}")
+@router.delete("/{article_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_article(
     article_id: str,
     token: str = Depends(oauth2_scheme),
@@ -296,12 +321,16 @@ async def delete_article(
 
     try:
         query = text("""
-            DELETE FROM articles a
-            USING users u
-            WHERE a.author_id = u.id 
-              AND a.id = CAST(:id AS UUID) 
-              AND u.uuid = CAST(:user_uuid AS UUID)
-            RETURNING a.id
+            DELETE FROM 
+                articles a
+            USING 
+                users u
+            WHERE 
+                a.author_id = u.id 
+                AND a.id = CAST(:id AS UUID) 
+                AND u.uuid = CAST(:user_uuid AS UUID)
+            RETURNING 
+                a.id
         """)
         result = await db.execute(
             query, {"id": article_id, "user_uuid": auth["data"]["uuid"]}
@@ -325,7 +354,14 @@ async def delete_article(
 @router.get("/{article_id}/last-update")
 async def get_article_last_update(article_id: str, db: AsyncSession = Depends(get_db)):
     try:
-        query = text("SELECT updated_at FROM articles WHERE id = CAST(:id AS UUID)")
+        query = text("""
+            SELECT 
+                updated_at 
+            FROM 
+                articles 
+            WHERE 
+                id = CAST(:id AS UUID)
+        """)
         result = await db.execute(query, {"id": article_id})
 
         last_updated = result.scalar_one_or_none()

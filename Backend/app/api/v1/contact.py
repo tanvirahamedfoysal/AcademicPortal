@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,7 +12,9 @@ router = APIRouter(prefix="/contact", tags=["contact"])
 
 
 @router.get("/meta")
-async def get_contact_meta(db: AsyncSession = Depends(get_db)):
+async def get_contact_meta(
+    db: AsyncSession = Depends(get_db)
+):
     try:
         result = await db.execute(
             text("""
@@ -41,16 +43,19 @@ async def get_contact_meta(db: AsyncSession = Depends(get_db)):
         return {"message": f"Error retrieving contact meta: {str(e)}"}
 
 
-@router.post("")
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def submit_contact_message(
     payload: CreateMessage, db: AsyncSession = Depends(get_db)
 ):
     try:
         response = await db.execute(
             text("""
-				INSERT INTO contact_messages (name, email, message)
-				VALUES (:name, :email, :message)
-				RETURNING id
+				INSERT INTO 
+                    contact_messages (name, email, message)
+				VALUES 
+                    (:name, :email, :message)
+				RETURNING 
+                    id
 			"""),
             {"name": payload.name, "email": payload.email, "message": payload.message},
         )
@@ -63,13 +68,18 @@ async def submit_contact_message(
 
 
 @router.get("")
-async def list_contact_messages(db: AsyncSession = Depends(get_db)):
+async def list_contact_messages(
+    db: AsyncSession = Depends(get_db)
+):
     try:
         result = await db.execute(
             text("""
-				SELECT id, name, email, message, created_at
-				FROM contact_messages
-				ORDER BY created_at DESC
+				SELECT 
+                    id, name, email, message, created_at
+				FROM 
+                    contact_messages
+				ORDER BY 
+                    created_at DESC
 			""")
         )
         messages = []
@@ -88,9 +98,12 @@ async def get_contact_message(message_id: int, db: AsyncSession = Depends(get_db
     try:
         result = await db.execute(
             text("""
-				SELECT id, name, email, message, created_at
-				FROM contact_messages
-				WHERE id = :message_id
+				SELECT 
+                    id, name, email, message, created_at
+				FROM 
+                    contact_messages
+				WHERE 
+                    id = :message_id
 			"""),
             {"message_id": message_id},
         )
@@ -105,13 +118,15 @@ async def get_contact_message(message_id: int, db: AsyncSession = Depends(get_db
         return {"message": f"Error retrieving contact message: {str(e)}"}
 
 
-@router.delete("/{message_id}")
+@router.delete("/{message_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_contact_message(message_id: int, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(
             text("""
-				DELETE FROM contact_messages
-				WHERE id = :message_id
+				DELETE FROM 
+                    contact_messages
+				WHERE 
+                    id = :message_id
 			"""),
             {"message_id": message_id},
         )

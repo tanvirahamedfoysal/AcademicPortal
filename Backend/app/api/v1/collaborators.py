@@ -18,11 +18,12 @@ async def list_collaborators(db: AsyncSession = Depends(get_db)):
         response = await db.execute(
             text("""
 				SELECT 
-					id AS uuid,
-					name,
+					id AS uuid, name,
 					COALESCE(image_url, :default_image) AS image_url
-				FROM collaborators
-				ORDER BY name DESC
+				FROM 
+                    collaborators
+				ORDER BY 
+                    name DESC
 			"""),
             {"default_image": settings.default_profile_image_url},
         )
@@ -32,7 +33,7 @@ async def list_collaborators(db: AsyncSession = Depends(get_db)):
         return {"message": f"Error retrieving collaborators: {str(e)}"}
 
 
-@router.post("")
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def create_collaborator(
     payload: CollaboratorCreate, db: AsyncSession = Depends(get_db)
 ):
@@ -40,9 +41,12 @@ async def create_collaborator(
         image_url = payload.image_url or settings.default_profile_image_url
         response = await db.execute(
             text("""
-				INSERT INTO collaborators (name, bio, organization, website_url, image_url)
-				VALUES (:name, :bio, :organization, :website_url, :image_url)
-				RETURNING id as uuid
+				INSERT INTO 
+                    collaborators (name, bio, organization, website_url, image_url)
+				VALUES 
+                    (:name, :bio, :organization, :website_url, :image_url)
+				RETURNING 
+                    id as uuid
 			"""),
             {
                 "name": payload.name,
@@ -60,7 +64,7 @@ async def create_collaborator(
         return {"message": f"Error creating collaborator: {str(e)}"}
 
 
-@router.patch("/{uuid}")
+@router.patch("/{uuid}", status_code=status.HTTP_202_ACCEPTED)
 async def update_collaborator(
     uuid: str, payload: CollaboratorUpdate, db: AsyncSession = Depends(get_db)
 ):
@@ -86,10 +90,14 @@ async def update_collaborator(
         # 4. Execute the update
         response = await db.execute(
             text(f"""
-				UPDATE collaborators
-				SET {set_query_part}
-				WHERE id = :uuid
-				RETURNING id AS uuid, name, bio, organization, website_url, image_url, updated_at
+				UPDATE 
+                    collaborators
+				SET 
+                    {set_query_part}
+				WHERE 
+                    id = :uuid
+				RETURNING 
+                    id AS uuid, name, bio, organization, website_url, image_url, updated_at
 			"""),
             query_params,
         )
@@ -114,14 +122,16 @@ async def update_collaborator(
         )
 
 
-@router.delete("/{uuid}", status_code=status.HTTP_200_OK)
+@router.delete("/{uuid}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_collaborator(uuid: str, db: AsyncSession = Depends(get_db)):
     try:
         # 1. Execute the DELETE query and check if a row was affected
         response = await db.execute(
             text("""
-				DELETE FROM collaborators
-				WHERE id = :uuid
+				DELETE FROM 
+                    collaborators
+				WHERE 
+                    id = :uuid
 				RETURNING id
 			"""),
             {"uuid": uuid},

@@ -9,19 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_db
 from app.utility import limiter
-from app.utility.auth import (
-    create_access_token,
-    hash_password,
-    verify_password,
-    verify_token,
-)
-from app.schema.v1.auth import (
-    UserRegister,
-    ValidateUsername,
-    RequestOTP,
-    ResetOTP,
-    EmailVerification,
-)
+from app.utility.auth import create_access_token, hash_password, verify_password, verify_token
+from app.schema.v1.auth import UserRegister, ValidateUsername, RequestOTP, ResetOTP, EmailVerification
+from app.utility.auth import validate_user_access, validate_moderator_access, validate_admin_access
 from app.utility.brevo import send_email
 from app.utility.time import bd_now, utc_now
 from app.core.config import settings
@@ -33,7 +23,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
 @router.get("/validate-token")
-async def validate_token(token: str = Depends(oauth2_scheme)):
+async def validate_token(
+    token: str = Depends(oauth2_scheme)
+):
     response = verify_token(token)
     if not response["is_valid"]:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
@@ -47,24 +39,18 @@ async def login(
 ):
     try:
         # 1. Fetch user info with student batch and profile image link via LEFT JOINs
-        result = await db.execute(
-            text("""
-                SELECT 
-					u.uuid, 
-					u.email, 
-					u.hashed_password, 
-					u.status, 
-					u.role as user_role,
-					u.updated_at as user_updated_at,
-					s.student_batch,
-					s.updated_at as student_updated_at,
-					u.image_url
-				FROM users u
-				LEFT JOIN students s ON u.id = s.id
-                WHERE u.username = :credential OR u.email = :credential
-            """),
-            {"credential": form_data.username},
-        )
+        query = text("""
+            SELECT 
+                u.uuid,	u.email, u.hashed_password, u.status, u.role as user_role,
+                u.updated_at as user_updated_at, s.student_batch, s.updated_at as student_updated_at, u.image_url
+            FROM 
+                users u LEFT JOIN students s 
+                ON u.id = s.id
+            WHERE 
+                u.username = :credential 
+                OR u.email = :credential
+        """)
+        result = await db.execute(query, {"credential": form_data.username})
         user = result.mappings().first()
 
         if not user:
@@ -131,15 +117,16 @@ async def validate_username(
 ):
     try:
         # 1. Store the execution result
-        query_result = await db.execute(
-            text("""
-				SELECT username
-				FROM users
-				WHERE username = :username
-				LIMIT 1
-			"""),
-            {"username": payload.username},
-        )
+        query = text("""
+            SELECT 
+                username
+            FROM 
+                users
+            WHERE 
+                username = :username
+            LIMIT 1
+        """)
+        query_result = await db.execute(query, {"username": payload.username})
 
         # 2. Extract the first row or None using scalar_one_or_none()
         result = query_result.scalar_one_or_none()
@@ -151,12 +138,18 @@ async def validate_username(
         )
 
     if not result:
-        return {"is_available": True, "message": "Username is available"}
+        return {
+            "is_available": True, 
+            "message": "Username is available"
+        }
 
-    return {"is_available": False, "message": "Username is already taken"}
+    return {
+        "is_available": False, 
+        "message": "Username is already taken"
+    }
 
 
-@router.post("/register/request-otp")
+@router.post("/register/request-otp", status_code=status.HTTP_201_CREATED)
 async def request_registration_otp(
     payload: RequestOTP, db: AsyncSession = Depends(get_db)
 ):
@@ -173,18 +166,22 @@ async def request_registration_otp(
     try:
         await db.execute(
             text("""
-				UPDATE email_otps
-				SET is_valid = FALSE
-				WHERE email = :email
-				AND purpose = 'REGISTER'
+				UPDATE 
+                    email_otps
+				SET 
+                    is_valid = FALSE
+				WHERE 
+                    email = :email
+				    AND purpose = 'REGISTER'
 			"""),
             {"email": payload.email},
         )
         await db.execute(
             text("""
-				INSERT INTO email_otps
-				(email, otp, purpose, expires_at, is_used)
-				VALUES (:email, :otp, 'REGISTER', :expires_at, FALSE)
+				INSERT INTO 
+                    email_otps  (email, otp, purpose, expires_at, is_used)
+				VALUES 
+                    (:email, :otp, 'REGISTER', :expires_at, FALSE)
 			"""),
             {"email": payload.email, "otp": otp, "expires_at": expires_at},
         )
@@ -201,7 +198,7 @@ async def request_registration_otp(
     return {"is_successful": True, "message": "If email exists, OTP sent"}
 
 
-@router.post("/register")
+@router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register_student(payload: UserRegister, db: AsyncSession = Depends(get_db)):
     try:
         check_existing = await db.execute(
@@ -371,18 +368,21 @@ async def request_password_reset_otp(
     return {"is_successful": True, "message": "If email exists, OTP sent"}
 
 
-@router.patch("/password-reset")
+@router.patch("/password-reset", status_code=status.HTTP_202_ACCEPTED)
 async def reset_password(payload: ResetOTP, db: AsyncSession = Depends(get_db)):
     try:
         # 1. Execute the query
         result = await db.execute(
             text("""
-				SELECT otp
-				FROM email_otps
-				WHERE email = :email
-				AND purpose = 'PASSWORD_RESET'
-				AND is_valid = TRUE
-				AND expires_at > NOW()
+				SELECT 
+                    otp
+				FROM 
+                    email_otps
+				WHERE 
+                    email = :email
+				    AND purpose = 'PASSWORD_RESET'
+				    AND is_valid = TRUE
+				    AND expires_at > NOW()
 			"""),
             {"email": payload.email},
         )
@@ -395,9 +395,12 @@ async def reset_password(payload: ResetOTP, db: AsyncSession = Depends(get_db)):
         if payload.otp == db_otp:
             await db.execute(
                 text("""
-					UPDATE users
-					SET hashed_password = :new_password
-					WHERE email = :email
+					UPDATE 
+                        users
+					SET 
+                        hashed_password = :new_password
+					WHERE 
+                        email = :email
 				"""),
                 {
                     "new_password": hash_password(payload.new_password),
@@ -406,10 +409,14 @@ async def reset_password(payload: ResetOTP, db: AsyncSession = Depends(get_db)):
             )
             await db.execute(
                 text("""
-					UPDATE email_otps
-					SET is_valid = FALSE, is_used = TRUE
-					WHERE email = :email
-					AND purpose = 'PASSWORD_RESET'
+					UPDATE 
+                        email_otps
+					SET 
+                        is_valid = FALSE, 
+                        is_used = TRUE
+					WHERE 
+                        email = :email
+					    AND purpose = 'PASSWORD_RESET'
 				"""),
                 {"email": payload.email},
             )
@@ -427,7 +434,7 @@ async def reset_password(payload: ResetOTP, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Failed to process reset request")
 
 
-@router.post("/validate-email")
+@router.post("/validate-email", status_code=status.HTTP_202_ACCEPTED)
 async def validate_email(
     payload: EmailVerification, db: AsyncSession = Depends(get_db)
 ):
@@ -435,9 +442,12 @@ async def validate_email(
         # 1. Store the execution result
         query_result = await db.execute(
             text("""
-				SELECT email
-				FROM users
-				WHERE email = :email
+				SELECT 
+                    email
+				FROM 
+                    users
+				WHERE 
+                    email = :email
 				LIMIT 1
 			"""),
             {"email": payload.email},

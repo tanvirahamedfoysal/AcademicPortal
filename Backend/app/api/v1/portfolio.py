@@ -44,7 +44,7 @@ async def get_portfolio(
         )
 
 
-@router.put("")
+@router.put("", status_code=status.HTTP_202_ACCEPTED)
 async def replace_portfolio(
     payload: AdminInfoUpdate, 
     db: AsyncSession = Depends(get_db)
