@@ -42,3 +42,7 @@ The included `.env.local` points to the current deployed FastAPI backend. If you
 npm run build
 npm start
 ```
+
+## Dependency compatibility note
+
+This frontend is pinned to Next.js 15.5.25 with React 19.0.0. If you previously installed dependencies from an older copy, remove `node_modules`, `.next`, and `package-lock.json` before running `npm install` again.
