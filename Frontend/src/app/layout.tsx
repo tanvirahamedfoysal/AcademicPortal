@@ -1,29 +1,22 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import QueryProvider from '../providers/QueryProvider';
 import HomeFloatingButton from '../components/HomeFloatingButton';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-
 export const metadata: Metadata = {
   title: {
-    template: '%s | Academic Research Portal',
-    default: 'Academic Research Portal',
+    template: '%s | Researcher\'s Eden',
+    default: "Researcher's Eden | Academic Research Portfolio",
   },
-  description: 'A centralized platform for academic publications, research collaborations, and document management.',
-  applicationName: 'Academic Portal',
-  manifest: '/manifest.json', 
+  description: 'Research portfolio, publications, scholarly resources, collaboration network, and academic learning community.',
+  applicationName: "Researcher's Eden",
+  manifest: '/manifest.json',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="font-sans antialiased bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+    <html lang="en">
+      <body className="min-h-screen bg-[#f5f7f4] text-slate-950 antialiased">
         <QueryProvider>
           {children}
           <HomeFloatingButton />

@@ -1,9 +1,10 @@
 export interface Student {
-  id: string;
+  uuid: string;
   name: string;
+  username?: string;
   email: string;
-  status: 'pending' | 'verified' | 'rejected';
-  department?: string;
-  studentId?: string;
-  created_at: string;
+  image_url?: string;
+  status: string;
+  student_batch?: number | string;
+  created_at?: string;
 }

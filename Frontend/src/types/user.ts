@@ -5,7 +5,10 @@ export interface User {
   username: string;
   email: string;
   role: UserRole;
+  status?: string;
+  profileType?: string;
   firstName?: string;
   lastName?: string;
   avatarUrl?: string;
+  studentBatch?: string | number;
 }

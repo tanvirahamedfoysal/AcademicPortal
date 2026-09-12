@@ -1,4 +1,5 @@
 'use client';
+import { apiFetch } from '../../../lib/client-api';
 
 import { useState, useEffect } from 'react';
 import { Loader2, Check, X, Trash2, Search, UserCheck, Clock, ShieldAlert, ArrowUpCircle } from 'lucide-react';
@@ -7,7 +8,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface Student {
   uuid: string;
   name: string;
-  username: string;
+  username?: string;
+  status?: string;
   email: string;
   student_batch?: string;
   created_at?: string;
@@ -30,8 +32,8 @@ export default function AdminStudentsPage() {
     setIsLoading(true);
     try {
       const [pendingRes, activeRes] = await Promise.all([
-        fetch('/api/v1/students/pending'),
-        fetch('/api/v1/students')
+        apiFetch('/api/v1/students/pending'),
+        apiFetch('/api/v1/students')
       ]);
 
       if (pendingRes.ok) {
@@ -40,7 +42,8 @@ export default function AdminStudentsPage() {
       }
       if (activeRes.ok) {
         const activeData = await activeRes.json();
-        setActiveStudents(Array.isArray(activeData) ? activeData : (activeData.data || []));
+        const rows = Array.isArray(activeData) ? activeData : (activeData.data || []);
+        setActiveStudents(rows.filter((student: Student) => String(student.status || '').toUpperCase() === 'ACTIVE'));
       }
     } catch (error) {
       console.error("Failed to fetch students data:", error);
@@ -54,7 +57,7 @@ export default function AdminStudentsPage() {
     
     setActionLoading(uuid);
     try {
-      const res = await fetch(`/api/v1/moderators/${uuid}`, { 
+      const res = await apiFetch(`/api/v1/moderators/${uuid}`, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -76,11 +79,10 @@ export default function AdminStudentsPage() {
   const handleVerify = async (uuid: string) => {
     setActionLoading(uuid);
     try {
-      const res = await fetch(`/api/v1/students/pending/${uuid}/verify`, { method: 'PATCH' });
+      const res = await apiFetch(`/api/v1/students/pending/${uuid}/verify`, { method: 'PATCH' });
       if (res.ok) {
-        const approvedStudent = pendingStudents.find(s => s.uuid === uuid);
         setPendingStudents(prev => prev.filter(s => s.uuid !== uuid));
-        if (approvedStudent) setActiveStudents(prev => [approvedStudent, ...prev]);
+        await fetchData();
       }
     } catch (error) {
       console.error("Failed to verify student:", error);
@@ -93,7 +95,7 @@ export default function AdminStudentsPage() {
     if (!confirm("Are you sure you want to reject and delete this pending registration?")) return;
     setActionLoading(uuid);
     try {
-      const res = await fetch(`/api/v1/students/pending/${uuid}`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/v1/students/pending/${uuid}`, { method: 'DELETE' });
       if (res.ok) setPendingStudents(prev => prev.filter(s => s.uuid !== uuid));
     } catch (error) {
       console.error("Failed to reject student:", error);
@@ -106,7 +108,7 @@ export default function AdminStudentsPage() {
     if (!confirm("Are you sure you want to permanently delete this student account?")) return;
     setActionLoading(uuid);
     try {
-      const res = await fetch(`/api/v1/students/${uuid}`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/v1/students/${uuid}`, { method: 'DELETE' });
       if (res.ok) setActiveStudents(prev => prev.filter(s => s.uuid !== uuid));
     } catch (error) {
       console.error("Failed to delete active student:", error);
@@ -118,7 +120,7 @@ export default function AdminStudentsPage() {
   const filteredData = (activeTab === 'pending' ? pendingStudents : activeStudents).filter(student => 
     student.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
     student.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    student.username.toLowerCase().includes(searchQuery.toLowerCase())
+    (student.username || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -136,7 +138,7 @@ export default function AdminStudentsPage() {
             placeholder="Search name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm"
+            className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent text-sm"
           />
         </div>
       </div>
@@ -145,13 +147,13 @@ export default function AdminStudentsPage() {
         <button
           onClick={() => setActiveTab('pending')}
           className={`flex-1 flex justify-center items-center gap-2 py-2 text-sm font-medium rounded-lg transition-colors ${
-            activeTab === 'pending' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            activeTab === 'pending' ? 'bg-white text-emerald-800 shadow-sm' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <Clock className="h-4 w-4" />
           Pending
           {pendingStudents.length > 0 && (
-            <span className="bg-blue-100 text-blue-600 py-0.5 px-2 rounded-full text-xs">
+            <span className="bg-emerald-50 text-emerald-700 py-0.5 px-2 rounded-full text-xs">
               {pendingStudents.length}
             </span>
           )}
@@ -182,7 +184,7 @@ export default function AdminStudentsPage() {
               {isLoading ? (
                 <tr>
                   <td colSpan={4} className="px-6 py-12 text-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto" />
+                    <Loader2 className="h-8 w-8 animate-spin text-[#0f3b34] mx-auto" />
                     <p className="text-slate-500 mt-2 text-sm">Loading students...</p>
                   </td>
                 </tr>
@@ -241,7 +243,7 @@ export default function AdminStudentsPage() {
                               <button
                                 onClick={() => handlePromoteToModerator(student.uuid, student.name)}
                                 disabled={actionLoading === student.uuid}
-                                className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors disabled:opacity-50"
+                                className="p-2 text-slate-400 hover:text-[#0f3b34] hover:bg-emerald-50 rounded-lg transition-colors disabled:opacity-50"
                                 title="Promote to Moderator"
                               >
                                 {actionLoading === student.uuid ? <Loader2 className="h-5 w-5 animate-spin" /> : <ArrowUpCircle className="h-5 w-5" />}

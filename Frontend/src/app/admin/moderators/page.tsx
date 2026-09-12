@@ -1,414 +1,109 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Loader2, Search, Plus, Shield, Trash2, X, UserCheck, Mail, ArrowUpCircle, Users } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
+import { ArrowUpCircle, Loader2, Search, Shield, Trash2, Users, X } from 'lucide-react';
+import { apiFetch } from '../../../lib/client-api';
 
-interface Moderator {
-  id?: string;
-  uuid?: string;
-  username?: string;
-  name?: string;
-  email: string;
-  is_active?: boolean;
-  created_at?: string;
-}
-
-interface Student {
-  uuid: string;
-  name: string;
-  username: string;
-  email: string;
-}
+type Moderator = { uuid: string; name?: string; email: string; mobile_number?: string | null; status: string };
+type Student = { uuid: string; name: string; username?: string; email: string; status?: string; student_batch?: number | string };
 
 export default function AdminModeratorsPage() {
   const [moderators, setModerators] = useState<Moderator[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
-  
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [formData, setFormData] = useState({ email: '', username: '', password: '' });
+  const [students, setStudents] = useState<Student[]>([]);
+  const [query, setQuery] = useState('');
+  const [studentQuery, setStudentQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [workingId, setWorkingId] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
 
-  const [isPromoteModalOpen, setIsPromoteModalOpen] = useState(false);
-  const [activeStudents, setActiveStudents] = useState<Student[]>([]);
-  const [isStudentsLoading, setIsStudentsLoading] = useState(false);
-  const [studentSearchQuery, setStudentSearchQuery] = useState('');
-
-  useEffect(() => {
-    fetchModerators();
-  }, []);
-
-  const fetchModerators = async () => {
-    setIsLoading(true);
+  const loadModerators = async () => {
+    setLoading(true);
     try {
-      const res = await fetch('/api/v1/moderators');
-      if (res.ok) {
-        const data = await res.json();
-        setModerators(Array.isArray(data) ? data : (data.data || []));
-      }
+      const response = await apiFetch('/api/v1/moderators');
+      if (!response.ok) throw new Error('Unable to load moderators.');
+      const payload = await response.json();
+      setModerators(Array.isArray(payload?.data) ? payload.data : []);
     } catch (error) {
-      console.error("Failed to fetch moderators:", error);
+      setFeedback(error instanceof Error ? error.message : 'Unable to load moderators.');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const openPromoteModal = async () => {
-    setIsPromoteModalOpen(true);
-    setIsStudentsLoading(true);
+  useEffect(() => { void loadModerators(); }, []);
+
+  const openPromotion = async () => {
+    setModalOpen(true);
+    setStudents([]);
+    setStudentQuery('');
     try {
-      const res = await fetch('/api/v1/students');
-      if (res.ok) {
-        const data = await res.json();
-        setActiveStudents(Array.isArray(data) ? data : (data.data || []));
-      }
+      const response = await apiFetch('/api/v1/students');
+      if (!response.ok) throw new Error('Unable to load students.');
+      const payload = await response.json();
+      setStudents((Array.isArray(payload?.data) ? payload.data : []).filter((student: Student) => String(student.status || '').toUpperCase() !== 'PENDING'));
     } catch (error) {
-      console.error("Failed to fetch student catalog data:", error);
-    } finally {
-      setIsStudentsLoading(false);
+      setFeedback(error instanceof Error ? error.message : 'Unable to load students.');
     }
   };
 
-  const handlePromoteFromModal = async (uuid: string, name: string) => {
-    if (!confirm(`Are you sure you want to promote ${name} to a Moderator role?`)) return;
-    
-    setIsStudentsLoading(true);
+  const promote = async (student: Student) => {
+    if (!window.confirm(`Promote ${student.name || student.email} to moderator?`)) return;
+    setWorkingId(student.uuid);
     try {
-      const res = await fetch(`/api/v1/moderators/${uuid}`, { 
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      
-      if (res.ok) {
-        alert(`${name} has been successfully promoted to Platform Moderator.`);
-        setIsPromoteModalOpen(false);
-        fetchModerators();
-      } else {
-        const errorData = await res.json();
-        alert(errorData.detail || "Failed to promote structural user type.");
-      }
+      const response = await apiFetch(`/api/v1/moderators/${student.uuid}`, { method: 'POST' });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(payload?.detail || 'Promotion failed.');
+      setFeedback(payload?.message || 'User promoted to moderator.');
+      setModalOpen(false);
+      await loadModerators();
     } catch (error) {
-      console.error("Promotion interaction failure:", error);
+      setFeedback(error instanceof Error ? error.message : 'Promotion failed.');
     } finally {
-      setIsStudentsLoading(false);
+      setWorkingId(null);
     }
   };
 
-  const handleRevoke = async (identifier: string) => {
-    if (!identifier) return;
-    if (!confirm("Are you sure you want to revoke moderator privileges for this user?")) return;
-    
-    setActionLoading(identifier);
+  const demote = async (moderator: Moderator) => {
+    if (!window.confirm(`Remove moderator privileges from ${moderator.name || moderator.email}?`)) return;
+    setWorkingId(moderator.uuid);
     try {
-      const res = await fetch(`/api/v1/moderators/${identifier}`, { method: 'DELETE' });
-      if (res.ok) {
-        setModerators(prev => prev.filter(mod => (mod.id || mod.uuid) !== identifier));
-      }
+      const response = await apiFetch(`/api/v1/moderators/${moderator.uuid}`, { method: 'DELETE' });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(payload?.detail || 'Demotion failed.');
+      setModerators((current) => current.filter((item) => item.uuid !== moderator.uuid));
+      setFeedback(payload?.message || 'Moderator privileges removed.');
     } catch (error) {
-      console.error("Failed to revoke moderator:", error);
+      setFeedback(error instanceof Error ? error.message : 'Demotion failed.');
     } finally {
-      setActionLoading(null);
+      setWorkingId(null);
     }
   };
 
-  const handleAddModerator = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSaving(true);
+  const filtered = useMemo(() => {
+    const term = query.trim().toLowerCase();
+    if (!term) return moderators;
+    return moderators.filter((moderator) => `${moderator.name || ''} ${moderator.email}`.toLowerCase().includes(term));
+  }, [moderators, query]);
 
-    try {
-      const res = await fetch('/api/v1/moderators', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-
-      if (res.ok) {
-        const responseData = await res.json();
-        const newMod = responseData.data || responseData;
-        setModerators(prev => [newMod, ...prev]);
-        setIsModalOpen(false);
-        setFormData({ email: '', username: '', password: '' });
-      } else {
-        const errorData = await res.json();
-        alert(errorData.detail || "Failed to add moderator");
-      }
-    } catch (error) {
-      console.error("Failed to add moderator:", error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const filteredModerators = moderators.filter(mod => {
-    const searchString = searchQuery.toLowerCase();
-    const nameMatch = (mod.username || mod.name || '').toLowerCase().includes(searchString);
-    const emailMatch = (mod.email || '').toLowerCase().includes(searchString);
-    return nameMatch || emailMatch;
-  });
-
-  const filteredStudents = activeStudents.filter(s => 
-    s.name?.toLowerCase().includes(studentSearchQuery.toLowerCase()) || 
-    s.email?.toLowerCase().includes(studentSearchQuery.toLowerCase()) ||
-    s.username?.toLowerCase().includes(studentSearchQuery.toLowerCase())
-  );
+  const candidateStudents = useMemo(() => {
+    const term = studentQuery.trim().toLowerCase();
+    return students.filter((student) => !moderators.some((moderator) => moderator.uuid === student.uuid)).filter((student) => !term || `${student.name || ''} ${student.username || ''} ${student.email}`.toLowerCase().includes(term));
+  }, [students, moderators, studentQuery]);
 
   return (
-    <div className="max-w-6xl mx-auto pb-12 relative">
-      <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <Shield className="h-6 w-6 text-indigo-600" />
-            Moderators
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">Manage users with elevated platform privileges.</p>
+    <div className="mx-auto max-w-7xl space-y-6 pb-12">
+      <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
+        <div className="grid gap-6 bg-[linear-gradient(130deg,#0b2823_0%,#0f3b34_62%,#174b3f_100%)] px-6 py-8 text-white md:grid-cols-[1fr_auto] md:items-end md:px-8">
+          <div><div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-50"><Shield className="h-3.5 w-3.5" /> Governance</div><h1 className="font-serif text-3xl font-semibold md:text-4xl">Moderator Team</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-emerald-50/80">Promote existing verified users into moderation and manage the portal&apos;s academic operations team.</p></div>
+          <button onClick={openPromotion} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#c7a35c] px-4 py-3 text-sm font-semibold text-[#102b26] transition hover:bg-[#d7bb80]"><ArrowUpCircle className="h-4 w-4" /> Promote user</button>
         </div>
-        
-        <div className="flex gap-3 items-start">
-          <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search by name or email..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:border-transparent text-sm"
-            />
-          </div>
-          
-          <div className="flex flex-col gap-2">
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm whitespace-nowrap shadow-sm w-full"
-            >
-              <Plus className="h-4 w-4" />
-              Add Moderator
-            </button>
-            <button 
-              onClick={openPromoteModal}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-white border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors font-medium text-sm whitespace-nowrap shadow-sm w-full"
-            >
-              <ArrowUpCircle className="h-4 w-4" />
-              Make Moderator
-            </button>
-          </div>
-        </div>
-      </div>
+        <div className="border-b border-slate-200 bg-slate-50/70 p-4 md:px-6"><div className="relative max-w-md"><Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search moderators" className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm outline-none focus:border-emerald-700" /></div></div>
+        {feedback && <div className="border-b border-slate-200 bg-amber-50 px-6 py-3 text-sm text-amber-900">{feedback}</div>}
+        {loading ? <div className="flex min-h-60 items-center justify-center"><Loader2 className="h-7 w-7 animate-spin text-[#0f3b34]" /></div> : filtered.length === 0 ? <div className="px-6 py-16 text-center text-sm text-slate-500"><Users className="mx-auto mb-3 h-9 w-9 text-slate-300" />No moderators found.</div> : <div className="divide-y divide-slate-100">{filtered.map((moderator) => <article key={moderator.uuid} className="grid gap-4 px-6 py-5 md:grid-cols-[1fr_auto] md:items-center"><div><h2 className="font-serif text-lg font-semibold text-slate-900">{moderator.name || 'Portal Moderator'}</h2><p className="mt-1 text-sm text-slate-500">{moderator.email}{moderator.mobile_number ? ` · ${moderator.mobile_number}` : ''}</p><span className="mt-2 inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-emerald-700">{moderator.status}</span></div><button onClick={() => demote(moderator)} disabled={workingId === moderator.uuid} className="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-white px-3.5 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-50">{workingId === moderator.uuid ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />} Remove role</button></article>)}</div>}
+      </section>
 
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm">
-                <th className="px-6 py-4 font-medium">User</th>
-                <th className="px-6 py-4 font-medium">Status</th>
-                <th className="px-6 py-4 font-medium">Added On</th>
-                <th className="px-6 py-4 font-medium text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mx-auto" />
-                  </td>
-                </tr>
-              ) : filteredModerators.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-slate-500 text-sm">
-                    <Shield className="h-8 w-8 text-slate-300 mx-auto mb-2" />
-                    No moderators found.
-                  </td>
-                </tr>
-              ) : (
-                <AnimatePresence>
-                  {}
-                  {filteredModerators.map((mod, index) => {
-                    const uniqueIdentifier = mod.id || mod.uuid || `fallback-key-${index}`;
-                    const displayName = mod.username || mod.name || 'Unknown User';
-                    
-                    return (
-                      <motion.tr 
-                        key={uniqueIdentifier}
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, height: 0 }}
-                        className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
-                      >
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="h-9 w-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm">
-                              {displayName.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <div className="font-medium text-slate-900">{displayName}</div>
-                              <div className="text-sm text-slate-500 flex items-center gap-1">
-                                <Mail className="h-3 w-3" /> {mod.email}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                            mod.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'
-                          }`}>
-                            <span className={`h-1.5 w-1.5 rounded-full ${mod.is_active ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
-                            {mod.is_active ? 'Active' : 'Inactive'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-slate-500 whitespace-nowrap">
-                          {mod.created_at ? new Date(mod.created_at).toLocaleDateString() : 'N/A'}
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <button
-                            onClick={() => handleRevoke(uniqueIdentifier)}
-                            disabled={actionLoading === uniqueIdentifier}
-                            className="px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 font-medium"
-                          >
-                            {actionLoading === uniqueIdentifier ? <Loader2 className="h-4 w-4 animate-spin inline" /> : 'Revoke Access'}
-                          </button>
-                        </td>
-                      </motion.tr>
-                    );
-                  })}
-                </AnimatePresence>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {}
-      <AnimatePresence>
-        {isModalOpen && (
-          <>
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-slate-900/40 z-40 backdrop-blur-sm"
-              onClick={() => setIsModalOpen(false)}
-            />
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl shadow-xl z-50 p-6"
-            >
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                  <UserCheck className="h-5 w-5 text-indigo-600" />
-                  Add New Moderator
-                </h3>
-                <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-700">
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-
-              <form onSubmit={handleAddModerator} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
-                  <input 
-                    type="email" required placeholder="moderator@example.com"
-                    value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-600 outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Username</label>
-                  <input 
-                    type="text" required placeholder="johndoe_mod"
-                    value={formData.username} onChange={e => setFormData({...formData, username: e.target.value})}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-600 outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Temporary Password</label>
-                  <input 
-                    type="password" required placeholder="••••••••"
-                    value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-600 outline-none"
-                  />
-                  <p className="text-xs text-slate-500 mt-1">They will be prompted to change this upon first login.</p>
-                </div>
-
-                <div className="pt-4 mt-6 border-t border-slate-100 flex justify-end gap-3">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg">
-                    Cancel
-                  </button>
-                  <button type="submit" disabled={isSaving} className="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-70 flex items-center gap-2">
-                    {isSaving && <Loader2 className="h-4 w-4 animate-spin" />}
-                    {isSaving ? 'Creating...' : 'Create Account'}
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {}
-      <AnimatePresence>
-        {isPromoteModalOpen && (
-          <>
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-slate-900/40 z-40 backdrop-blur-sm"
-              onClick={() => setIsPromoteModalOpen(false)}
-            />
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-2xl shadow-xl z-50 p-6 max-h-[80vh] flex flex-col"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                  <Users className="h-5 w-5 text-indigo-600" />
-                  Select Student to Promote
-                </h3>
-                <button onClick={() => setIsPromoteModalOpen(false)} className="text-slate-400 hover:text-slate-700">
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-
-              <div className="relative mb-4">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search students by name, email, or username..."
-                  value={studentSearchQuery}
-                  onChange={(e) => setStudentSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-600 outline-none text-sm"
-                />
-              </div>
-
-              <div className="overflow-y-auto flex-1 border border-slate-100 rounded-lg p-2">
-                {isStudentsLoading && activeStudents.length === 0 ? (
-                  <div className="flex justify-center items-center py-8">
-                    <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
-                  </div>
-                ) : filteredStudents.length === 0 ? (
-                  <div className="text-center py-8 text-sm text-slate-500">
-                    No active students found matching search parameter.
-                  </div>
-                ) : (
-                  <ul className="space-y-1">
-                    {filteredStudents.map(student => (
-                      <li key={student.uuid} className="flex justify-between items-center p-3 hover:bg-slate-50 rounded-lg border border-transparent hover:border-slate-100 transition-colors">
-                        <div>
-                          <p className="text-sm font-medium text-slate-900">{student.name}</p>
-                          <p className="text-xs text-slate-500">@{student.username} • {student.email}</p>
-                        </div>
-                        <button
-                          onClick={() => handlePromoteFromModal(student.uuid, student.name)}
-                          disabled={isStudentsLoading}
-                          className="px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white rounded-md text-xs font-medium transition-colors disabled:opacity-50"
-                        >
-                          Promote
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {modalOpen && <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm"><div className="max-h-[88vh] w-full max-w-2xl overflow-hidden rounded-[1.75rem] bg-white shadow-2xl"><div className="flex items-center justify-between border-b border-slate-200 px-6 py-5"><div><div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0f3b34]">Existing verified users</div><h2 className="font-serif text-2xl font-semibold text-slate-900">Promote to moderator</h2></div><button onClick={() => setModalOpen(false)} className="rounded-full border border-slate-200 p-2 text-slate-500"><X className="h-4 w-4" /></button></div><div className="p-5"><div className="relative"><Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" /><input value={studentQuery} onChange={(e) => setStudentQuery(e.target.value)} placeholder="Search students" className="w-full rounded-xl border border-slate-200 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-emerald-700" /></div></div><div className="max-h-[56vh] divide-y divide-slate-100 overflow-y-auto">{candidateStudents.length === 0 ? <div className="px-6 py-12 text-center text-sm text-slate-500">No eligible users found.</div> : candidateStudents.map((student) => <div key={student.uuid} className="flex items-center justify-between gap-4 px-6 py-4"><div className="min-w-0"><div className="truncate font-medium text-slate-900">{student.name || student.username || 'Student'}</div><div className="truncate text-sm text-slate-500">{student.email}{student.student_batch ? ` · Batch ${student.student_batch}` : ''}</div></div><button onClick={() => promote(student)} disabled={workingId === student.uuid} className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#0f3b34] px-3.5 py-2 text-sm font-semibold text-white disabled:opacity-50">{workingId === student.uuid ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUpCircle className="h-4 w-4" />} Promote</button></div>)}</div></div></div>}
     </div>
   );
 }
