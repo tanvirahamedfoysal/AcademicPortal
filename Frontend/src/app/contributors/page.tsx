@@ -1,4 +1,4 @@
-import MainLayout from '@/components/MainLayout';
+import MainLayout from '../../components/MainLayout';
 import { UsersRound } from 'lucide-react';
 
 export default function ContributorsPage() {

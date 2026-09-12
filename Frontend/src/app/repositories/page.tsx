@@ -1,4 +1,4 @@
-import MainLayout from '@/components/MainLayout';
+import MainLayout from '../../components/MainLayout';
 import { FolderArchive } from 'lucide-react';
 
 export default function RepositoriesPage() {

@@ -1,5 +1,5 @@
 'use client';
-import MainLayout from '@/components/MainLayout';
+import MainLayout from '../../components/MainLayout';
 import { ArrowRight } from 'lucide-react';
 
 export default function ContactPage() {

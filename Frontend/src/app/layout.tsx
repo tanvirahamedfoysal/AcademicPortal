@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import QueryProvider from '../providers/QueryProvider';
-import HomeFloatingButton from '@/components/HomeFloatingButton';
+import HomeFloatingButton from '../components/HomeFloatingButton';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });

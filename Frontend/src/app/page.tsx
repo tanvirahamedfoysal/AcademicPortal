@@ -1,4 +1,4 @@
-import MainLayout from '@/components/MainLayout';
+import MainLayout from '../components/MainLayout';
 import { FileText, Github, Users } from 'lucide-react';
 
 export default function HomePage() {
