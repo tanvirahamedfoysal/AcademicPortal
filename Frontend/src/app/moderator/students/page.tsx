@@ -1,4 +1,5 @@
 'use client';
+import { apiFetch } from '../../../lib/client-api';
 
 import { useState, useEffect } from 'react';
 import { Loader2, Search, GraduationCap, Trash2, CheckCircle, XCircle, Mail } from 'lucide-react';
@@ -10,6 +11,7 @@ interface Student {
   username: string;
   email: string;
   created_at?: string;
+  status?: string;
 }
 
 export default function ModeratorStudentsPage() {
@@ -32,13 +34,13 @@ export default function ModeratorStudentsPage() {
         ? '/api/v1/students' 
         : '/api/v1/students/pending'; 
         
-      const res = await fetch(endpoint);
+      const res = await apiFetch(endpoint);
       if (res.ok) {
         const data = await res.json();
         const formattedData = Array.isArray(data) ? data : (data.data || []);
         
         if (activeTab === 'active') {
-          setStudents(formattedData);
+          setStudents(formattedData.filter((student: Student) => String(student.status || '').toUpperCase() === 'ACTIVE'));
         } else {
           setPendingStudents(formattedData);
         }
@@ -55,7 +57,7 @@ export default function ModeratorStudentsPage() {
     
     setActionLoading(uuid);
     try {
-      const res = await fetch(`/api/v1/students/${uuid}`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/v1/students/${uuid}`, { method: 'DELETE' });
       if (res.ok) {
         setStudents(prev => prev.filter(s => s.uuid !== uuid));
       } else {
@@ -71,8 +73,8 @@ export default function ModeratorStudentsPage() {
   const handleApprove = async (uuid: string, name: string) => {
     setActionLoading(uuid);
     try {
-      const res = await fetch(`/api/v1/students/${uuid}/approve`, { 
-        method: 'POST',
+      const res = await apiFetch(`/api/v1/students/pending/${uuid}/verify`, { 
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' }
       });
       if (res.ok) {
@@ -93,7 +95,7 @@ export default function ModeratorStudentsPage() {
     
     setActionLoading(uuid);
     try {
-      const res = await fetch(`/api/v1/students/pending/${uuid}`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/v1/students/pending/${uuid}`, { method: 'DELETE' });
       if (res.ok) {
         setPendingStudents(prev => prev.filter(s => s.uuid !== uuid));
       } else {

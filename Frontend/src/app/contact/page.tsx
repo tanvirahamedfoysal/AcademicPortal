@@ -1,35 +1,50 @@
-'use client';
+import { Github, GraduationCap, Linkedin, Mail, MapPin, Phone, Send } from 'lucide-react';
 import MainLayout from '../../components/MainLayout';
-import { ArrowRight } from 'lucide-react';
+import ContactForm from '../../components/public/ContactForm';
+import { getContactMeta, getPortfolio } from '../../lib/public-api';
 
-export default function ContactPage() {
+export const metadata = { title: 'Contact', description: 'Contact the researcher for academic collaboration and research opportunities.' };
+
+function safe(value?: string | null) { return value || undefined; }
+
+export default async function ContactPage() {
+  const [meta, portfolio] = await Promise.all([getContactMeta(), getPortfolio()]);
+  const email = safe(meta?.email || portfolio?.email);
+  const phone = safe(meta?.phone || portfolio?.phone);
+  const institution = [portfolio?.college, portfolio?.school].filter(Boolean).join(' · ');
+  const links = [
+    { label: 'Google Scholar', href: meta?.google_scholar_url || portfolio?.google_scholar_url, icon: GraduationCap },
+    { label: 'GitHub', href: meta?.github_url || portfolio?.github_url, icon: Github },
+    { label: 'LinkedIn', href: meta?.linkedin_url || portfolio?.linkedin_url, icon: Linkedin },
+  ].filter((item) => item.href && /^https?:\/\//.test(String(item.href)));
+
   return (
     <MainLayout>
-      <div className="max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <h2 className="text-3xl font-bold text-slate-900 mb-2">Get in Touch</h2>
-        <p className="text-slate-600 mb-8">Have a question about my research or want to collaborate? Send a message.</p>
-        
-        <form className="space-y-5 bg-white p-8 rounded-2xl border border-slate-200 shadow-sm" onSubmit={(e) => e.preventDefault()}>
-          <div className="grid grid-cols-2 gap-5">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
-              <input type="text" className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-              <input type="email" className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
+      <section className="border-b border-slate-200 bg-[#fbfcfa]">
+        <div className="page-shell py-16 lg:py-20">
+          <p className="eyebrow">Contact & collaboration</p>
+          <h1 className="mt-4 max-w-4xl font-serif text-5xl font-bold tracking-[-0.045em] sm:text-6xl">Start an academic conversation.</h1>
+          <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600">Reach out about research collaboration, publications, academic supervision, resources, speaking, or learning opportunities.</p>
+        </div>
+      </section>
+
+      <section className="page-shell grid gap-8 py-14 lg:grid-cols-[.72fr_1.28fr] lg:py-20">
+        <aside className="rounded-[28px] bg-[#0b2823] p-7 text-white sm:p-9">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#e6c27a]">Research contact</p>
+          <h2 className="mt-4 font-serif text-3xl font-bold">Let&apos;s connect around meaningful work.</h2>
+          <p className="mt-4 text-sm leading-7 text-emerald-50/65">Provide a little context in your message so the conversation can begin with the right research or academic focus.</p>
+          <div className="mt-9 space-y-4">
+            {email && <a href={`mailto:${email}`} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[.05] p-4 text-sm font-semibold"><Mail className="h-4 w-4 text-[#e6c27a]" /> {email}</a>}
+            {phone && <a href={`tel:${phone}`} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[.05] p-4 text-sm font-semibold"><Phone className="h-4 w-4 text-[#e6c27a]" /> {phone}</a>}
+            {institution && <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[.05] p-4 text-sm font-semibold"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#e6c27a]" /> {institution}</div>}
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Message</label>
-            <textarea rows={5} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
-          </div>
-          <button className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
-            Send Message
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </form>
-      </div>
+          {links.length > 0 && <div className="mt-8 flex flex-wrap gap-2">{links.map(({ label, href, icon: Icon }) => <a key={label} href={String(href)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-2 text-xs font-semibold text-emerald-50/75 hover:bg-white/10 hover:text-white"><Icon className="h-3.5 w-3.5" /> {label}</a>)}</div>}
+          <div className="mt-10 flex items-center gap-2 border-t border-white/10 pt-6 text-xs text-emerald-50/50"><Send className="h-3.5 w-3.5" /> Messages are stored through the existing contact API.</div>
+        </aside>
+        <div>
+          <ContactForm />
+        </div>
+      </section>
     </MainLayout>
   );
 }
