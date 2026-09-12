@@ -1,4 +1,5 @@
 'use client';
+import { apiFetch } from '../../../lib/client-api';
 
 import { useState, useEffect } from 'react';
 import { Send, Loader2, CheckCircle2 } from 'lucide-react';
@@ -17,8 +18,8 @@ export default function StudentMessagePage() {
 
   // Pre-fill the user's name and email if available in local storage
   useEffect(() => {
-    const storedName = localStorage.getItem('displayName') || '';
-    const storedEmail = localStorage.getItem('userEmail') || ''; // Assuming you save email on login
+    const storedName = localStorage.getItem('user_name') || '';
+    const storedEmail = (localStorage.getItem('user_name') || '').includes('@') ? (localStorage.getItem('user_name') || '') : '';
     setFormData(prev => ({ ...prev, name: storedName, email: storedEmail }));
   }, []);
 
@@ -28,10 +29,10 @@ export default function StudentMessagePage() {
     setSubmitStatus('idle');
 
     try {
-      const res = await fetch('/api/v1/messages', {
+      const res = await apiFetch('/api/v1/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ name: formData.name, email: formData.email, message: `Subject: ${formData.subject}\n\n${formData.message}` })
       });
 
       if (res.ok) {
@@ -53,7 +54,7 @@ export default function StudentMessagePage() {
     <div className="max-w-3xl mx-auto pb-12">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-          <Send className="h-6 w-6 text-sky-500" />
+          <Send className="h-6 w-6 text-emerald-700" />
           Send a Message
         </h1>
         <p className="text-sm text-slate-500 mt-1">Contact portal administrators and moderators for support or inquiries.</p>
@@ -73,7 +74,7 @@ export default function StudentMessagePage() {
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm outline-none transition-all"
+                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-emerald-700 focus:border-transparent text-sm outline-none transition-all"
                 placeholder="John Doe"
               />
             </div>
@@ -84,7 +85,7 @@ export default function StudentMessagePage() {
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm outline-none transition-all"
+                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-emerald-700 focus:border-transparent text-sm outline-none transition-all"
                 placeholder="john@example.com"
               />
             </div>
@@ -97,7 +98,7 @@ export default function StudentMessagePage() {
               required
               value={formData.subject}
               onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-              className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm outline-none transition-all"
+              className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-emerald-700 focus:border-transparent text-sm outline-none transition-all"
               placeholder="What is this regarding?"
             />
           </div>
@@ -109,7 +110,7 @@ export default function StudentMessagePage() {
               rows={6}
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm outline-none transition-all resize-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-emerald-700 focus:border-transparent text-sm outline-none transition-all resize-none"
               placeholder="Type your message here..."
             />
           </div>
@@ -131,7 +132,7 @@ export default function StudentMessagePage() {
             <button
               type="submit"
               disabled={isSubmitting || !formData.subject || !formData.message}
-              className="flex items-center gap-2 px-6 py-2.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors text-sm font-medium disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2.5 bg-[#0f3b34] text-white rounded-lg hover:bg-[#092c27] transition-colors text-sm font-medium disabled:opacity-50"
             >
               {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               Send Message

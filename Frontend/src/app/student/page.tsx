@@ -1,57 +1,38 @@
 'use client';
 
-import { BookOpen, FolderArchive, Users, GraduationCap, Send, User, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { ArrowRight, BookOpen, FolderArchive, GraduationCap, Loader2, MessageSquare, Sparkles, UserRound, Users } from 'lucide-react';
+import { apiFetch } from '../../lib/client-api';
+
+type Counts = { articles: number; resources: number; collaborators: number; students: number };
 
 export default function StudentDashboardHome() {
-  const [userName, setUserName] = useState('Student');
-
+  const [counts, setCounts] = useState<Counts>({ articles: 0, resources: 0, collaborators: 0, students: 0 });
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
-    const storedName = localStorage.getItem('displayName');
-    if (storedName) setUserName(storedName);
+    Promise.all([apiFetch('/api/v1/articles/public'), apiFetch('/api/v1/repository/documents'), apiFetch('/api/v1/collaborators'), apiFetch('/api/v1/students')])
+      .then(async (responses) => Promise.all(responses.map(async (response) => response.ok ? response.json() : { data: [] })))
+      .then(([articles, resources, collaborators, students]) => setCounts({ articles: articles?.data?.length || 0, resources: resources?.data?.length || 0, collaborators: collaborators?.data?.length || 0, students: students?.data?.filter((student: { status?: string }) => String(student.status).toUpperCase() === 'ACTIVE').length || 0 }))
+      .finally(() => setLoading(false));
   }, []);
 
-  const portalLinks = [
-    { name: 'Research Articles', href: '/student/articles', icon: BookOpen, color: 'text-blue-500', bg: 'bg-blue-50', desc: 'Browse published research and academic papers.' },
-    { name: 'File Repository', href: '/student/repository', icon: FolderArchive, color: 'text-amber-500', bg: 'bg-amber-50', desc: 'Access shared datasets and documentation.' },
-    { name: 'Collaborators', href: '/student/collaborators', icon: Users, color: 'text-purple-500', bg: 'bg-purple-50', desc: 'View partner institutions and co-researchers.' },
-    { name: 'Fellow Students', href: '/student/students', icon: GraduationCap, color: 'text-emerald-500', bg: 'bg-emerald-50', desc: 'Connect with other students in the portal.' },
-    { name: 'Send Message', href: '/student/messages', icon: Send, color: 'text-sky-500', bg: 'bg-sky-50', desc: 'Contact administrators or moderators.' },
-    { name: 'My Profile', href: '/student/profile', icon: User, color: 'text-indigo-500', bg: 'bg-indigo-50', desc: 'Update your personal details and password.' },
+  const links = [
+    ['/student/articles', 'Published research', 'Read the portal’s active publication collection.', BookOpen],
+    ['/student/repository', 'Research repository', 'Open shared documents, datasets, and reference material.', FolderArchive],
+    ['/student/collaborators', 'Research network', 'Explore collaborators and partner organizations.', Users],
+    ['/student/students', 'Student directory', 'Discover peers across active academic batches.', GraduationCap],
+    ['/student/messages', 'Contact desk', 'Send a message to the academic portal team.', MessageSquare],
+    ['/student/profile', 'Profile & security', 'Maintain your account details and password.', UserRound],
   ];
 
   return (
-    <div className="max-w-6xl mx-auto pb-12">
-      <div className="mb-10">
-        <h1 className="text-3xl font-bold text-slate-900">Welcome back, {userName}!</h1>
-        <p className="text-slate-500 mt-2">Access research materials, collaborate, and manage your academic profile.</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {portalLinks.map((link, index) => (
-          <motion.div
-            key={link.name}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <Link href={link.href} className="block group h-full">
-              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-slate-300 transition-all h-full flex flex-col">
-                <div className={`h-12 w-12 rounded-lg ${link.bg} ${link.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <link.icon className="h-6 w-6" />
-                </div>
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">{link.name}</h3>
-                <p className="text-sm text-slate-500 flex-grow mb-4">{link.desc}</p>
-                <div className="flex items-center text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">
-                  Explore <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </Link>
-          </motion.div>
-        ))}
-      </div>
+    <div className="mx-auto max-w-7xl space-y-6 pb-12">
+      <section className="relative overflow-hidden rounded-[2rem] bg-[linear-gradient(130deg,#0b2823_0%,#0f3b34_62%,#174b3f_100%)] p-7 text-white shadow-sm md:p-9"><div className="absolute -right-14 -top-14 h-56 w-56 rounded-full border border-white/10" /><div className="relative max-w-3xl"><div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-50"><Sparkles className="h-3.5 w-3.5" /> Learning workspace</div><h1 className="font-serif text-3xl font-semibold md:text-4xl">Research Learning Hub</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-emerald-50/80">Move from reading to participation: discover published work, use shared resources, find peers, and stay connected to the research community.</p></div></section>
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{[
+        ['Published articles', counts.articles, BookOpen], ['Repository resources', counts.resources, FolderArchive], ['Collaborators', counts.collaborators, Users], ['Active students', counts.students, GraduationCap],
+      ].map(([label, value, Icon]) => { const StatIcon = Icon as typeof BookOpen; return <div key={String(label)} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><StatIcon className="h-5 w-5 text-[#0f3b34]" /><div className="mt-5 text-3xl font-semibold text-slate-900">{loading ? <Loader2 className="h-6 w-6 animate-spin" /> : String(value)}</div><div className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">{String(label)}</div></div>; })}</section>
+      <section><div className="mb-4"><div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9b7835]">Explore the portal</div><h2 className="mt-1 font-serif text-2xl font-semibold text-slate-900">Your academic toolkit</h2></div><div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{links.map(([href, title, description, Icon]) => { const LinkIcon = Icon as typeof BookOpen; return <Link key={String(href)} href={String(href)} className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"><div className="flex items-start justify-between"><div className="rounded-xl bg-emerald-50 p-2.5 text-[#0f3b34]"><LinkIcon className="h-5 w-5" /></div><ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-1 group-hover:text-[#0f3b34]" /></div><h3 className="mt-5 font-serif text-xl font-semibold text-slate-900">{String(title)}</h3><p className="mt-2 text-sm leading-6 text-slate-500">{String(description)}</p></Link>; })}</div></section>
     </div>
   );
 }
