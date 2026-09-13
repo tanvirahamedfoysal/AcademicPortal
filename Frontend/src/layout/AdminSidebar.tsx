@@ -39,10 +39,10 @@ export default function AdminSidebar() {
   }, []);
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col sticky top-0">
+    <aside className="w-64 bg-[linear-gradient(180deg,#fffaf7,#edf6ff)] border-r border-gray-200 h-screen flex flex-col sticky top-0">
       {/* Brand Header */}
       <div className="h-16 flex items-center px-6 border-b border-gray-200">
-        <span className="text-xl font-bold text-slate-800">Academic Portal</span>
+        <span className="text-xl font-bold text-slate-800">Dr. Tania Islam</span>
       </div>
 
       {/* Navigation */}
@@ -57,11 +57,11 @@ export default function AdminSidebar() {
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
                 isActive 
-                  ? 'bg-blue-50 text-blue-700 font-medium' 
+                  ? 'bg-[#f8dce7] text-[#8c4f69] font-medium' 
                   : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
               }`}
             >
-              <Icon size={20} className={isActive ? 'text-blue-700' : 'text-slate-400'} />
+              <Icon size={20} className={isActive ? 'text-[#8c4f69]' : 'text-slate-400'} />
               {item.label}
             </Link>
           );

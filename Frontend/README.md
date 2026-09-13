@@ -1,4 +1,4 @@
-# Researcher's Eden — Academic Research Portal Frontend
+# Dr. Tania Islam — Academic Research Portal Frontend
 
 Premium Next.js frontend for the existing FastAPI academic portal backend.
 
@@ -73,3 +73,9 @@ It uses only existing backend routes:
 Because the current backend does not expose a dedicated gallery table/endpoint and the backend must remain unchanged, the frontend stores a reserved structured metadata record inside `research_interests`. The UI filters that reserved record out everywhere research interests are displayed. This allows portfolio-photo/gallery data to persist using the current FastAPI contract without a backend migration.
 
 The admin **Profile Settings** page also supports uploading the account profile photo through `/images`. For the admin account, its About Me/description field is synchronized to `portfolio.public_bio`, which is the public field the landing page can read without exposing an authenticated token.
+
+## Pastel theme + mobile responsiveness update
+
+The current frontend uses Dr. Tania Islam as the site identity throughout and removes the previous Researcher's Eden branding. The visual system now centers off-white (`#fffaf7` / `#fffdfb`), baby pink (`#f8dce7`), light cyan (`#dff7f6`), and lightest blue (`#edf6ff`), with deeper rose/cyan accents only where extra contrast is required for controls.
+
+The personal portfolio stage is responsive down to small phone widths. Portfolio and achievement/gallery media use full-image containment on phones/tablets so uploaded photos are not cut off, while large desktop breakpoints retain the editorial crop. Navigation, dashboard sidebar, auth screens, public pages, cards, and dashboard headers share the same pastel system.

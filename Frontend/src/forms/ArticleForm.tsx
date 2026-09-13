@@ -60,7 +60,7 @@ export default function ArticleForm() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Enter a descriptive title for your research..."
-          className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+          className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d98bab] transition-colors"
           required
           disabled={createMutation.isPending}
         />
@@ -76,7 +76,7 @@ export default function ArticleForm() {
           onChange={(e) => setAbstract(e.target.value)}
           placeholder="Provide a brief summary of your research methodology and findings..."
           rows={3}
-          className="w-full px-4 py-3 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors resize-none"
+          className="w-full px-4 py-3 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d98bab] transition-colors resize-none"
           required
           disabled={createMutation.isPending}
         />
@@ -95,7 +95,7 @@ export default function ArticleForm() {
           onChange={(e) => setContent(e.target.value)}
           placeholder="Write or paste your full research paper content here..."
           rows={12}
-          className="w-full px-4 py-3 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+          className="w-full px-4 py-3 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d98bab] transition-colors"
           required
           disabled={createMutation.isPending}
         />
@@ -118,7 +118,7 @@ export default function ArticleForm() {
         <button
           type="submit"
           disabled={createMutation.isPending || !title || !abstract || !content}
-          className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors disabled:opacity-70 flex items-center gap-2"
+          className="px-6 py-2 bg-[#b96586] text-white font-medium rounded-md hover:bg-[#a65376] transition-colors disabled:opacity-70 flex items-center gap-2"
         >
           {createMutation.isPending ? (
             <>

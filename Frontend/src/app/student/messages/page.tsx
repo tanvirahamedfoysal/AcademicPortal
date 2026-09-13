@@ -54,7 +54,7 @@ export default function StudentMessagePage() {
     <div className="max-w-3xl mx-auto pb-12">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-          <Send className="h-6 w-6 text-emerald-700" />
+          <Send className="h-6 w-6 text-[#689aa6]" />
           Send a Message
         </h1>
         <p className="text-sm text-slate-500 mt-1">Contact portal administrators and moderators for support or inquiries.</p>
@@ -74,7 +74,7 @@ export default function StudentMessagePage() {
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-emerald-700 focus:border-transparent text-sm outline-none transition-all"
+                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-[#78bac5] focus:border-transparent text-sm outline-none transition-all"
                 placeholder="John Doe"
               />
             </div>
@@ -85,7 +85,7 @@ export default function StudentMessagePage() {
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-emerald-700 focus:border-transparent text-sm outline-none transition-all"
+                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-[#78bac5] focus:border-transparent text-sm outline-none transition-all"
                 placeholder="john@example.com"
               />
             </div>
@@ -98,7 +98,7 @@ export default function StudentMessagePage() {
               required
               value={formData.subject}
               onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-              className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-emerald-700 focus:border-transparent text-sm outline-none transition-all"
+              className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-[#78bac5] focus:border-transparent text-sm outline-none transition-all"
               placeholder="What is this regarding?"
             />
           </div>
@@ -110,7 +110,7 @@ export default function StudentMessagePage() {
               rows={6}
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-emerald-700 focus:border-transparent text-sm outline-none transition-all resize-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-[#78bac5] focus:border-transparent text-sm outline-none transition-all resize-none"
               placeholder="Type your message here..."
             />
           </div>
@@ -118,7 +118,7 @@ export default function StudentMessagePage() {
           <div className="flex items-center justify-between pt-4 border-t border-slate-100">
             <div>
               {submitStatus === 'success' && (
-                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm font-medium text-emerald-600 flex items-center gap-1.5">
+                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm font-medium text-[#6fa8b4] flex items-center gap-1.5">
                   <CheckCircle2 className="h-4 w-4" /> Message sent successfully!
                 </motion.p>
               )}
@@ -132,7 +132,7 @@ export default function StudentMessagePage() {
             <button
               type="submit"
               disabled={isSubmitting || !formData.subject || !formData.message}
-              className="flex items-center gap-2 px-6 py-2.5 bg-[#0f3b34] text-white rounded-lg hover:bg-[#092c27] transition-colors text-sm font-medium disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2.5 bg-[#5f91a0] text-white rounded-lg hover:bg-[#4f7d8a] transition-colors text-sm font-medium disabled:opacity-50"
             >
               {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               Send Message

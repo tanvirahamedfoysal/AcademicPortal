@@ -181,15 +181,15 @@ export default function ArticleWorkspace({ roleLabel = 'Researcher' }: { roleLab
   return (
     <div className="mx-auto max-w-7xl space-y-6 pb-12">
       <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-        <div className="grid gap-6 bg-[linear-gradient(130deg,#0b2823_0%,#0f3b34_62%,#174b3f_100%)] px-6 py-8 text-white md:grid-cols-[1fr_auto] md:items-end md:px-8">
+        <div className="grid gap-6 bg-[linear-gradient(130deg,#fffdfb_0%,#f8dce7_52%,#dff7f6_100%)] px-6 py-8 text-slate-900 md:grid-cols-[1fr_auto] md:items-end md:px-8">
           <div>
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-50">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-700">
               <BookOpen className="h-3.5 w-3.5" /> {roleLabel} publishing desk
             </div>
             <h1 className="font-serif text-3xl font-semibold tracking-tight md:text-4xl">Research Articles</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-emerald-50/80">Draft, refine, publish, and maintain long-form academic writing through the portal&apos;s existing article workflow.</p>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">Draft, refine, publish, and maintain long-form academic writing through the portal&apos;s existing article workflow.</p>
           </div>
-          <button onClick={openCreate} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#c7a35c] px-4 py-3 text-sm font-semibold text-[#102b26] shadow-sm transition hover:bg-[#d7bb80]">
+          <button onClick={openCreate} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#b96586] px-4 py-3 text-sm font-semibold text-[#60778d] shadow-sm transition hover:bg-[#e8b5c8]">
             <Plus className="h-4 w-4" /> New article
           </button>
         </div>
@@ -197,7 +197,7 @@ export default function ArticleWorkspace({ roleLabel = 'Researcher' }: { roleLab
         <div className="flex flex-col gap-3 border-b border-slate-200 bg-slate-50/70 p-4 sm:flex-row sm:items-center sm:justify-between md:px-6">
           <div className="relative w-full sm:max-w-md">
             <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search your article library" className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/10" />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search your article library" className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm outline-none focus:border-[#78bac5] focus:ring-2 focus:ring-[#78bac5]/15" />
           </div>
           <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">{articles.length} authored records</div>
         </div>
@@ -205,7 +205,7 @@ export default function ArticleWorkspace({ roleLabel = 'Researcher' }: { roleLab
         {feedback && <div className="border-b border-slate-200 bg-amber-50 px-6 py-3 text-sm text-amber-900">{feedback}</div>}
 
         {isLoading ? (
-          <div className="flex min-h-60 items-center justify-center"><Loader2 className="h-7 w-7 animate-spin text-[#0f3b34]" /></div>
+          <div className="flex min-h-60 items-center justify-center"><Loader2 className="h-7 w-7 animate-spin text-[#5f91a0]" /></div>
         ) : filtered.length === 0 ? (
           <div className="px-6 py-16 text-center"><FileText className="mx-auto h-9 w-9 text-slate-300" /><h2 className="mt-4 font-serif text-xl font-semibold text-slate-800">No articles found</h2><p className="mt-2 text-sm text-slate-500">Create a draft or adjust your search.</p></div>
         ) : (
@@ -220,14 +220,14 @@ export default function ArticleWorkspace({ roleLabel = 'Researcher' }: { roleLab
                     </div>
                     <h2 className="mt-1.5 truncate font-serif text-xl font-semibold text-slate-900">{article.article_title}</h2>
                     <div className="mt-2 flex items-center gap-2 text-xs">
-                      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-semibold ${published ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+                      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-semibold ${published ? 'bg-[#dff7f6] text-[#689aa6]' : 'bg-amber-50 text-amber-700'}`}>
                         {published ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}{article.article_status || 'DRAFT'}
                       </span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => toggleStatus(article)} disabled={workingId === article.article_uuid} className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-500 transition hover:text-[#0f3b34] disabled:opacity-50" title={published ? 'Move to draft' : 'Publish'}>{workingId === article.article_uuid ? <Loader2 className="h-4 w-4 animate-spin" /> : published ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
-                    <button onClick={() => openEdit(article.article_uuid)} disabled={workingId === article.article_uuid} className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-500 transition hover:text-[#0f3b34]" title="Edit article"><Edit3 className="h-4 w-4" /></button>
+                    <button onClick={() => toggleStatus(article)} disabled={workingId === article.article_uuid} className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-500 transition hover:text-[#5f91a0] disabled:opacity-50" title={published ? 'Move to draft' : 'Publish'}>{workingId === article.article_uuid ? <Loader2 className="h-4 w-4 animate-spin" /> : published ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
+                    <button onClick={() => openEdit(article.article_uuid)} disabled={workingId === article.article_uuid} className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-500 transition hover:text-[#5f91a0]" title="Edit article"><Edit3 className="h-4 w-4" /></button>
                     <button onClick={() => removeArticle(article)} disabled={workingId === article.article_uuid} className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600" title="Delete article"><Trash2 className="h-4 w-4" /></button>
                   </div>
                 </article>
@@ -241,15 +241,15 @@ export default function ArticleWorkspace({ roleLabel = 'Researcher' }: { roleLab
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm">
           <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-[1.75rem] border border-white/20 bg-white shadow-2xl">
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur">
-              <div><div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0f3b34]">Publishing desk</div><h2 className="font-serif text-2xl font-semibold text-slate-900">{editingId ? 'Edit article' : 'Create article'}</h2></div>
+              <div><div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5f91a0]">Publishing desk</div><h2 className="font-serif text-2xl font-semibold text-slate-900">{editingId ? 'Edit article' : 'Create article'}</h2></div>
               <button onClick={() => setModalOpen(false)} className="rounded-full border border-slate-200 p-2 text-slate-500 hover:bg-slate-50"><X className="h-4 w-4" /></button>
             </div>
             <form onSubmit={saveArticle} className="space-y-5 p-6">
-              <div><label className="mb-2 block text-sm font-semibold text-slate-700">Title</label><input required value={form.title} onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/10" placeholder="A clear, research-oriented title" /></div>
-              <div><label className="mb-2 block text-sm font-semibold text-slate-700">Article body</label><textarea required rows={14} value={form.body} onChange={(event) => setForm((current) => ({ ...current, body: event.target.value }))} className="w-full resize-y rounded-xl border border-slate-200 px-4 py-3 font-serif text-[15px] leading-7 outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/10" placeholder="Write the article body…" /></div>
+              <div><label className="mb-2 block text-sm font-semibold text-slate-700">Title</label><input required value={form.title} onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#78bac5] focus:ring-2 focus:ring-[#78bac5]/15" placeholder="A clear, research-oriented title" /></div>
+              <div><label className="mb-2 block text-sm font-semibold text-slate-700">Article body</label><textarea required rows={14} value={form.body} onChange={(event) => setForm((current) => ({ ...current, body: event.target.value }))} className="w-full resize-y rounded-xl border border-slate-200 px-4 py-3 font-serif text-[15px] leading-7 outline-none focus:border-[#78bac5] focus:ring-2 focus:ring-[#78bac5]/15" placeholder="Write the article body…" /></div>
               <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
-                <div><label className="mb-2 block text-sm font-semibold text-slate-700">Publication status</label><select value={form.status} onChange={(event) => setForm((current) => ({ ...current, status: event.target.value }))} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-700"><option value="DRAFT">Draft</option><option value="PUBLISHED">Published</option><option value="ARCHIVED">Archived</option></select></div>
-                <button type="submit" disabled={isSaving} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0f3b34] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0b2823] disabled:opacity-60">{isSaving && <Loader2 className="h-4 w-4 animate-spin" />}{editingId ? 'Save changes' : 'Create article'}</button>
+                <div><label className="mb-2 block text-sm font-semibold text-slate-700">Publication status</label><select value={form.status} onChange={(event) => setForm((current) => ({ ...current, status: event.target.value }))} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#78bac5]"><option value="DRAFT">Draft</option><option value="PUBLISHED">Published</option><option value="ARCHIVED">Archived</option></select></div>
+                <button type="submit" disabled={isSaving} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5f91a0] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#a65376] disabled:opacity-60">{isSaving && <Loader2 className="h-4 w-4 animate-spin" />}{editingId ? 'Save changes' : 'Create article'}</button>
               </div>
             </form>
           </div>

@@ -36,15 +36,15 @@ export default function LoginForm() {
 
       <label className="block text-sm font-semibold text-slate-700">
         Username or email
-        <input id="username" type="text" autoComplete="username" value={username} onChange={(e) => setUsername(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-emerald-800 focus:bg-white" placeholder="username or researcher@university.edu" required disabled={loginMutation.isPending} />
+        <input id="username" type="text" autoComplete="username" value={username} onChange={(e) => setUsername(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-[#a9d7df] focus:bg-white" placeholder="username or researcher@university.edu" required disabled={loginMutation.isPending} />
       </label>
 
       <label className="block text-sm font-semibold text-slate-700">
         Password
-        <input id="password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-emerald-800 focus:bg-white" placeholder="••••••••" required disabled={loginMutation.isPending} />
+        <input id="password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-[#a9d7df] focus:bg-white" placeholder="••••••••" required disabled={loginMutation.isPending} />
       </label>
 
-      <button type="submit" disabled={loginMutation.isPending || !username || !password} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#0f3b34] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#092c27] disabled:opacity-60">
+      <button type="submit" disabled={loginMutation.isPending || !username || !password} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#5f91a0] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#4f7d8a] disabled:opacity-60">
         {loginMutation.isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Signing in...</> : <>Sign in to portal <ArrowRight className="h-4 w-4" /></>}
       </button>
     </form>

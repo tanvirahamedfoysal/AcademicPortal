@@ -138,7 +138,7 @@ export default function AdminStudentsPage() {
             placeholder="Search name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-700 focus:border-transparent text-sm"
+            className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#78bac5] focus:border-transparent text-sm"
           />
         </div>
       </div>
@@ -147,13 +147,13 @@ export default function AdminStudentsPage() {
         <button
           onClick={() => setActiveTab('pending')}
           className={`flex-1 flex justify-center items-center gap-2 py-2 text-sm font-medium rounded-lg transition-colors ${
-            activeTab === 'pending' ? 'bg-white text-emerald-800 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            activeTab === 'pending' ? 'bg-white text-[#5f91a0] shadow-sm' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <Clock className="h-4 w-4" />
           Pending
           {pendingStudents.length > 0 && (
-            <span className="bg-emerald-50 text-emerald-700 py-0.5 px-2 rounded-full text-xs">
+            <span className="bg-[#dff7f6] text-[#689aa6] py-0.5 px-2 rounded-full text-xs">
               {pendingStudents.length}
             </span>
           )}
@@ -184,7 +184,7 @@ export default function AdminStudentsPage() {
               {isLoading ? (
                 <tr>
                   <td colSpan={4} className="px-6 py-12 text-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-[#0f3b34] mx-auto" />
+                    <Loader2 className="h-8 w-8 animate-spin text-[#5f91a0] mx-auto" />
                     <p className="text-slate-500 mt-2 text-sm">Loading students...</p>
                   </td>
                 </tr>
@@ -243,7 +243,7 @@ export default function AdminStudentsPage() {
                               <button
                                 onClick={() => handlePromoteToModerator(student.uuid, student.name)}
                                 disabled={actionLoading === student.uuid}
-                                className="p-2 text-slate-400 hover:text-[#0f3b34] hover:bg-emerald-50 rounded-lg transition-colors disabled:opacity-50"
+                                className="p-2 text-slate-400 hover:text-[#5f91a0] hover:bg-[#dff7f6] rounded-lg transition-colors disabled:opacity-50"
                                 title="Promote to Moderator"
                               >
                                 {actionLoading === student.uuid ? <Loader2 className="h-5 w-5 animate-spin" /> : <ArrowUpCircle className="h-5 w-5" />}

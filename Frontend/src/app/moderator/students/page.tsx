@@ -123,7 +123,7 @@ export default function ModeratorStudentsPage() {
       <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <GraduationCap className="h-6 w-6 text-emerald-600" />
+            <GraduationCap className="h-6 w-6 text-[#6fa8b4]" />
             Student Management
           </h1>
           <p className="text-sm text-slate-500 mt-1">Review registrations and manage existing student accounts.</p>
@@ -136,7 +136,7 @@ export default function ModeratorStudentsPage() {
             placeholder="Search by name, username, or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent text-sm outline-none"
+            className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#78bac5] focus:border-transparent text-sm outline-none"
           />
         </div>
       </div>
@@ -147,7 +147,7 @@ export default function ModeratorStudentsPage() {
           onClick={() => setActiveTab('active')}
           className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
             activeTab === 'active' 
-              ? 'border-emerald-600 text-emerald-600' 
+              ? 'border-[#78bac5] text-[#6fa8b4]' 
               : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
           }`}
         >
@@ -157,7 +157,7 @@ export default function ModeratorStudentsPage() {
           onClick={() => setActiveTab('pending')}
           className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
             activeTab === 'pending' 
-              ? 'border-emerald-600 text-emerald-600' 
+              ? 'border-[#78bac5] text-[#6fa8b4]' 
               : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
           }`}
         >
@@ -185,7 +185,7 @@ export default function ModeratorStudentsPage() {
               {isLoading ? (
                 <tr>
                   <td colSpan={3} className="px-6 py-12 text-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-emerald-600 mx-auto" />
+                    <Loader2 className="h-8 w-8 animate-spin text-[#6fa8b4] mx-auto" />
                   </td>
                 </tr>
               ) : filteredData.length === 0 ? (
@@ -205,7 +205,7 @@ export default function ModeratorStudentsPage() {
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-9 w-9 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">
+                          <div className="h-9 w-9 rounded-full bg-[#cdeff0] flex items-center justify-center text-[#689aa6] font-bold text-sm">
                             {(student.name || student.username || '?').charAt(0).toUpperCase()}
                           </div>
                           <div>
@@ -234,7 +234,7 @@ export default function ModeratorStudentsPage() {
                             <button
                               onClick={() => handleApprove(student.uuid, student.name)}
                               disabled={actionLoading === student.uuid}
-                              className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors disabled:opacity-50"
+                              className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-[#689aa6] bg-[#dff7f6] hover:bg-[#cdeff0] rounded-lg transition-colors disabled:opacity-50"
                             >
                               {actionLoading === student.uuid ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
                               Approve

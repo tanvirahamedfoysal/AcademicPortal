@@ -62,7 +62,7 @@ export default function ProfileForm() {
             type="text"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d98bab] transition-colors"
             placeholder="e.g. John"
           />
         </div>
@@ -76,7 +76,7 @@ export default function ProfileForm() {
             type="text"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d98bab] transition-colors"
             placeholder="e.g. Doe"
           />
         </div>
@@ -91,7 +91,7 @@ export default function ProfileForm() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d98bab] transition-colors"
           placeholder="your.email@example.com"
         />
       </div>
@@ -100,7 +100,7 @@ export default function ProfileForm() {
         <button
           type="submit"
           disabled={updateMutation.isPending}
-          className="bg-blue-600 text-white font-medium px-6 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-70 flex items-center gap-2"
+          className="bg-[#b96586] text-white font-medium px-6 py-2 rounded-md hover:bg-[#a65376] transition-colors disabled:opacity-70 flex items-center gap-2"
         >
           {updateMutation.isPending ? (
             <>

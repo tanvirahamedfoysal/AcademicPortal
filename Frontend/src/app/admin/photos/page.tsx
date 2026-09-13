@@ -27,7 +27,7 @@ import type { PortfolioData } from '../../../types/public';
 
 type Feedback = { type: 'success' | 'error' | 'info'; message: string } | null;
 
-const fieldClass = 'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/10';
+const fieldClass = 'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#78bac5] focus:ring-2 focus:ring-[#78bac5]/15';
 
 function parseLinks(value: string) {
   return value
@@ -237,28 +237,28 @@ export default function NecessaryPhotosPage() {
     }));
   };
 
-  if (loading) return <div className="flex min-h-[55vh] items-center justify-center"><Loader2 className="h-7 w-7 animate-spin text-[#0f3b34]" /></div>;
+  if (loading) return <div className="flex min-h-[55vh] items-center justify-center"><Loader2 className="h-7 w-7 animate-spin text-[#5f91a0]" /></div>;
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 pb-12">
-      <section className="overflow-hidden rounded-[2rem] bg-[linear-gradient(130deg,#0b2823_0%,#0f3b34_62%,#174b3f_100%)] p-7 text-white shadow-sm md:p-9">
+      <section className="overflow-hidden rounded-[2rem] bg-[linear-gradient(130deg,#fffdfb_0%,#f8dce7_52%,#dff7f6_100%)] p-7 text-slate-900 shadow-sm md:p-9">
         <div className="max-w-4xl">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-50"><Images className="h-3.5 w-3.5" /> Public portfolio media</div>
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-700"><Images className="h-3.5 w-3.5" /> Public portfolio media</div>
           <h1 className="font-serif text-3xl font-semibold md:text-4xl">Necessary Photos</h1>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-emerald-50/80">Manage the dedicated portfolio portrait and the achievement/photo-gallery slideshow. The account profile photo remains separate and is updated from Profile Settings.</p>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-500">Manage the dedicated portfolio portrait and the achievement/photo-gallery slideshow. The account profile photo remains separate and is updated from Profile Settings.</p>
         </div>
       </section>
 
-      {feedback && <div className={`rounded-2xl border px-5 py-3 text-sm ${feedback.type === 'error' ? 'border-rose-200 bg-rose-50 text-rose-800' : feedback.type === 'success' ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-amber-200 bg-amber-50 text-amber-900'}`}>{feedback.message}</div>}
+      {feedback && <div className={`rounded-2xl border px-5 py-3 text-sm ${feedback.type === 'error' ? 'border-rose-200 bg-rose-50 text-rose-800' : feedback.type === 'success' ? 'border-emerald-200 bg-[#dff7f6] text-[#5f91a0]' : 'border-amber-200 bg-amber-50 text-amber-900'}`}>{feedback.message}</div>}
 
       <section className="grid gap-6 lg:grid-cols-[.7fr_1.3fr]">
         <div className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm md:p-8">
-          <div className="flex items-center gap-3 border-b border-slate-100 pb-5"><div className="rounded-xl bg-emerald-50 p-2.5 text-[#0f3b34]"><Camera className="h-5 w-5" /></div><div><h2 className="font-serif text-xl font-semibold text-slate-900">Portfolio photo</h2><p className="text-sm text-slate-500">The rectangular photo used only on the public landing page.</p></div></div>
-          <div className="mt-6 aspect-[4/5] overflow-hidden rounded-2xl border border-slate-200 bg-[#eef3ef]">
-            {media.portfolioPhoto ? <img src={media.portfolioPhoto} alt="Current portfolio" className="h-full w-full object-cover" /> : <div className="flex h-full flex-col items-center justify-center px-8 text-center"><Camera className="h-9 w-9 text-slate-300" /><p className="mt-4 text-sm font-semibold text-slate-600">No portfolio photo yet</p><p className="mt-1 text-xs leading-5 text-slate-400">Upload a dedicated portrait or professional academic photograph.</p></div>}
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-5"><div className="rounded-xl bg-[#dff7f6] p-2.5 text-[#5f91a0]"><Camera className="h-5 w-5" /></div><div><h2 className="font-serif text-xl font-semibold text-slate-900">Portfolio photo</h2><p className="text-sm text-slate-500">The rectangular photo used only on the public landing page.</p></div></div>
+          <div className="mt-6 aspect-[4/5] overflow-hidden rounded-2xl border border-slate-200 bg-[#edf6ff]">
+            {media.portfolioPhoto ? <img src={media.portfolioPhoto} alt="Current portfolio" className="h-full w-full object-contain p-2" /> : <div className="flex h-full flex-col items-center justify-center px-8 text-center"><Camera className="h-9 w-9 text-slate-300" /><p className="mt-4 text-sm font-semibold text-slate-600">No portfolio photo yet</p><p className="mt-1 text-xs leading-5 text-slate-400">Upload a dedicated portrait or professional academic photograph.</p></div>}
           </div>
           <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-            <label className={`flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#0f3b34] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#0b2823] ${portfolioUploading ? 'pointer-events-none opacity-60' : ''}`}>
+            <label className={`flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#5f91a0] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#a65376] ${portfolioUploading ? 'pointer-events-none opacity-60' : ''}`}>
               {portfolioUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} {media.portfolioPhoto ? 'Replace photo' : 'Upload photo'}
               <input type="file" accept="image/*" className="hidden" onChange={handlePortfolioPhoto} disabled={portfolioUploading} />
             </label>
@@ -268,15 +268,15 @@ export default function NecessaryPhotosPage() {
 
         <form onSubmit={addGalleryPhoto} className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm md:p-8">
           <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-5">
-            <div className="flex items-center gap-3"><div className="rounded-xl bg-amber-50 p-2.5 text-[#9b7835]"><ImagePlus className="h-5 w-5" /></div><div><h2 className="font-serif text-xl font-semibold text-slate-900">Add slideshow photo</h2><p className="text-sm text-slate-500">Achievement, event, award, conference, teaching, or research moment.</p></div></div>
+            <div className="flex items-center gap-3"><div className="rounded-xl bg-amber-50 p-2.5 text-[#9f5f7a]"><ImagePlus className="h-5 w-5" /></div><div><h2 className="font-serif text-xl font-semibold text-slate-900">Add slideshow photo</h2><p className="text-sm text-slate-500">Achievement, event, award, conference, teaching, or research moment.</p></div></div>
             <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600">{media.gallery.length}/{PORTFOLIO_GALLERY_LIMIT}</span>
           </div>
           <div className="mt-6 grid gap-5 md:grid-cols-2">
-            <label className="md:col-span-2"><span className="mb-2 block text-sm font-semibold text-slate-700">Photo</span><input id="gallery-file" type="file" accept="image/*" onChange={(e) => setGalleryFile(e.target.files?.[0] || null)} className="block w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-[#e7efe9] file:px-4 file:py-2 file:text-xs file:font-semibold file:text-[#0f3b34]" /></label>
+            <label className="md:col-span-2"><span className="mb-2 block text-sm font-semibold text-slate-700">Photo</span><input id="gallery-file" type="file" accept="image/*" onChange={(e) => setGalleryFile(e.target.files?.[0] || null)} className="block w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-[#dff7f6] file:px-4 file:py-2 file:text-xs file:font-semibold file:text-[#5f91a0]" /></label>
             <label className="md:col-span-2"><span className="mb-2 block text-sm font-semibold text-slate-700">Photo description</span><textarea rows={5} value={newDescription} onChange={(e) => setNewDescription(e.target.value)} className={fieldClass} placeholder="Explain the achievement, event, milestone, place, or research context shown in this photo…" /></label>
             <label className="md:col-span-2"><span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700"><ExternalLink className="h-4 w-4" /> Related links <span className="font-normal text-slate-400">(optional)</span></span><textarea rows={3} value={newLinks} onChange={(e) => setNewLinks(e.target.value)} className={fieldClass} placeholder={'https://conference.org/event\nhttps://journal.org/paper'} /><span className="mt-1.5 block text-xs text-slate-400">Add one URL per line or separate them with commas.</span></label>
           </div>
-          <div className="mt-6 flex justify-end"><button type="submit" disabled={galleryUploading || media.gallery.length >= PORTFOLIO_GALLERY_LIMIT} className="inline-flex items-center gap-2 rounded-xl bg-[#0f3b34] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#0b2823] disabled:cursor-not-allowed disabled:opacity-50">{galleryUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />} Add to slideshow</button></div>
+          <div className="mt-6 flex justify-end"><button type="submit" disabled={galleryUploading || media.gallery.length >= PORTFOLIO_GALLERY_LIMIT} className="inline-flex items-center gap-2 rounded-xl bg-[#5f91a0] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#a65376] disabled:cursor-not-allowed disabled:opacity-50">{galleryUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />} Add to slideshow</button></div>
         </form>
       </section>
 
@@ -289,8 +289,8 @@ export default function NecessaryPhotosPage() {
         {media.gallery.length ? (
           <div className="mt-6 space-y-5">
             {media.gallery.map((item, index) => (
-              <article key={item.id} className="grid gap-5 rounded-2xl border border-slate-200 bg-[#fbfcfa] p-4 md:grid-cols-[190px_1fr_auto] md:p-5">
-                <div className="aspect-[4/3] overflow-hidden rounded-xl bg-slate-100"><img src={item.url} alt={item.description || `Gallery ${index + 1}`} className="h-full w-full object-cover" /></div>
+              <article key={item.id} className="grid gap-5 rounded-2xl border border-slate-200 bg-[#fffdfb] p-4 md:grid-cols-[190px_1fr_auto] md:p-5">
+                <div className="aspect-[4/3] overflow-hidden rounded-xl bg-slate-100"><img src={item.url} alt={item.description || `Gallery ${index + 1}`} className="h-full w-full object-contain p-2" /></div>
                 <div className="grid gap-4">
                   <label><span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">Description</span><textarea rows={3} value={item.description} onChange={(e) => updateGalleryItem(item.id, { description: e.target.value })} className={fieldClass} /></label>
                   <label><span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">Related links</span><textarea rows={2} value={item.links.join('\n')} onChange={(e) => updateGalleryItem(item.id, { links: parseLinks(e.target.value) })} className={fieldClass} placeholder="One URL per line" /></label>

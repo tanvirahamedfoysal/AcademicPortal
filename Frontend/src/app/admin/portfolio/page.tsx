@@ -133,21 +133,21 @@ export default function AdminPortfolioPage() {
     }
   };
 
-  if (loading) return <div className="flex min-h-[55vh] items-center justify-center"><Loader2 className="h-7 w-7 animate-spin text-[#0f3b34]" /></div>;
+  if (loading) return <div className="flex min-h-[55vh] items-center justify-center"><Loader2 className="h-7 w-7 animate-spin text-[#5f91a0]" /></div>;
 
-  const fieldClass = 'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/10';
+  const fieldClass = 'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#78bac5] focus:ring-2 focus:ring-[#78bac5]/15';
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 pb-12">
-      <section className="overflow-hidden rounded-[2rem] bg-[linear-gradient(130deg,#0b2823_0%,#0f3b34_62%,#174b3f_100%)] p-7 text-white shadow-sm md:p-9">
-        <div className="max-w-3xl"><div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-50"><UserRound className="h-3.5 w-3.5" /> Public researcher identity</div><h1 className="font-serif text-3xl font-semibold md:text-4xl">Portfolio Editor</h1><p className="mt-3 text-sm leading-6 text-emerald-50/80">Control Dr. Tania Islam&apos;s academic profile, about-me narrative, research direction, institutional information, and public researcher links.</p></div>
+      <section className="overflow-hidden rounded-[2rem] bg-[linear-gradient(130deg,#fffdfb_0%,#f8dce7_52%,#dff7f6_100%)] p-7 text-slate-900 shadow-sm md:p-9">
+        <div className="max-w-3xl"><div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-700"><UserRound className="h-3.5 w-3.5" /> Public researcher identity</div><h1 className="font-serif text-3xl font-semibold md:text-4xl">Portfolio Editor</h1><p className="mt-3 text-sm leading-6 text-slate-500">Control Dr. Tania Islam&apos;s academic profile, about-me narrative, research direction, institutional information, and public researcher links.</p></div>
       </section>
 
       {feedback && <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-3 text-sm text-amber-900">{feedback}</div>}
 
       <form onSubmit={save} className="space-y-6">
         <section className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm md:p-8">
-          <div className="flex items-center gap-3 border-b border-slate-100 pb-5"><div className="rounded-xl bg-emerald-50 p-2.5 text-[#0f3b34]"><UserRound className="h-5 w-5" /></div><div><h2 className="font-serif text-xl font-semibold text-slate-900">Public narrative</h2><p className="text-sm text-slate-500">This About Me text is shown prominently beside the portfolio photo on the public landing page.</p></div></div>
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-5"><div className="rounded-xl bg-[#dff7f6] p-2.5 text-[#5f91a0]"><UserRound className="h-5 w-5" /></div><div><h2 className="font-serif text-xl font-semibold text-slate-900">Public narrative</h2><p className="text-sm text-slate-500">This About Me text is shown prominently beside the portfolio photo on the public landing page.</p></div></div>
           <div className="mt-6 grid gap-5 md:grid-cols-2">
             <label className="md:col-span-2"><span className="mb-2 block text-sm font-semibold text-slate-700">About me / public bio</span><textarea rows={6} value={form.public_bio} onChange={(e) => update('public_bio', e.target.value)} className={fieldClass} placeholder="A concise first-person or third-person academic biography for the landing page…" /></label>
             <label><span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700"><Mail className="h-4 w-4" /> Contact email</span><input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} className={fieldClass} /></label>
@@ -156,7 +156,7 @@ export default function AdminPortfolioPage() {
         </section>
 
         <section className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm md:p-8">
-          <div className="flex items-center gap-3 border-b border-slate-100 pb-5"><div className="rounded-xl bg-amber-50 p-2.5 text-[#9b7835]"><BookOpen className="h-5 w-5" /></div><div><h2 className="font-serif text-xl font-semibold text-slate-900">Academic &amp; research profile</h2><p className="text-sm text-slate-500">Institutional background, research agenda, and areas of interest used across the public portfolio.</p></div></div>
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-5"><div className="rounded-xl bg-amber-50 p-2.5 text-[#9f5f7a]"><BookOpen className="h-5 w-5" /></div><div><h2 className="font-serif text-xl font-semibold text-slate-900">Academic &amp; research profile</h2><p className="text-sm text-slate-500">Institutional background, research agenda, and areas of interest used across the public portfolio.</p></div></div>
           <div className="mt-6 grid gap-5 md:grid-cols-2">
             <label><span className="mb-2 block text-sm font-semibold text-slate-700">Full name</span><input value={form.full_name} onChange={(e) => update('full_name', e.target.value)} className={fieldClass} placeholder="Dr. Tania Islam" /></label>
             <label><span className="mb-2 block text-sm font-semibold text-slate-700">Occupation</span><input value={form.occupation} onChange={(e) => update('occupation', e.target.value)} className={fieldClass} placeholder="Academic Researcher & Educator" /></label>
@@ -174,7 +174,7 @@ export default function AdminPortfolioPage() {
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{linkFields.map(([field, label]) => <label key={field}><span className="mb-2 block text-sm font-semibold text-slate-700">{label}</span><input type="url" value={form[field]} onChange={(e) => update(field, e.target.value)} className={fieldClass} placeholder="https://…" /></label>)}</div>
         </section>
 
-        <div className="sticky bottom-4 flex justify-end"><button type="submit" disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-[#0f3b34] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-950/10 transition hover:bg-[#0b2823] disabled:opacity-60">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save portfolio</button></div>
+        <div className="sticky bottom-4 flex justify-end"><button type="submit" disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-[#5f91a0] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-300/20 transition hover:bg-[#a65376] disabled:opacity-60">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save portfolio</button></div>
       </form>
     </div>
   );

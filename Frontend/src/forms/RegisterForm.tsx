@@ -209,7 +209,7 @@ export default function RegisterForm() {
                 onChange={(e) => setName(e.target.value)}
                 type="text"
                 required
-                className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-800 focus:border-transparent sm:text-sm transition-colors"
+                className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#78bac5] focus:border-transparent sm:text-sm transition-colors"
                 placeholder="Dr. Jane Doe"
               />
             </div>
@@ -230,7 +230,7 @@ export default function RegisterForm() {
                 type="text"
                 required
                 minLength={3}
-                className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-800 focus:border-transparent sm:text-sm transition-colors"
+                className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#78bac5] focus:border-transparent sm:text-sm transition-colors"
                 placeholder="johndoe123"
               />
             </div>
@@ -250,7 +250,7 @@ export default function RegisterForm() {
                 onChange={(e) => setEmail(e.target.value)}
                 type="email"
                 required
-                className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-800 focus:border-transparent sm:text-sm transition-colors"
+                className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#78bac5] focus:border-transparent sm:text-sm transition-colors"
                 placeholder="researcher@university.edu"
               />
             </div>
@@ -270,7 +270,7 @@ export default function RegisterForm() {
                 onChange={(e) => setStudentBatch(e.target.value)}
                 type="text"
                 required
-                className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-800 focus:border-transparent sm:text-sm transition-colors"
+                className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#78bac5] focus:border-transparent sm:text-sm transition-colors"
                 placeholder="e.g. 2024"
               />
             </div>
@@ -291,7 +291,7 @@ export default function RegisterForm() {
                 type="password"
                 required
                 minLength={8}
-                className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-800 focus:border-transparent sm:text-sm transition-colors"
+                className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#78bac5] focus:border-transparent sm:text-sm transition-colors"
                 placeholder="••••••••"
               />
             </div>
@@ -300,7 +300,7 @@ export default function RegisterForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-[#0f3b34] hover:bg-[#092c27] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-800 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-[#5f91a0] hover:bg-[#4f7d8a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#78bac5] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>
@@ -348,7 +348,7 @@ export default function RegisterForm() {
               onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
               disabled={countdown.secondsLeft <= 0}
               required
-              className="block w-full px-3 py-2 text-center tracking-widest text-lg border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-800 focus:border-transparent disabled:bg-slate-100 disabled:text-slate-400 transition-colors"
+              className="block w-full px-3 py-2 text-center tracking-widest text-lg border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#78bac5] focus:border-transparent disabled:bg-slate-100 disabled:text-slate-400 transition-colors"
               placeholder="000000"
             />
           </div>
@@ -357,7 +357,7 @@ export default function RegisterForm() {
             <button
               type="submit"
               disabled={isLoading || otp.length !== 6}
-              className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-[#0f3b34] hover:bg-[#092c27] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-800 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-[#5f91a0] hover:bg-[#4f7d8a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#78bac5] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>
@@ -373,7 +373,7 @@ export default function RegisterForm() {
               type="button"
               onClick={resendOtp}
               disabled={isLoading}
-              className="w-full flex justify-center py-2.5 px-4 border border-slate-300 rounded-xl shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-800 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full flex justify-center py-2.5 px-4 border border-slate-300 rounded-xl shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#78bac5] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <Loader2 className="animate-spin -ml-1 mr-2 h-5 w-5 text-slate-500" />

@@ -103,17 +103,17 @@ export default function RepositoryManager({
   return (
     <div className="mx-auto max-w-7xl space-y-6 pb-12">
       <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-        <div className="grid gap-6 bg-[linear-gradient(130deg,#0b2823_0%,#0f3b34_58%,#173f36_100%)] px-6 py-8 text-white md:grid-cols-[1fr_auto] md:items-end md:px-8">
+        <div className="grid gap-6 bg-[linear-gradient(130deg,#fffdfb_0%,#f8dce7_52%,#dff7f6_100%)] px-6 py-8 text-slate-900 md:grid-cols-[1fr_auto] md:items-end md:px-8">
           <div>
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-50">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-700">
               <FolderArchive className="h-3.5 w-3.5" /> Knowledge archive
             </div>
             <h1 className="font-serif text-3xl font-semibold tracking-tight md:text-4xl">{title}</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-emerald-50/80">{description}</p>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">{description}</p>
           </div>
           <div className="rounded-2xl border border-white/15 bg-white/10 px-5 py-4 backdrop-blur-sm">
             <div className="text-3xl font-semibold">{documents.length}</div>
-            <div className="text-xs uppercase tracking-[0.16em] text-emerald-50/65">Available resources</div>
+            <div className="text-xs uppercase tracking-[0.16em] text-slate-500">Available resources</div>
           </div>
         </div>
 
@@ -124,7 +124,7 @@ export default function RepositoryManager({
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search the repository"
-              className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-800 outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/10"
+              className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-800 outline-none transition focus:border-[#78bac5] focus:ring-2 focus:ring-[#78bac5]/15"
             />
           </div>
           {canManage && (
@@ -134,7 +134,7 @@ export default function RepositoryManager({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0f3b34] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0b2823] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5f91a0] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#a65376] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}
                 {isUploading ? 'Uploading…' : 'Upload resource'}
@@ -150,7 +150,7 @@ export default function RepositoryManager({
         <div className="divide-y divide-slate-100">
           {isLoading ? (
             <div className="flex min-h-56 items-center justify-center">
-              <Loader2 className="h-7 w-7 animate-spin text-[#0f3b34]" />
+              <Loader2 className="h-7 w-7 animate-spin text-[#5f91a0]" />
             </div>
           ) : filteredDocuments.length === 0 ? (
             <div className="px-6 py-16 text-center">
@@ -161,7 +161,7 @@ export default function RepositoryManager({
           ) : (
             filteredDocuments.map((document, index) => (
               <article key={`${document.id}-${document.url}`} className="grid gap-4 px-5 py-5 transition hover:bg-slate-50/70 md:grid-cols-[auto_1fr_auto] md:items-center md:px-6">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-[#0f3b34]">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#dff7f6] text-[#5f91a0]">
                   <FileText className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
@@ -174,14 +174,14 @@ export default function RepositoryManager({
                     href={document.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 transition hover:border-emerald-200 hover:text-[#0f3b34]"
+                    className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 transition hover:border-[#b8dce3] hover:text-[#5f91a0]"
                   >
                     <ExternalLink className="h-4 w-4" /> View
                   </a>
                   <a
                     href={document.url}
                     download
-                    className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-500 transition hover:text-[#0f3b34]"
+                    className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-500 transition hover:text-[#5f91a0]"
                     aria-label={`Download ${document.name}`}
                   >
                     <Download className="h-4 w-4" />

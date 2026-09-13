@@ -20,7 +20,7 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
         <section className="page-shell py-24 text-center">
           <h1 className="font-serif text-4xl font-bold">Publication not available</h1>
           <p className="mt-4 text-slate-500">The article may not be published, or the API is temporarily unavailable.</p>
-          <Link href="/articles" className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#0f3b34] px-5 py-3 text-sm font-bold text-white"><ArrowLeft className="h-4 w-4" /> Back to publications</Link>
+          <Link href="/articles" className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#5f91a0] px-5 py-3 text-sm font-bold text-white"><ArrowLeft className="h-4 w-4" /> Back to publications</Link>
         </section>
       </MainLayout>
     );
@@ -32,15 +32,15 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
   return (
     <MainLayout>
       <article>
-        <header className="border-b border-slate-200 bg-[#fbfcfa]">
+        <header className="border-b border-slate-200 bg-[#fffdfb]">
           <div className="page-shell max-w-5xl py-14 lg:py-20">
-            <Link href="/articles" className="inline-flex items-center gap-2 text-sm font-bold text-[#0f3b34]"><ArrowLeft className="h-4 w-4" /> Publications</Link>
+            <Link href="/articles" className="inline-flex items-center gap-2 text-sm font-bold text-[#5f91a0]"><ArrowLeft className="h-4 w-4" /> Publications</Link>
             <p className="eyebrow mt-12">Research article</p>
             <h1 className="mt-4 font-serif text-4xl font-bold leading-[1.08] tracking-[-0.04em] sm:text-5xl lg:text-6xl">{article.article_title}</h1>
             <div className="mt-7 flex flex-wrap items-center gap-5 text-sm text-slate-500">
-              <span className="inline-flex items-center gap-2"><CalendarDays className="h-4 w-4 text-emerald-700" /> {formatDate(article.published_at)}</span>
-              <span className="inline-flex items-center gap-2"><Clock3 className="h-4 w-4 text-emerald-700" /> {readMinutes} min read</span>
-              <span className="inline-flex items-center gap-2"><Share2 className="h-4 w-4 text-emerald-700" /> Public research record</span>
+              <span className="inline-flex items-center gap-2"><CalendarDays className="h-4 w-4 text-[#689aa6]" /> {formatDate(article.published_at)}</span>
+              <span className="inline-flex items-center gap-2"><Clock3 className="h-4 w-4 text-[#689aa6]" /> {readMinutes} min read</span>
+              <span className="inline-flex items-center gap-2"><Share2 className="h-4 w-4 text-[#689aa6]" /> Public research record</span>
             </div>
           </div>
         </header>
