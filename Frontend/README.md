@@ -76,6 +76,6 @@ The admin **Profile Settings** page also supports uploading the account profile 
 
 ## Pastel theme + mobile responsiveness update
 
-The current frontend uses Dr. Tania Islam as the site identity throughout and removes the previous Researcher's Eden branding. The visual system now centers off-white (`#fffaf7` / `#fffdfb`), baby pink (`#f8dce7`), light cyan (`#dff7f6`), and lightest blue (`#edf6ff`), with deeper rose/cyan accents only where extra contrast is required for controls.
+The current frontend uses Dr. Tania Islam as the site identity throughout. The visual system centers off-white (`#fffaf7` / `#fffdfb`), baby pink (`#f8dce7`), light cyan (`#dff7f6`), and lightest blue (`#edf6ff`), with deeper rose/cyan accents only where extra contrast is required for controls.
 
 The personal portfolio stage is responsive down to small phone widths. Portfolio and achievement/gallery media use full-image containment on phones/tablets so uploaded photos are not cut off, while large desktop breakpoints retain the editorial crop. Navigation, dashboard sidebar, auth screens, public pages, cards, and dashboard headers share the same pastel system.

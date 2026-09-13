@@ -9,6 +9,7 @@ import {
   Sparkles,
   UsersRound,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import MainLayout from '../components/MainLayout';
 import ResearcherPortfolioHero from '../components/public/ResearcherPortfolioHero';
 import {
@@ -53,15 +54,15 @@ export default async function HomePage() {
 
       <section className="border-y border-slate-200 bg-[#fffdfb]">
         <div className="page-shell grid gap-0 md:grid-cols-4">
-          {[
-            [researcherArticles.length, 'Published works', BookOpenText],
-            [documents.length, 'Research resources', FileArchive],
-            [collaborators.length, 'Collaborators', Network],
-            [students.length, 'Learning community', UsersRound],
-          ].map(([count, label, Icon], index) => (
-            <div key={String(label)} className={`flex items-center gap-4 py-7 md:px-7 ${index > 0 ? 'border-t border-slate-200 md:border-l md:border-t-0' : ''}`}>
+          {([
+            { count: researcherArticles.length, label: 'Published works', Icon: BookOpenText },
+            { count: documents.length, label: 'Research resources', Icon: FileArchive },
+            { count: collaborators.length, label: 'Collaborators', Icon: Network },
+            { count: students.length, label: 'Learning community', Icon: UsersRound },
+          ] satisfies Array<{ count: number; label: string; Icon: LucideIcon }>).map(({ count, label, Icon }, index) => (
+            <div key={label} className={`flex items-center gap-4 py-7 md:px-7 ${index > 0 ? 'border-t border-slate-200 md:border-l md:border-t-0' : ''}`}>
               <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#dff7f6] text-[#5f91a0]"><Icon className="h-5 w-5" /></span>
-              <div><p className="font-serif text-2xl font-bold text-slate-950">{count as number}</p><p className="mt-0.5 text-xs font-semibold text-slate-500">{label as string}</p></div>
+              <div><p className="font-serif text-2xl font-bold text-slate-950">{count}</p><p className="mt-0.5 text-xs font-semibold text-slate-500">{label}</p></div>
             </div>
           ))}
         </div>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ArrowLeft, BookOpenText, FlaskConical, LockKeyhole, ShieldCheck } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import LoginForm from '../../../forms/LoginForm';
 
 export const metadata = { title: 'Sign In', description: 'Sign in to the academic research portal.' };
@@ -18,7 +19,15 @@ export default function LoginPage() {
             <h1 className="mt-5 font-serif text-5xl font-bold leading-[1.05] tracking-[-0.04em]">Return to your research workspace.</h1>
             <p className="mt-6 text-base leading-8 text-slate-500">Manage publications, resources, collaborators, students, messages, and profile information from one focused academic environment.</p>
             <div className="mt-9 grid gap-3 sm:grid-cols-3">
-              {[['Publish', BookOpenText], ['Research', FlaskConical], ['Secure', LockKeyhole]].map(([label, Icon]) => <div key={String(label)} className="rounded-2xl border border-[#d6e5ec] bg-[#fffdfb]/70 p-4 text-sm font-semibold"><Icon className="mb-4 h-4 w-4 text-[#d98bab]" />{label as string}</div>)}
+              {([
+                { label: 'Publish', Icon: BookOpenText },
+                { label: 'Research', Icon: FlaskConical },
+                { label: 'Secure', Icon: LockKeyhole },
+              ] satisfies Array<{ label: string; Icon: LucideIcon }>).map(({ label, Icon }) => (
+                <div key={label} className="rounded-2xl border border-[#d6e5ec] bg-[#fffdfb]/70 p-4 text-sm font-semibold">
+                  <Icon className="mb-4 h-4 w-4 text-[#d98bab]" />{label}
+                </div>
+              ))}
             </div>
           </div>
           <p className="relative text-xs text-slate-500">Academic portfolio · learning portal · research operations</p>
