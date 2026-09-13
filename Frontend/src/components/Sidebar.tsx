@@ -8,6 +8,7 @@ import {
   FolderArchive,
   GraduationCap,
   Home,
+  Images,
   Inbox,
   LogOut,
   Settings,
@@ -26,6 +27,7 @@ interface SidebarProps {
 
 const navigationConfig = [
   { name: 'Portfolio', pathSegment: '/portfolio', icon: Briefcase, allowedRoles: ['admin'] },
+  { name: 'Necessary Photos', pathSegment: '/photos', icon: Images, allowedRoles: ['admin'] },
   { name: 'Overview', pathSegment: '', icon: Home, allowedRoles: ['moderator', 'student'] },
   { name: 'Articles', pathSegment: '/articles', icon: FileText, allowedRoles: ['admin', 'moderator', 'student'] },
   { name: 'Collaborators', pathSegment: '/collaborators', icon: Users, allowedRoles: ['admin', 'moderator', 'student'] },

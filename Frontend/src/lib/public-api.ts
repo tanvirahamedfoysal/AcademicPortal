@@ -16,7 +16,7 @@ const API_BASE = `${API_ORIGIN}${API_PREFIX}`;
 async function getPublicJson<T>(path: string): Promise<T | null> {
   try {
     const response = await fetch(`${API_BASE}${path}`, {
-      next: { revalidate: 60 },
+      cache: 'no-store',
       headers: { Accept: 'application/json' },
     });
 
