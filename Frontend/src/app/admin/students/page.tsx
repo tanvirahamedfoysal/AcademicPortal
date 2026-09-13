@@ -161,7 +161,7 @@ export default function AdminStudentsPage() {
         <button
           onClick={() => setActiveTab('active')}
           className={`flex-1 flex justify-center items-center gap-2 py-2 text-sm font-medium rounded-lg transition-colors ${
-            activeTab === 'active' ? 'bg-white text-green-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            activeTab === 'active' ? 'bg-white text-[#4f8294] shadow-sm' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <UserCheck className="h-4 w-4" />
@@ -202,7 +202,7 @@ export default function AdminStudentsPage() {
                       key={student.uuid}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      exit={{ opacity: 0, backgroundColor: '#fee2e2' }}
+                      exit={{ opacity: 0, backgroundColor: '#edf6ff' }}
                       className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors"
                     >
                       <td className="px-6 py-4">
@@ -224,7 +224,7 @@ export default function AdminStudentsPage() {
                               <button
                                 onClick={() => handleVerify(student.uuid)}
                                 disabled={actionLoading === student.uuid}
-                                className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50"
+                                className="p-2 text-[#5f91a0] hover:bg-[#dff7f6] rounded-lg transition-colors disabled:opacity-50"
                                 title="Approve Student"
                               >
                                 {actionLoading === student.uuid ? <Loader2 className="h-5 w-5 animate-spin" /> : <Check className="h-5 w-5" />}
@@ -232,7 +232,7 @@ export default function AdminStudentsPage() {
                               <button
                                 onClick={() => handleRejectPending(student.uuid)}
                                 disabled={actionLoading === student.uuid}
-                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                                className="p-2 text-[#527f8f] hover:bg-[#edf6ff] rounded-lg transition-colors disabled:opacity-50"
                                 title="Reject Student"
                               >
                                 {actionLoading === student.uuid ? <Loader2 className="h-5 w-5 animate-spin" /> : <X className="h-5 w-5" />}
@@ -251,7 +251,7 @@ export default function AdminStudentsPage() {
                               <button
                                 onClick={() => handleDeleteActive(student.uuid)}
                                 disabled={actionLoading === student.uuid}
-                                className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                                className="p-2 text-slate-400 hover:text-[#527f8f] hover:bg-[#edf6ff] rounded-lg transition-colors disabled:opacity-50"
                                 title="Delete Account"
                               >
                                 {actionLoading === student.uuid ? <Loader2 className="h-5 w-5 animate-spin" /> : <Trash2 className="h-5 w-5" />}

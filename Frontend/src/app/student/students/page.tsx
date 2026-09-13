@@ -27,7 +27,7 @@ export default function StudentDirectoryPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-6 pb-12">
       <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-        <div className="bg-[linear-gradient(130deg,#fffdfb_0%,#f8dce7_52%,#dff7f6_100%)] px-6 py-8 text-slate-900 md:px-8">
+        <div className="bg-[linear-gradient(130deg,#fffdfb_0%,#edf6ff_52%,#dff7f6_100%)] px-6 py-8 text-slate-900 md:px-8">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-700"><GraduationCap className="h-3.5 w-3.5" /> Academic community</div>
           <h1 className="font-serif text-3xl font-semibold md:text-4xl">Student Directory</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">Discover active students in the research community and identify potential peers for study, review, and collaboration.</p>

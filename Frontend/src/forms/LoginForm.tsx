@@ -28,7 +28,7 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {loginMutation.isError && (
-        <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        <div className="flex items-start gap-2 rounded-xl border border-[#cde3ea] bg-[#edf6ff] p-3 text-sm text-[#4f8294]">
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
           <p>{loginMutation.error instanceof Error ? loginMutation.error.message : 'Unable to sign in.'}</p>
         </div>

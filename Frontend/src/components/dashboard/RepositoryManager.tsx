@@ -103,7 +103,7 @@ export default function RepositoryManager({
   return (
     <div className="mx-auto max-w-7xl space-y-6 pb-12">
       <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-        <div className="grid gap-6 bg-[linear-gradient(130deg,#fffdfb_0%,#f8dce7_52%,#dff7f6_100%)] px-6 py-8 text-slate-900 md:grid-cols-[1fr_auto] md:items-end md:px-8">
+        <div className="grid gap-6 bg-[linear-gradient(130deg,#fffdfb_0%,#edf6ff_52%,#dff7f6_100%)] px-6 py-8 text-slate-900 md:grid-cols-[1fr_auto] md:items-end md:px-8">
           <div>
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-700">
               <FolderArchive className="h-3.5 w-3.5" /> Knowledge archive
@@ -134,7 +134,7 @@ export default function RepositoryManager({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5f91a0] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#a65376] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5f91a0] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#4f8294] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}
                 {isUploading ? 'Uploading…' : 'Upload resource'}
@@ -144,7 +144,7 @@ export default function RepositoryManager({
         </div>
 
         {feedback && (
-          <div className="border-b border-slate-200 bg-amber-50 px-6 py-3 text-sm text-amber-900">{feedback}</div>
+          <div className="border-b border-slate-200 bg-[#edf6ff] px-6 py-3 text-sm text-slate-700">{feedback}</div>
         )}
 
         <div className="divide-y divide-slate-100">
@@ -191,7 +191,7 @@ export default function RepositoryManager({
                       type="button"
                       onClick={() => handleDelete(document)}
                       disabled={deletingUrl === document.url}
-                      className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                      className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-500 transition hover:border-[#cde3ea] hover:bg-[#edf6ff] hover:text-[#527f8f] disabled:opacity-50"
                       aria-label={`Delete ${document.name}`}
                     >
                       {deletingUrl === document.url ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}

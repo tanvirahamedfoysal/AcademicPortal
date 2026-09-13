@@ -10,6 +10,24 @@ export type PortfolioGalleryItem = {
   links: string[];
 };
 
+export type PortfolioQuickInfoSource =
+  | 'full_name'
+  | 'occupation'
+  | 'designation'
+  | 'education'
+  | 'school'
+  | 'college'
+  | 'phone'
+  | 'email'
+  | 'research_interests';
+
+export type PortfolioQuickInfoItem = {
+  id: string;
+  label: string;
+  value: string;
+  source?: PortfolioQuickInfoSource | null;
+};
+
 export type PortfolioMedia = {
   portfolioPhoto: string;
   gallery: PortfolioGalleryItem[];
@@ -20,6 +38,9 @@ export type PortfolioMedia = {
     designation: string;
     education: string;
   };
+  // null means an older portfolio that has never configured quick info.
+  // [] means the owner intentionally removed every quick-info row.
+  quickInfo: PortfolioQuickInfoItem[] | null;
 };
 
 export const emptyPortfolioMedia: PortfolioMedia = {
@@ -27,7 +48,42 @@ export const emptyPortfolioMedia: PortfolioMedia = {
   gallery: [],
   ownerUuid: '',
   researcherInfo: { fullName: '', occupation: '', designation: '', education: '' },
+  quickInfo: null,
 };
+
+export const QUICK_INFO_SOURCE_LABELS: Record<PortfolioQuickInfoSource, string> = {
+  full_name: 'Name',
+  occupation: 'Occupation',
+  designation: 'Designation',
+  education: 'Education',
+  school: 'Department / School',
+  college: 'University / Institution',
+  phone: 'Phone',
+  email: 'Email',
+  research_interests: 'Research interests',
+};
+
+export const QUICK_INFO_SOURCES = Object.keys(QUICK_INFO_SOURCE_LABELS) as PortfolioQuickInfoSource[];
+
+export function createDefaultQuickInfo(): PortfolioQuickInfoItem[] {
+  const defaultSources: PortfolioQuickInfoSource[] = [
+    'occupation',
+    'designation',
+    'education',
+    'school',
+    'college',
+    'phone',
+    'email',
+    'research_interests',
+  ];
+
+  return defaultSources.map((source) => ({
+    id: `quick-${source}`,
+    label: QUICK_INFO_SOURCE_LABELS[source],
+    value: '',
+    source,
+  }));
+}
 
 function normalizeString(value: unknown): string {
   return typeof value === 'string' ? value.trim() : '';
@@ -41,7 +97,30 @@ function normalizeLinks(value: unknown): string[] {
     .slice(0, 8);
 }
 
-export function isPortfolioMediaEntry(value: unknown): value is string {
+function normalizeQuickInfo(value: unknown): PortfolioQuickInfoItem[] | null {
+  if (!Array.isArray(value)) return null;
+
+  return value
+    .map((item, index) => {
+      const candidate = item as Partial<PortfolioQuickInfoItem>;
+      const rawSource = normalizeString(candidate?.source);
+      const source = QUICK_INFO_SOURCES.includes(rawSource as PortfolioQuickInfoSource)
+        ? (rawSource as PortfolioQuickInfoSource)
+        : null;
+      const label = normalizeString(candidate?.label) || (source ? QUICK_INFO_SOURCE_LABELS[source] : '');
+
+      return {
+        id: normalizeString(candidate?.id) || `quick-${index}`,
+        label,
+        value: normalizeString(candidate?.value),
+        source,
+      } satisfies PortfolioQuickInfoItem;
+    })
+    .filter((item) => Boolean(item.label || item.value || item.source))
+    .slice(0, 30);
+}
+
+export function isPortfolioMediaEntry(value: unknown): boolean {
   return typeof value === 'string' && value.startsWith(PORTFOLIO_MEDIA_PREFIX);
 }
 
@@ -53,7 +132,7 @@ export function getVisibleResearchInterests(interests?: string[] | null): string
 
 export function parsePortfolioMedia(interests?: string[] | null): PortfolioMedia {
   const encoded = (Array.isArray(interests) ? interests : []).find(isPortfolioMediaEntry);
-  if (!encoded) return { ...emptyPortfolioMedia, gallery: [] };
+  if (!encoded) return { ...emptyPortfolioMedia, gallery: [], quickInfo: null };
 
   try {
     const parsed = JSON.parse(encoded.slice(PORTFOLIO_MEDIA_PREFIX.length)) as Partial<PortfolioMedia>;
@@ -83,14 +162,76 @@ export function parsePortfolioMedia(interests?: string[] | null): PortfolioMedia
         designation: normalizeString(parsed.researcherInfo?.designation),
         education: normalizeString(parsed.researcherInfo?.education),
       },
+      quickInfo: normalizeQuickInfo(parsed.quickInfo),
     };
   } catch {
-    return { ...emptyPortfolioMedia, gallery: [] };
+    return { ...emptyPortfolioMedia, gallery: [], quickInfo: null };
   }
+}
+
+export function getQuickInfoSourceValue(
+  source: PortfolioQuickInfoSource,
+  portfolio: PortfolioData | null | undefined,
+  media: PortfolioMedia,
+): string {
+  switch (source) {
+    case 'full_name':
+      return media.researcherInfo.fullName;
+    case 'occupation':
+      return media.researcherInfo.occupation;
+    case 'designation':
+      return media.researcherInfo.designation;
+    case 'education':
+      return media.researcherInfo.education;
+    case 'school':
+      return normalizeString(portfolio?.school);
+    case 'college':
+      return normalizeString(portfolio?.college);
+    case 'phone':
+      return normalizeString(portfolio?.phone);
+    case 'email':
+      return normalizeString(portfolio?.email);
+    case 'research_interests':
+      return getVisibleResearchInterests(portfolio?.research_interests).join(', ');
+    default:
+      return '';
+  }
+}
+
+export function resolvePortfolioQuickInfo(
+  portfolio: PortfolioData | null | undefined,
+  media: PortfolioMedia,
+): PortfolioQuickInfoItem[] {
+  const configured = media.quickInfo === null ? createDefaultQuickInfo() : media.quickInfo;
+
+  return configured
+    .map((item, index) => {
+      const value = item.source ? getQuickInfoSourceValue(item.source, portfolio, media) : normalizeString(item.value);
+      const label = normalizeString(item.label) || (item.source ? QUICK_INFO_SOURCE_LABELS[item.source] : '');
+      return {
+        id: normalizeString(item.id) || `quick-display-${index}`,
+        label,
+        value,
+        source: item.source || null,
+      } satisfies PortfolioQuickInfoItem;
+    })
+    .filter((item) => Boolean(item.label && item.value));
 }
 
 export function withPortfolioMedia(interests: string[] | null | undefined, media: PortfolioMedia): string[] {
   const visible = getVisibleResearchInterests(interests);
+  const normalizedQuickInfo = media.quickInfo === null
+    ? null
+    : media.quickInfo
+        .slice(0, 30)
+        .map((item, index) => ({
+          id: normalizeString(item.id) || `quick-${index}`,
+          label: normalizeString(item.label),
+          value: normalizeString(item.value),
+          source: item.source && QUICK_INFO_SOURCES.includes(item.source) ? item.source : null,
+        }))
+        .filter((item) => Boolean(item.label || item.value || item.source));
+
   const normalized: PortfolioMedia = {
     portfolioPhoto: normalizeString(media.portfolioPhoto),
     ownerUuid: normalizeString(media.ownerUuid),
@@ -100,6 +241,7 @@ export function withPortfolioMedia(interests: string[] | null | undefined, media
       designation: normalizeString(media.researcherInfo?.designation),
       education: normalizeString(media.researcherInfo?.education),
     },
+    quickInfo: normalizedQuickInfo,
     gallery: (Array.isArray(media.gallery) ? media.gallery : [])
       .filter((item) => Boolean(item?.url))
       .slice(0, PORTFOLIO_GALLERY_LIMIT)

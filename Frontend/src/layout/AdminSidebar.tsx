@@ -57,11 +57,11 @@ export default function AdminSidebar() {
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
                 isActive 
-                  ? 'bg-[#f8dce7] text-[#8c4f69] font-medium' 
+                  ? 'bg-[#edf6ff] text-[#4f8294] font-medium' 
                   : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
               }`}
             >
-              <Icon size={20} className={isActive ? 'text-[#8c4f69]' : 'text-slate-400'} />
+              <Icon size={20} className={isActive ? 'text-[#4f8294]' : 'text-slate-400'} />
               {item.label}
             </Link>
           );
@@ -91,7 +91,7 @@ export default function AdminSidebar() {
           
           <button 
             onClick={logout}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-md transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-[#527f8f] bg-[#edf6ff] hover:bg-[#dff7f6] rounded-md transition-colors"
           >
             <LogOut size={16} />
             Sign Out

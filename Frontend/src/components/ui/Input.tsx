@@ -31,8 +31,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               focus:outline-none focus:ring-2 
               disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500
               ${error 
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20 text-red-900 placeholder:text-red-300' 
-                : 'border-slate-300 focus:border-[#78bac5] focus:ring-[#d98bab]/20 placeholder:text-slate-400'
+                ? 'border-[#b8dce3] focus:border-[#78bac5] focus:ring-[#78bac5]/20 text-[#355f6d] placeholder:text-[#95b9c5]' 
+                : 'border-slate-300 focus:border-[#78bac5] focus:ring-[#78bac5]/20 placeholder:text-slate-400'
               }
               ${className}
             `}
@@ -40,13 +40,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           />
           {error && (
             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <AlertCircle className="h-4 w-4 text-red-500" />
+              <AlertCircle className="h-4 w-4 text-[#5f91a0]" />
             </div>
           )}
         </div>
 
         {error ? (
-          <p className="text-xs text-red-500 font-medium">{error}</p>
+          <p className="text-xs text-[#5f91a0] font-medium">{error}</p>
         ) : helperText ? (
           <p className="text-xs text-slate-500">{helperText}</p>
         ) : null}

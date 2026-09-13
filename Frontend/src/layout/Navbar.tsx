@@ -36,7 +36,7 @@ export default function Navbar() {
           
           {}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="bg-[#b96586] text-white p-1.5 rounded-lg group-hover:bg-[#a65376] transition-colors">
+            <div className="bg-[#5f91a0] text-white p-1.5 rounded-lg group-hover:bg-[#4f8294] transition-colors">
               <BookOpen size={22} />
             </div>
             <span className="font-bold text-xl tracking-tight text-slate-900">
@@ -54,7 +54,7 @@ export default function Navbar() {
                   href={link.href}
                   className={`text-sm font-medium transition-colors ${
                     isActive 
-                      ? 'text-[#9f5f7a]' 
+                      ? 'text-[#527f8f]' 
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
@@ -79,7 +79,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/auth/login"
-                className="text-sm font-medium text-white bg-[#b96586] hover:bg-[#a65376] px-5 py-2 rounded-md transition-colors shadow-sm"
+                className="text-sm font-medium text-white bg-[#5f91a0] hover:bg-[#4f8294] px-5 py-2 rounded-md transition-colors shadow-sm"
               >
                 Sign In
               </Link>
@@ -109,7 +109,7 @@ export default function Navbar() {
                   href={link.href}
                   className={`block px-3 py-2 rounded-md text-base font-medium ${
                     isActive
-                      ? 'bg-[#f8dce7] text-[#8c4f69]'
+                      ? 'bg-[#edf6ff] text-[#4f8294]'
                       : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
                   }`}
                 >
@@ -130,7 +130,7 @@ export default function Navbar() {
               ) : (
                 <Link
                   href="/auth/login"
-                  className="block w-full text-center text-base font-medium text-white bg-[#b96586] hover:bg-[#a65376] px-4 py-3 rounded-md transition-colors"
+                  className="block w-full text-center text-base font-medium text-white bg-[#5f91a0] hover:bg-[#4f8294] px-4 py-3 rounded-md transition-colors"
                 >
                   Sign In
                 </Link>

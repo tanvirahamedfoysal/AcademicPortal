@@ -123,7 +123,7 @@ export default function StudentMessagePage() {
                 </motion.p>
               )}
               {submitStatus === 'error' && (
-                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm font-medium text-red-600">
+                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm font-medium text-[#527f8f]">
                   Failed to send message. Please try again.
                 </motion.p>
               )}

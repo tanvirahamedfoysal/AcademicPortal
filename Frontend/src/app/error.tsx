@@ -22,9 +22,9 @@ export default function GlobalError({
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center p-4 bg-slate-50">
-      <Card className="max-w-md w-full border-red-100 shadow-md">
+      <Card className="max-w-md w-full border-[#dce7ee] shadow-md">
         <CardHeader className="text-center pt-8 pb-4">
-          <div className="mx-auto bg-red-100 text-red-600 w-16 h-16 flex items-center justify-center rounded-full mb-4">
+          <div className="mx-auto bg-[#dff7f6] text-[#527f8f] w-16 h-16 flex items-center justify-center rounded-full mb-4">
             <AlertOctagon size={32} />
           </div>
           <CardTitle className="text-xl text-slate-900">
@@ -38,7 +38,7 @@ export default function GlobalError({
           </p>
           {}
           {process.env.NODE_ENV === 'development' && (
-            <div className="bg-slate-100 p-3 rounded-md text-left overflow-x-auto text-xs font-mono text-red-800 border border-red-200">
+            <div className="bg-slate-100 p-3 rounded-md text-left overflow-x-auto text-xs font-mono text-[#3f7081] border border-[#cde3ea]">
               {error.message || 'Unknown error occurred'}
             </div>
           )}

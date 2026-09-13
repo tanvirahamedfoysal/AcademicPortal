@@ -14,15 +14,15 @@ export default async function RepositoriesPage() {
 
   return (
     <MainLayout>
-      <section className="border-b border-[#d8e7ee] bg-[linear-gradient(135deg,#edf6ff_0%,#dff7f6_52%,#f8dce7_100%)] text-slate-900">
+      <section className="border-b border-[#d8e7ee] bg-[linear-gradient(135deg,#edf6ff_0%,#dff7f6_52%,#edf6ff_100%)] text-slate-900">
         <div className="page-shell grid gap-10 py-16 lg:grid-cols-[1fr_.45fr] lg:items-end lg:py-20">
           <div className="max-w-4xl">
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#d98bab]">Open knowledge</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#78bac5]">Open knowledge</p>
             <h1 className="mt-4 font-serif text-5xl font-bold tracking-[-0.045em] sm:text-6xl">Research resources & repository</h1>
             <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-500">A shared archive of documents and academic material supporting research, teaching, and independent learning.</p>
           </div>
           <div className="rounded-2xl border border-[#d4e5ed] bg-[#fffdfb]/78 p-5 shadow-sm">
-            <div className="flex items-center gap-3"><ShieldCheck className="h-5 w-5 text-[#d98bab]" /><p className="text-sm font-semibold">Backend-managed document library</p></div>
+            <div className="flex items-center gap-3"><ShieldCheck className="h-5 w-5 text-[#78bac5]" /><p className="text-sm font-semibold">Backend-managed document library</p></div>
             <p className="mt-2 text-xs leading-6 text-slate-500">Files shown here come directly from the existing repository API.</p>
           </div>
         </div>

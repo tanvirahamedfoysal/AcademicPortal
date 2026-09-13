@@ -29,7 +29,7 @@ export default async function ContributorsPage() {
                   ) : (
                     <span className="grid h-14 w-14 place-items-center rounded-2xl bg-[#5b8796] font-serif text-lg font-bold text-white">{student.name.slice(0, 2).toUpperCase()}</span>
                   )}
-                  <GraduationCap className="h-5 w-5 text-[#b96586]" />
+                  <GraduationCap className="h-5 w-5 text-[#5f91a0]" />
                 </div>
                 <h2 className="mt-6 font-serif text-xl font-bold tracking-[-0.02em]">{student.name}</h2>
                 <p className="mt-1 text-sm text-slate-500">@{student.username}</p>

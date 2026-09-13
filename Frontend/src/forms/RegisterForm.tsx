@@ -188,7 +188,7 @@ export default function RegisterForm() {
   return (
     <div className="w-full">
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl">
+        <div className="mb-4 p-3 bg-[#edf6ff] border border-[#cde3ea] text-[#527f8f] text-sm rounded-xl">
           {error}
         </div>
       )}
@@ -315,7 +315,7 @@ export default function RegisterForm() {
       ) : (
         <form onSubmit={handleRegister} className="space-y-5">
           {successMsg && countdown.secondsLeft > 0 && (
-            <div className="p-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl flex items-start gap-2">
+            <div className="p-3 bg-[#dff7f6] border border-[#cde3ea] text-[#4f8294] text-sm rounded-xl flex items-start gap-2">
               <CheckCircle2 className="h-5 w-5 shrink-0 mt-0.5" />
               <p>{successMsg}</p>
             </div>

@@ -31,7 +31,7 @@ export default function ArticleForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl">
       {createMutation.isSuccess && (
-        <div className="p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg flex items-center gap-3">
+        <div className="p-4 bg-[#dff7f6] border border-[#cde3ea] text-[#4f8294] rounded-lg flex items-center gap-3">
           <CheckCircle size={20} className="shrink-0" />
           <div>
             <h4 className="font-medium">Publication Successful</h4>
@@ -41,7 +41,7 @@ export default function ArticleForm() {
       )}
 
       {createMutation.isError && (
-        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-start gap-3">
+        <div className="p-4 bg-[#edf6ff] border border-[#cde3ea] text-[#4f8294] rounded-lg flex items-start gap-3">
           <AlertCircle size={20} className="mt-0.5 shrink-0" />
           <div>
             <h4 className="font-medium">Failed to publish article</h4>
@@ -60,7 +60,7 @@ export default function ArticleForm() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Enter a descriptive title for your research..."
-          className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d98bab] transition-colors"
+          className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#78bac5] transition-colors"
           required
           disabled={createMutation.isPending}
         />
@@ -76,7 +76,7 @@ export default function ArticleForm() {
           onChange={(e) => setAbstract(e.target.value)}
           placeholder="Provide a brief summary of your research methodology and findings..."
           rows={3}
-          className="w-full px-4 py-3 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d98bab] transition-colors resize-none"
+          className="w-full px-4 py-3 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#78bac5] transition-colors resize-none"
           required
           disabled={createMutation.isPending}
         />
@@ -95,7 +95,7 @@ export default function ArticleForm() {
           onChange={(e) => setContent(e.target.value)}
           placeholder="Write or paste your full research paper content here..."
           rows={12}
-          className="w-full px-4 py-3 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d98bab] transition-colors"
+          className="w-full px-4 py-3 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#78bac5] transition-colors"
           required
           disabled={createMutation.isPending}
         />
@@ -118,7 +118,7 @@ export default function ArticleForm() {
         <button
           type="submit"
           disabled={createMutation.isPending || !title || !abstract || !content}
-          className="px-6 py-2 bg-[#b96586] text-white font-medium rounded-md hover:bg-[#a65376] transition-colors disabled:opacity-70 flex items-center gap-2"
+          className="px-6 py-2 bg-[#5f91a0] text-white font-medium rounded-md hover:bg-[#4f8294] transition-colors disabled:opacity-70 flex items-center gap-2"
         >
           {createMutation.isPending ? (
             <>

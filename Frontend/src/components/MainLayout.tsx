@@ -72,10 +72,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <div className="border-b border-[#cde8ec] bg-[#dff7f6] text-slate-700">
         <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-4 px-4 py-2 text-xs sm:px-8 lg:px-12">
           <p className="flex min-w-0 items-center gap-2 text-slate-600">
-            <FlaskConical className="h-3.5 w-3.5 shrink-0 text-[#b96586]" />
+            <FlaskConical className="h-3.5 w-3.5 shrink-0 text-[#5f91a0]" />
             <span className="truncate sm:whitespace-normal">Research portfolio · publications · open learning resources</span>
           </p>
-          <Link href="/contact" className="hidden items-center gap-1 font-semibold text-[#9f5f7a] hover:text-[#78445d] sm:flex">
+          <Link href="/contact" className="hidden items-center gap-1 font-semibold text-[#527f8f] hover:text-[#3f7081] sm:flex">
             Open to research collaboration <ArrowUpRight className="h-3.5 w-3.5" />
           </Link>
         </div>
@@ -84,7 +84,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <header className="sticky top-0 z-50 border-b border-[#dce7ee] bg-[#fffdfb]/94 backdrop-blur-xl">
         <div className="mx-auto flex h-[76px] max-w-[1480px] items-center justify-between gap-4 px-4 sm:px-8 lg:px-12">
           <Link href="/" className="group flex min-w-0 items-center gap-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#f8dce7] text-[#9f5f7a] shadow-[0_8px_24px_rgba(185,101,134,.14)]">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#edf6ff] text-[#527f8f] shadow-[0_8px_24px_rgba(95,145,160,.14)]">
               <ShieldCheck className="h-5 w-5" />
             </span>
             <span className="min-w-0">
@@ -101,7 +101,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                   key={href}
                   href={href}
                   className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                    active ? 'bg-[#edf6ff] text-[#4f7e8c]' : 'text-slate-600 hover:bg-[#f8dce7]/55 hover:text-slate-900'
+                    active ? 'bg-[#edf6ff] text-[#4f7e8c]' : 'text-slate-600 hover:bg-[#edf6ff]/55 hover:text-slate-900'
                   }`}
                 >
                   {label}
@@ -116,16 +116,16 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 <Link href={dashboardHref} className="rounded-full border border-[#dce7ee] bg-[#fffaf7] px-4 py-2 text-sm font-semibold text-slate-700 hover:border-[#b8dce3] hover:text-[#4f7e8c]">
                   Dashboard
                 </Link>
-                <button onClick={signOut} className="grid h-10 w-10 place-items-center rounded-full bg-[#b96586] text-white transition hover:bg-[#a65376]" aria-label="Sign out">
+                <button onClick={signOut} className="grid h-10 w-10 place-items-center rounded-full bg-[#5f91a0] text-white transition hover:bg-[#4f8294]" aria-label="Sign out">
                   <LogOut className="h-4 w-4" />
                 </button>
               </>
             ) : (
               <>
-                <Link href="/auth/login" className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-slate-700 hover:text-[#9f5f7a]">
+                <Link href="/auth/login" className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-slate-700 hover:text-[#527f8f]">
                   <LogIn className="h-4 w-4" /> Sign in
                 </Link>
-                <Link href="/auth/register" className="rounded-full bg-[#b96586] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#a65376]">
+                <Link href="/auth/register" className="rounded-full bg-[#5f91a0] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#4f8294]">
                   Join the portal
                 </Link>
               </>
@@ -148,13 +148,13 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
               <div className="mt-2 flex flex-col gap-2 border-t border-[#dce7ee] pt-4 min-[420px]:flex-row sm:col-span-2">
                 {user ? (
                   <>
-                    <Link href={dashboardHref} className="flex-1 rounded-xl bg-[#b96586] px-4 py-3 text-center text-sm font-semibold text-white">Dashboard</Link>
+                    <Link href={dashboardHref} className="flex-1 rounded-xl bg-[#5f91a0] px-4 py-3 text-center text-sm font-semibold text-white">Dashboard</Link>
                     <button onClick={signOut} className="rounded-xl border border-[#dce7ee] bg-[#fffaf7] px-4 py-3 text-sm font-semibold text-slate-700">Sign out</button>
                   </>
                 ) : (
                   <>
                     <Link href="/auth/login" className="flex-1 rounded-xl border border-[#dce7ee] bg-[#fffaf7] px-4 py-3 text-center text-sm font-semibold text-slate-700">Sign in</Link>
-                    <Link href="/auth/register" className="flex-1 rounded-xl bg-[#b96586] px-4 py-3 text-center text-sm font-semibold text-white">Join portal</Link>
+                    <Link href="/auth/register" className="flex-1 rounded-xl bg-[#5f91a0] px-4 py-3 text-center text-sm font-semibold text-white">Join portal</Link>
                   </>
                 )}
               </div>
@@ -165,7 +165,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
       <main className="min-w-0">{children}</main>
 
-      <footer className="border-t border-[#cfe6ee] bg-[linear-gradient(135deg,#fffaf7_0%,#edf6ff_50%,#f8dce7_100%)] text-slate-700">
+      <footer className="border-t border-[#cfe6ee] bg-[linear-gradient(135deg,#fffaf7_0%,#edf6ff_50%,#edf6ff_100%)] text-slate-700">
         <div className="mx-auto grid max-w-[1480px] gap-10 px-4 py-12 sm:px-8 lg:grid-cols-[1.4fr_1fr_1fr] lg:px-12">
           <div>
             <div className="mb-4 flex items-center gap-3">
@@ -178,7 +178,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             <p className="max-w-xl text-sm leading-6 text-slate-600">A focused academic environment for communicating research, publishing scholarly writing, sharing resources, and building a learning community around evidence and collaboration.</p>
           </div>
           <div>
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-[#9f5f7a]">Explore</p>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-[#527f8f]">Explore</p>
             <div className="grid gap-2 text-sm text-slate-600">
               <Link href="/articles" className="hover:text-slate-900">Publications</Link>
               <Link href="/repositories" className="hover:text-slate-900">Research resources</Link>
@@ -186,7 +186,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             </div>
           </div>
           <div>
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-[#9f5f7a]">Portal</p>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-[#527f8f]">Portal</p>
             <div className="grid gap-2 text-sm text-slate-600">
               <Link href="/contributors" className="hover:text-slate-900">Learning community</Link>
               <Link href="/contact" className="hover:text-slate-900">Contact</Link>

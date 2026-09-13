@@ -39,7 +39,7 @@ export default function ModeratorDashboard() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 pb-12">
-      <section className="overflow-hidden rounded-[2rem] bg-[linear-gradient(130deg,#fffdfb_0%,#f8dce7_52%,#dff7f6_100%)] p-7 text-slate-900 shadow-sm md:p-9">
+      <section className="overflow-hidden rounded-[2rem] bg-[linear-gradient(130deg,#fffdfb_0%,#edf6ff_52%,#dff7f6_100%)] p-7 text-slate-900 shadow-sm md:p-9">
         <div className="max-w-3xl"><div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-700"><Shield className="h-3.5 w-3.5" /> Moderator workspace</div><h1 className="font-serif text-3xl font-semibold md:text-4xl">Academic Operations Overview</h1><p className="mt-3 text-sm leading-6 text-slate-500">Review the live state of the research community, maintain shared knowledge, and keep contribution workflows moving.</p></div>
       </section>
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">{stats.map((stat) => <div key={stat.label} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><stat.icon className="h-5 w-5 text-[#5f91a0]" /><div className="mt-5 text-3xl font-semibold text-slate-900">{loading ? <Loader2 className="h-6 w-6 animate-spin" /> : stat.value}</div><div className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">{stat.label}</div></div>)}</section>

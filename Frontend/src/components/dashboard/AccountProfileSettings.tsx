@@ -182,7 +182,7 @@ export default function AccountProfileSettings() {
   return (
     <div className="mx-auto max-w-6xl space-y-6 pb-12">
       <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-        <div className="grid gap-6 bg-[linear-gradient(130deg,#fffdfb_0%,#f8dce7_52%,#dff7f6_100%)] px-6 py-8 text-slate-900 md:grid-cols-[auto_1fr_auto] md:items-center md:px-8">
+        <div className="grid gap-6 bg-[linear-gradient(130deg,#fffdfb_0%,#edf6ff_52%,#dff7f6_100%)] px-6 py-8 text-slate-900 md:grid-cols-[auto_1fr_auto] md:items-center md:px-8">
           <div className="h-20 w-20 overflow-hidden rounded-2xl border border-white/20 bg-white/10">
             {profile?.profile_image ? <img src={profile.profile_image} alt="Profile" className="h-full w-full object-cover" /> : <div className="flex h-full w-full items-center justify-center"><UserRound className="h-8 w-8" /></div>}
           </div>
@@ -198,7 +198,7 @@ export default function AccountProfileSettings() {
         </div>
       </section>
 
-      {feedback && <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-3 text-sm text-amber-900">{feedback}</div>}
+      {feedback && <div className="rounded-2xl border border-[#cde3ea] bg-[#edf6ff] px-5 py-3 text-sm text-slate-700">{feedback}</div>}
 
       <div className="grid gap-6 xl:grid-cols-[1.35fr_.65fr]">
         <form onSubmit={saveProfile} className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm md:p-8">
@@ -219,7 +219,7 @@ export default function AccountProfileSettings() {
 
             {profile?.user_role !== 'ADMIN' && <label className="block"><span className="mb-2 block text-sm font-semibold text-slate-700">Student batch</span><input inputMode="numeric" value={form.student_batch} onChange={(e) => setForm({ ...form, student_batch: e.target.value.replace(/\D/g, '') })} placeholder="e.g. 2024" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#78bac5] focus:ring-2 focus:ring-[#78bac5]/15" /></label>}
           </div>
-          <div className="mt-6 flex justify-end"><button type="submit" disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-[#5f91a0] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#a65376] disabled:opacity-60">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save profile</button></div>
+          <div className="mt-6 flex justify-end"><button type="submit" disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-[#5f91a0] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#4f8294] disabled:opacity-60">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save profile</button></div>
         </form>
 
         <div className="space-y-6">
@@ -233,7 +233,7 @@ export default function AccountProfileSettings() {
           </section>
 
           <form onSubmit={savePassword} className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-3"><div className="rounded-xl bg-amber-50 p-2.5 text-amber-700"><KeyRound className="h-5 w-5" /></div><div><h2 className="font-serif text-xl font-semibold text-slate-900">Security</h2><p className="text-sm text-slate-500">Set a new account password.</p></div></div>
+            <div className="flex items-center gap-3"><div className="rounded-xl bg-[#edf6ff] p-2.5 text-[#527f8f]"><KeyRound className="h-5 w-5" /></div><div><h2 className="font-serif text-xl font-semibold text-slate-900">Security</h2><p className="text-sm text-slate-500">Set a new account password.</p></div></div>
             <div className="mt-5 space-y-4"><input type="password" minLength={8} required value={password.next} onChange={(e) => setPassword({ ...password, next: e.target.value })} placeholder="New password" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#78bac5]" /><input type="password" minLength={8} required value={password.confirm} onChange={(e) => setPassword({ ...password, confirm: e.target.value })} placeholder="Confirm new password" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#78bac5]" /></div>
             <button type="submit" disabled={saving} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:opacity-60"><KeyRound className="h-4 w-4" /> Update password</button>
           </form>

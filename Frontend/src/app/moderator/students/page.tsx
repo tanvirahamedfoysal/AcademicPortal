@@ -163,7 +163,7 @@ export default function ModeratorStudentsPage() {
         >
           Pending Approvals
           {pendingStudents.length > 0 && activeTab !== 'pending' && (
-            <span className="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
+            <span className="bg-[#dff7f6] text-[#527f8f] text-[10px] font-bold px-2 py-0.5 rounded-full">
               {pendingStudents.length}
             </span>
           )}
@@ -224,7 +224,7 @@ export default function ModeratorStudentsPage() {
                           <button
                             onClick={() => handleDelete(student.uuid, student.name)}
                             disabled={actionLoading === student.uuid}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                            className="p-2 text-[#527f8f] hover:bg-[#edf6ff] rounded-lg transition-colors disabled:opacity-50"
                             title="Delete Student"
                           >
                             {actionLoading === student.uuid ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
@@ -242,7 +242,7 @@ export default function ModeratorStudentsPage() {
                             <button
                               onClick={() => handleReject(student.uuid, student.name)}
                               disabled={actionLoading === student.uuid}
-                              className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50"
+                              className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-[#4f8294] bg-[#edf6ff] hover:bg-[#dff7f6] rounded-lg transition-colors disabled:opacity-50"
                             >
                               {actionLoading === student.uuid ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
                               Reject

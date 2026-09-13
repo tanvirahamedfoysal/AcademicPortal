@@ -241,7 +241,7 @@ export default function NecessaryPhotosPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 pb-12">
-      <section className="overflow-hidden rounded-[2rem] bg-[linear-gradient(130deg,#fffdfb_0%,#f8dce7_52%,#dff7f6_100%)] p-7 text-slate-900 shadow-sm md:p-9">
+      <section className="overflow-hidden rounded-[2rem] bg-[linear-gradient(130deg,#fffdfb_0%,#edf6ff_52%,#dff7f6_100%)] p-7 text-slate-900 shadow-sm md:p-9">
         <div className="max-w-4xl">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-700"><Images className="h-3.5 w-3.5" /> Public portfolio media</div>
           <h1 className="font-serif text-3xl font-semibold md:text-4xl">Necessary Photos</h1>
@@ -249,7 +249,7 @@ export default function NecessaryPhotosPage() {
         </div>
       </section>
 
-      {feedback && <div className={`rounded-2xl border px-5 py-3 text-sm ${feedback.type === 'error' ? 'border-rose-200 bg-rose-50 text-rose-800' : feedback.type === 'success' ? 'border-emerald-200 bg-[#dff7f6] text-[#5f91a0]' : 'border-amber-200 bg-amber-50 text-amber-900'}`}>{feedback.message}</div>}
+      {feedback && <div className={`rounded-2xl border px-5 py-3 text-sm ${feedback.type === 'error' ? 'border-[#cde3ea] bg-[#edf6ff] text-[#3f7081]' : feedback.type === 'success' ? 'border-[#cde3ea] bg-[#dff7f6] text-[#5f91a0]' : 'border-[#cde3ea] bg-[#edf6ff] text-slate-700'}`}>{feedback.message}</div>}
 
       <section className="grid gap-6 lg:grid-cols-[.7fr_1.3fr]">
         <div className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm md:p-8">
@@ -258,17 +258,17 @@ export default function NecessaryPhotosPage() {
             {media.portfolioPhoto ? <img src={media.portfolioPhoto} alt="Current portfolio" className="h-full w-full object-contain p-2" /> : <div className="flex h-full flex-col items-center justify-center px-8 text-center"><Camera className="h-9 w-9 text-slate-300" /><p className="mt-4 text-sm font-semibold text-slate-600">No portfolio photo yet</p><p className="mt-1 text-xs leading-5 text-slate-400">Upload a dedicated portrait or professional academic photograph.</p></div>}
           </div>
           <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-            <label className={`flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#5f91a0] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#a65376] ${portfolioUploading ? 'pointer-events-none opacity-60' : ''}`}>
+            <label className={`flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#5f91a0] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#4f8294] ${portfolioUploading ? 'pointer-events-none opacity-60' : ''}`}>
               {portfolioUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} {media.portfolioPhoto ? 'Replace photo' : 'Upload photo'}
               <input type="file" accept="image/*" className="hidden" onChange={handlePortfolioPhoto} disabled={portfolioUploading} />
             </label>
-            {media.portfolioPhoto && <button type="button" onClick={removePortfolioPhoto} disabled={portfolioUploading} className="inline-flex items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:opacity-50"><Trash2 className="h-4 w-4" /> Remove</button>}
+            {media.portfolioPhoto && <button type="button" onClick={removePortfolioPhoto} disabled={portfolioUploading} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#cde3ea] bg-[#edf6ff] px-4 py-3 text-sm font-semibold text-[#4f8294] transition hover:bg-[#dff7f6] disabled:opacity-50"><Trash2 className="h-4 w-4" /> Remove</button>}
           </div>
         </div>
 
         <form onSubmit={addGalleryPhoto} className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm md:p-8">
           <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-5">
-            <div className="flex items-center gap-3"><div className="rounded-xl bg-amber-50 p-2.5 text-[#9f5f7a]"><ImagePlus className="h-5 w-5" /></div><div><h2 className="font-serif text-xl font-semibold text-slate-900">Add slideshow photo</h2><p className="text-sm text-slate-500">Achievement, event, award, conference, teaching, or research moment.</p></div></div>
+            <div className="flex items-center gap-3"><div className="rounded-xl bg-[#edf6ff] p-2.5 text-[#527f8f]"><ImagePlus className="h-5 w-5" /></div><div><h2 className="font-serif text-xl font-semibold text-slate-900">Add slideshow photo</h2><p className="text-sm text-slate-500">Achievement, event, award, conference, teaching, or research moment.</p></div></div>
             <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600">{media.gallery.length}/{PORTFOLIO_GALLERY_LIMIT}</span>
           </div>
           <div className="mt-6 grid gap-5 md:grid-cols-2">
@@ -276,7 +276,7 @@ export default function NecessaryPhotosPage() {
             <label className="md:col-span-2"><span className="mb-2 block text-sm font-semibold text-slate-700">Photo description</span><textarea rows={5} value={newDescription} onChange={(e) => setNewDescription(e.target.value)} className={fieldClass} placeholder="Explain the achievement, event, milestone, place, or research context shown in this photo…" /></label>
             <label className="md:col-span-2"><span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700"><ExternalLink className="h-4 w-4" /> Related links <span className="font-normal text-slate-400">(optional)</span></span><textarea rows={3} value={newLinks} onChange={(e) => setNewLinks(e.target.value)} className={fieldClass} placeholder={'https://conference.org/event\nhttps://journal.org/paper'} /><span className="mt-1.5 block text-xs text-slate-400">Add one URL per line or separate them with commas.</span></label>
           </div>
-          <div className="mt-6 flex justify-end"><button type="submit" disabled={galleryUploading || media.gallery.length >= PORTFOLIO_GALLERY_LIMIT} className="inline-flex items-center gap-2 rounded-xl bg-[#5f91a0] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#a65376] disabled:cursor-not-allowed disabled:opacity-50">{galleryUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />} Add to slideshow</button></div>
+          <div className="mt-6 flex justify-end"><button type="submit" disabled={galleryUploading || media.gallery.length >= PORTFOLIO_GALLERY_LIMIT} className="inline-flex items-center gap-2 rounded-xl bg-[#5f91a0] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#4f8294] disabled:cursor-not-allowed disabled:opacity-50">{galleryUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />} Add to slideshow</button></div>
         </form>
       </section>
 
@@ -298,7 +298,7 @@ export default function NecessaryPhotosPage() {
                 <div className="flex gap-2 md:flex-col">
                   <button type="button" onClick={() => movePhoto(index, -1)} disabled={index === 0} className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 disabled:opacity-30" title="Move earlier"><ArrowUp className="h-4 w-4" /></button>
                   <button type="button" onClick={() => movePhoto(index, 1)} disabled={index === media.gallery.length - 1} className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 disabled:opacity-30" title="Move later"><ArrowDown className="h-4 w-4" /></button>
-                  <button type="button" onClick={() => removeGalleryPhoto(item)} className="grid h-10 w-10 place-items-center rounded-xl border border-rose-200 bg-rose-50 text-rose-600 transition hover:bg-rose-100" title="Remove photo"><Trash2 className="h-4 w-4" /></button>
+                  <button type="button" onClick={() => removeGalleryPhoto(item)} className="grid h-10 w-10 place-items-center rounded-xl border border-[#cde3ea] bg-[#edf6ff] text-[#527f8f] transition hover:bg-[#dff7f6]" title="Remove photo"><Trash2 className="h-4 w-4" /></button>
                 </div>
               </article>
             ))}

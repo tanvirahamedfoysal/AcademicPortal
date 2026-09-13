@@ -6,7 +6,7 @@ export default function GlobalLoading() {
       <div className="relative flex items-center justify-center">
         {}
         <div className="absolute inset-0 bg-[#edf6ff] rounded-full blur-xl opacity-50 animate-pulse"></div>
-        <Loader2 className="h-10 w-10 animate-spin text-[#9f5f7a] relative z-10" />
+        <Loader2 className="h-10 w-10 animate-spin text-[#527f8f] relative z-10" />
       </div>
       <p className="text-sm font-medium animate-pulse tracking-wide">
         Loading application data...
