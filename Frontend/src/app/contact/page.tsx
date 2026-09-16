@@ -1,4 +1,4 @@
-import { Github, GraduationCap, Linkedin, Mail, MapPin, Phone, Send } from 'lucide-react';
+import { Github, GraduationCap, Linkedin, Mail, MapPin, Phone } from 'lucide-react';
 import MainLayout from '../../components/MainLayout';
 import ContactForm from '../../components/public/ContactForm';
 import { getContactMeta, getPortfolio } from '../../lib/public-api';
@@ -38,8 +38,7 @@ export default async function ContactPage() {
             {phone && <a href={`tel:${phone}`} className="flex items-center gap-3 rounded-2xl border border-[#d8e5ec] bg-[#fffdfb]/72 p-4 text-sm font-semibold"><Phone className="h-4 w-4 text-[#78bac5]" /> {phone}</a>}
             {institution && <div className="flex items-start gap-3 rounded-2xl border border-[#d8e5ec] bg-[#fffdfb]/72 p-4 text-sm font-semibold"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#78bac5]" /> {institution}</div>}
           </div>
-          {links.length > 0 && <div className="mt-8 flex flex-wrap gap-2">{links.map(({ label, href, icon: Icon }) => <a key={label} href={String(href)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-[#d2e4ea] bg-[#fffdfb]/65 px-3 py-2 text-xs font-semibold text-slate-500 hover:bg-white/10 hover:text-white"><Icon className="h-3.5 w-3.5" /> {label}</a>)}</div>}
-          <div className="mt-10 flex items-center gap-2 border-t border-[#d8e5ec] pt-6 text-xs text-slate-500"><Send className="h-3.5 w-3.5" /> Messages are stored through the existing contact API.</div>
+          {links.length > 0 && <div className="mt-8 flex flex-wrap gap-2">{links.map(({ label, href, icon: Icon }) => <a key={label} href={String(href)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-[#d2e4ea] bg-[#fffdfb]/65 px-3 py-2 text-xs font-semibold text-slate-500 hover:bg-[#dff7f6] hover:text-[#4f8294]"><Icon className="h-3.5 w-3.5" /> {label}</a>)}</div>}
         </aside>
         <div>
           <ContactForm />

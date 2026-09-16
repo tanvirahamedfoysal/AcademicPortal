@@ -55,7 +55,7 @@ export default async function HomePage() {
             { count: researcherArticles.length, label: 'Published works', Icon: BookOpenText },
             { count: documents.length, label: 'Research resources', Icon: FileArchive },
             { count: collaborators.length, label: 'Collaborators', Icon: Network },
-            { count: students.length, label: 'Learning community', Icon: UsersRound },
+            { count: students.length, label: 'Lab members', Icon: UsersRound },
           ] satisfies Array<{ count: number; label: string; Icon: LucideIcon }>).map(({ count, label, Icon }, index) => (
             <div key={label} className={`flex items-center gap-4 py-7 md:px-7 ${index > 0 ? 'border-t border-slate-200 md:border-l md:border-t-0' : ''}`}>
               <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#dff7f6] text-[#5f91a0]"><Icon className="h-5 w-5" /></span>
