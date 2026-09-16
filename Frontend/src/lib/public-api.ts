@@ -6,6 +6,7 @@ import type {
   PublicArticleSummary,
   PublicCollaborator,
   PublicStudent,
+  PublicLabMember,
   RepositoryDocument,
 } from '../types/public';
 
@@ -51,6 +52,17 @@ export async function getStudents(): Promise<PublicStudent[]> {
   const payload = await getPublicJson<ApiEnvelope<PublicStudent[]>>('/students');
   const rows = Array.isArray(payload?.data) ? payload.data : [];
   return rows.filter((student) => !student.status || String(student.status).toUpperCase() === 'ACTIVE');
+}
+
+export async function getLabMembers(): Promise<PublicLabMember[]> {
+  const students = await getStudents();
+  const detailed = await Promise.all(
+    students.map(async (student) => {
+      const detail = await getPublicJson<PublicLabMember>(`/students/${encodeURIComponent(student.uuid)}`);
+      return { ...student, ...(detail ?? {}) } as PublicLabMember;
+    }),
+  );
+  return detailed.filter((member) => !member.status || String(member.status).toUpperCase() === 'ACTIVE');
 }
 
 export async function getRepositoryDocuments(): Promise<RepositoryDocument[]> {
