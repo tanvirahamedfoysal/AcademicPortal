@@ -9,8 +9,7 @@ export function middleware(request: NextRequest) {
 
   if (pathname.startsWith('/auth')) {
     if (!isAuthenticated) return NextResponse.next();
-    const target = userRole === 'ADMIN' ? '/admin/portfolio' : userRole === 'MODERATOR' ? '/moderator' : '/student';
-    return NextResponse.redirect(new URL(target, request.url));
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
   if (pathname.startsWith('/admin')) {
