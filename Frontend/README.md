@@ -26,9 +26,9 @@ Admin → **Portfolio Editor** now includes a configurable **Quick info** builde
 
 Quick-info configuration is persisted through the existing portfolio contract using the same reserved metadata record already used for portfolio/gallery media. No backend route or database change is required.
 
-## Existing FastAPI integration
+## FastAPI integration
 
-The backend API is not modified. The frontend continues to use the existing `/api/v1` routes, including:
+The frontend continues to use the existing `/api/v1` routes. This version also adds a small backend extension for persistent Lab Member labels (`students.is_lab_member`) so Admin/Moderator selections are shared across devices and visible publicly. Core existing API behaviour remains unchanged. Existing routes include:
 
 - OAuth-style login (`/auth/login`)
 - Portfolio (`/portfolio`)
@@ -69,7 +69,7 @@ The project is pinned to Next.js 15.5.25 with React 19.0.0. If dependencies were
 - Added password visibility control and cleaner OTP states.
 - Rebuilt the article editor with Write / Preview / Split modes, LaTeX insertion helpers, responsive full-height editing, and MathJax preview.
 - Public article pages now typeset LaTeX math while preserving the raw article source stored by the existing FastAPI backend.
-- Preserved the existing backend contracts; no backend change is required.
+- Preserved the existing backend contracts used by the editor and UI. The separate Lab Member label feature adds its own migration and endpoints.
 - Included the Netlify Next.js runtime configuration so the SSR routes continue to deploy correctly.
 
 ## v5.0.4 interface and article-editor audit
@@ -99,3 +99,23 @@ The project is pinned to Next.js 15.5.25 with React 19.0.0. If dependencies were
 - As the article body grows and the editor scrolls, formatting, media, table, link, and LaTeX controls stay pinned at the top of the editor viewport.
 - The toolbar remains horizontally scrollable on narrow phones while staying pinned vertically.
 - No backend or article payload format changes are required.
+
+## Lab Members developer credits and labels
+
+The public **Lab Members** page has a static **Special Thanks** section for the two portal developers, followed by dynamically labelled student lab members.
+
+Developer photos are loaded from:
+
+- `public/developers/tanvir.jpg`
+- `public/developers/mahruf.jpg`
+
+If either photo is missing, the UI uses an initials placeholder. Add the real files using those exact names before deployment.
+
+Admin and Moderator can label/unlabel active students from **Students**. The public page only loads students with `is_lab_member = true`.
+
+## v5.4.0 – Custom landing section
+
+- Split the right-side landing rail into Recent publications and a dashboard-managed Custom Section.
+- Added Admin > Custom Section for a custom header and ordered content items.
+- Each item supports a name plus description, link, or both; description items open in a modal and link-only items open directly.
+- Custom-section data is stored through the existing portfolio metadata payload, so no additional backend endpoint is required.
