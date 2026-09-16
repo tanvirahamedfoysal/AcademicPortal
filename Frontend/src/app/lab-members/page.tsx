@@ -1,10 +1,11 @@
 import { AtSign, GraduationCap, Mail, MapPin, Phone, UsersRound } from 'lucide-react';
 import MainLayout from '../../components/MainLayout';
+import SpecialThanksDevelopers from '../../components/public/SpecialThanksDevelopers';
 import { getLabMembers } from '../../lib/public-api';
 
 export const metadata = {
   title: 'Lab Members',
-  description: 'Students and researchers connected to Dr. Tania Islam’s lab and academic work.',
+  description: 'Developers and labelled lab members connected to Dr. Tania Islam’s academic work.',
 };
 
 export default async function LabMembersPage() {
@@ -16,13 +17,21 @@ export default async function LabMembersPage() {
         <div className="page-shell py-14 sm:py-16 lg:py-20">
           <div className="max-w-4xl">
             <p className="eyebrow">Lab members</p>
-            <h1 className="mt-4 font-serif text-4xl font-bold tracking-[-0.04em] sm:text-5xl lg:text-6xl">People working and learning in the lab.</h1>
-            <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg">Profiles of active lab members, including their academic batch, contact information and research background where available.</p>
+            <h1 className="mt-4 font-serif text-4xl font-bold tracking-[-0.04em] sm:text-5xl lg:text-6xl">People behind the lab and the platform.</h1>
+            <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg">Acknowledging the developers who built this portal and the students, officially the members of the lab.</p>
           </div>
         </div>
       </section>
 
+      <SpecialThanksDevelopers />
+
       <section className="page-shell py-12 sm:py-14 lg:py-20">
+        <div className="mb-7 max-w-3xl sm:mb-9">
+          <p className="eyebrow">Lab members</p>
+          <h2 className="mt-3 font-serif text-3xl font-bold tracking-[-0.035em] text-slate-900 sm:text-4xl">Current member profiles</h2>
+          <p className="mt-3 text-sm leading-7 text-slate-600 sm:text-base">Students shown here have been specifically considered as lab members by Dr. Tania Islam. Their contributions to the lab are greatly appreciated.</p>
+        </div>
+
         {members.length ? (
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {members.map((member) => (
@@ -35,7 +44,7 @@ export default async function LabMembersPage() {
                     <span className="grid h-20 w-20 shrink-0 place-items-center rounded-2xl bg-[#dff7f6] font-serif text-2xl font-bold text-[#527f8f]">{member.name.slice(0, 2).toUpperCase()}</span>
                   )}
                   <div className="min-w-0 pt-1">
-                    <h2 className="break-words font-serif text-xl font-bold tracking-[-0.02em] text-slate-900 sm:text-2xl">{member.name}</h2>
+                    <h3 className="break-words font-serif text-xl font-bold tracking-[-0.02em] text-slate-900 sm:text-2xl">{member.name}</h3>
                     <p className="mt-1 flex items-center gap-1.5 break-all text-sm text-slate-500"><AtSign className="h-3.5 w-3.5 shrink-0" />{member.username}</p>
                     <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#dff7f6] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-[#527f8f]"><GraduationCap className="h-3.5 w-3.5" />{member.student_batch ? `Batch ${member.student_batch}` : 'Lab member'}</span>
                   </div>
@@ -54,7 +63,7 @@ export default async function LabMembersPage() {
             ))}
           </div>
         ) : (
-          <div className="academic-card px-6 py-16 text-center"><UsersRound className="mx-auto h-9 w-9 text-[#689aa6]" /><h2 className="mt-5 font-serif text-2xl font-bold">No lab member profiles are available yet</h2><p className="mt-3 text-sm text-slate-500">Active member profiles will appear here.</p></div>
+          <div className="academic-card px-6 py-16 text-center"><UsersRound className="mx-auto h-9 w-9 text-[#689aa6]" /><h2 className="mt-5 font-serif text-2xl font-bold">No students are labelled as lab members yet</h2><p className="mt-3 text-sm text-slate-500">Admin or Moderator can label an active student from the Students dashboard.</p></div>
         )}
       </section>
     </MainLayout>

@@ -18,9 +18,10 @@ import {
   Instagram,
   Linkedin,
   MessageCircle,
+  X,
 } from 'lucide-react';
 import type { PortfolioData, PublicArticleSummary } from '../../types/public';
-import type { PortfolioMedia, PortfolioQuickInfoItem } from '../../lib/portfolio-media';
+import type { PortfolioCustomSectionItem, PortfolioMedia, PortfolioQuickInfoItem } from '../../lib/portfolio-media';
 import { resolvePortfolioQuickInfo } from '../../lib/portfolio-media';
 
 interface ResearcherPortfolioHeroProps {
@@ -57,6 +58,7 @@ function QuickInfoValue({ item }: { item: PortfolioQuickInfoItem }) {
 
 export default function ResearcherPortfolioHero({ portfolio, media, articles }: ResearcherPortfolioHeroProps) {
   const [activePhoto, setActivePhoto] = useState(0);
+  const [activeCustomItem, setActiveCustomItem] = useState<PortfolioCustomSectionItem | null>(null);
   const gallery = media.gallery;
 
   useEffect(() => {
@@ -70,6 +72,20 @@ export default function ResearcherPortfolioHero({ portfolio, media, articles }: 
   useEffect(() => {
     if (activePhoto >= gallery.length) setActivePhoto(0);
   }, [activePhoto, gallery.length]);
+
+  useEffect(() => {
+    if (!activeCustomItem) return;
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setActiveCustomItem(null);
+    };
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [activeCustomItem]);
 
   const currentPhoto = gallery[activePhoto] ?? null;
 
@@ -88,7 +104,8 @@ export default function ResearcherPortfolioHero({ portfolio, media, articles }: 
     [portfolio],
   );
 
-  const recentArticles = articles.slice(0, 8);
+  const recentArticles = articles.slice(0, 6);
+  const customSection = media.customSection;
   const fullName = media.researcherInfo.fullName || 'Dr. Tania Islam';
   const occupation = media.researcherInfo.occupation || '';
   const designation = media.researcherInfo.designation || '';
@@ -220,34 +237,91 @@ export default function ResearcherPortfolioHero({ portfolio, media, articles }: 
           </div>
         </div>
 
-        <aside className="order-4 min-w-0 rounded-[30px] border border-[#d7e6ee] bg-[#fffdfb]/94 p-5 shadow-[0_18px_52px_rgba(83,111,137,.08)] backdrop-blur-sm sm:p-6 lg:row-span-2">
-          <div className="flex items-center justify-between gap-4 border-b border-[#dce7ee] pb-5">
-            <h2 className="break-words font-serif text-2xl font-bold tracking-[-0.02em] text-slate-900">Recent publications</h2>
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#edf6ff] text-[#5e93a0]"><FileText className="h-[18px] w-[18px]" /></span>
-          </div>
+        <div className="order-4 grid min-w-0 gap-4 lg:row-span-2 lg:grid-rows-2">
+          <section className="flex min-h-0 flex-col rounded-[30px] border border-[#d7e6ee] bg-[#fffdfb]/94 p-5 shadow-[0_18px_52px_rgba(83,111,137,.08)] backdrop-blur-sm sm:p-6">
+            <div className="flex items-center justify-between gap-4 border-b border-[#dce7ee] pb-4">
+              <h2 className="break-words font-serif text-2xl font-bold tracking-[-0.02em] text-slate-900">Recent publications</h2>
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#edf6ff] text-[#5e93a0]"><FileText className="h-[18px] w-[18px]" /></span>
+            </div>
 
-          <div className="mt-2 divide-y divide-[#e1eaf0] lg:max-h-[760px] lg:overflow-y-auto lg:pr-1">
-            {recentArticles.length ? recentArticles.map((article, index) => (
-              <Link key={article.article_uuid} href={`/articles/${article.article_uuid}`} className="group block py-5">
-                <div className="flex items-start gap-3">
-                  <span className="mt-0.5 shrink-0 font-serif text-lg font-bold text-[#b5c9d4]">{String(index + 1).padStart(2, '0')}</span>
-                  <div className="min-w-0 flex-1">
-                    {formatDate(article.published_at) && <p className="text-xs font-medium text-slate-500">{formatDate(article.published_at)}</p>}
-                    <h3 className="mt-1.5 break-words font-serif text-[17px] font-semibold leading-6 text-slate-800 transition group-hover:text-[#4f8294]">{article.article_title}</h3>
-                    <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-slate-400 transition group-hover:text-[#5e93a0]">Read paper <ArrowUpRight className="h-3 w-3" /></span>
+            <div className="mt-1 min-h-0 flex-1 divide-y divide-[#e1eaf0] lg:overflow-y-auto lg:pr-1">
+              {recentArticles.length ? recentArticles.map((article, index) => (
+                <Link key={article.article_uuid} href={`/articles/${article.article_uuid}`} className="group block py-4">
+                  <div className="flex items-start gap-3">
+                    <span className="mt-0.5 shrink-0 font-serif text-base font-bold text-[#b5c9d4]">{String(index + 1).padStart(2, '0')}</span>
+                    <div className="min-w-0 flex-1">
+                      {formatDate(article.published_at) && <p className="text-[11px] font-medium text-slate-500">{formatDate(article.published_at)}</p>}
+                      <h3 className="mt-1 break-words font-serif text-[16px] font-semibold leading-6 text-slate-800 transition group-hover:text-[#4f8294]">{article.article_title}</h3>
+                    </div>
+                    <ArrowUpRight className="mt-1 h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:text-[#5e93a0]" />
                   </div>
-                </div>
-              </Link>
-            )) : (
-              <div className="py-8 text-sm text-slate-500">No publications yet.</div>
-            )}
-          </div>
+                </Link>
+              )) : (
+                <div className="py-7 text-sm text-slate-500">No publications yet.</div>
+              )}
+            </div>
 
-          <Link href="/articles" className="mt-5 flex items-center justify-between gap-3 rounded-2xl border border-[#b8dce3] bg-[#edf6ff] px-4 py-3.5 text-xs font-bold text-[#4f8294] transition hover:bg-[#dff7f6]">
-            View all publications <ArrowUpRight className="h-4 w-4 shrink-0" />
-          </Link>
-        </aside>
+            <Link href="/articles" className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-[#b8dce3] bg-[#edf6ff] px-4 py-3 text-xs font-bold text-[#4f8294] transition hover:bg-[#dff7f6]">
+              View all publications <ArrowUpRight className="h-4 w-4 shrink-0" />
+            </Link>
+          </section>
+
+          <section className="flex min-h-0 flex-col rounded-[30px] border border-[#cfe8eb] bg-[#dff7f6]/52 p-5 shadow-[0_18px_52px_rgba(83,111,137,.07)] backdrop-blur-sm sm:p-6">
+            <div className="flex items-center justify-between gap-4 border-b border-[#d4e7ec] pb-4">
+              <h2 className="break-words font-serif text-2xl font-bold tracking-[-0.02em] text-slate-900">{customSection.header || 'Custom section'}</h2>
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#fffdfb]/86 text-[#5e93a0]"><BookOpen className="h-[18px] w-[18px]" /></span>
+            </div>
+
+            <div className="mt-1 min-h-0 flex-1 divide-y divide-[#d7e7eb] lg:overflow-y-auto lg:pr-1">
+              {customSection.items.length ? customSection.items.map((item, index) => {
+                const hasDescription = Boolean(item.description.trim());
+                const hasLink = Boolean(safeUrl(item.link));
+                const row = (
+                  <div className="flex items-start gap-3 py-4 text-left">
+                    <span className="mt-0.5 shrink-0 font-serif text-base font-bold text-[#9fbfc8]">{String(index + 1).padStart(2, '0')}</span>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="break-words font-serif text-[16px] font-semibold leading-6 text-slate-800 transition group-hover:text-[#4f8294]">{item.name}</h3>
+                      {hasDescription && <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-500">{item.description}</p>}
+                    </div>
+                    {(hasDescription || hasLink) && <ArrowUpRight className="mt-1 h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:text-[#5e93a0]" />}
+                  </div>
+                );
+
+                if (!hasDescription && hasLink) {
+                  return <a key={item.id} href={item.link} target="_blank" rel="noreferrer" className="group block">{row}</a>;
+                }
+
+                if (hasDescription) {
+                  return <button key={item.id} type="button" onClick={() => setActiveCustomItem(item)} className="group block w-full">{row}</button>;
+                }
+
+                return <div key={item.id}>{row}</div>;
+              }) : (
+                <div className="py-7 text-sm text-slate-500">No items yet.</div>
+              )}
+            </div>
+          </section>
+        </div>
       </div>
+
+      {activeCustomItem && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-900/35 p-4 backdrop-blur-sm" onMouseDown={() => setActiveCustomItem(null)}>
+          <article className="max-h-[min(78vh,720px)] w-full max-w-2xl overflow-y-auto rounded-[30px] border border-[#d4e5ed] bg-[#fffdfb] p-5 shadow-[0_30px_90px_rgba(15,35,50,.22)] sm:p-7" onMouseDown={(event) => event.stopPropagation()}>
+            <div className="flex items-start justify-between gap-5">
+              <h2 className="break-words font-serif text-2xl font-bold tracking-[-0.025em] text-slate-900 sm:text-3xl">{activeCustomItem.name}</h2>
+              <button type="button" onClick={() => setActiveCustomItem(null)} className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[#d5e5ec] bg-[#edf6ff] text-slate-600 transition hover:bg-[#dff7f6]" aria-label="Close details"><X className="h-4 w-4" /></button>
+            </div>
+
+            {activeCustomItem.description && <p className="mt-6 whitespace-pre-line break-words text-sm leading-7 text-slate-600 sm:text-[15px] sm:leading-8">{activeCustomItem.description}</p>}
+
+            {safeUrl(activeCustomItem.link) && (
+              <a href={activeCustomItem.link} target="_blank" rel="noreferrer" className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#5f91a0] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4f8294]">
+                Open link <ExternalLink className="h-4 w-4" />
+              </a>
+            )}
+          </article>
+        </div>
+      )}
     </section>
   );
 }

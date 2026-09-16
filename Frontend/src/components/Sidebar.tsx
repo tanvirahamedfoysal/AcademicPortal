@@ -10,6 +10,7 @@ import {
   Home,
   Images,
   Inbox,
+  List,
   LogOut,
   Settings,
   ShieldCheck,
@@ -28,6 +29,7 @@ interface SidebarProps {
 const navigationConfig = [
   { name: 'Portfolio', pathSegment: '/portfolio', icon: Briefcase, allowedRoles: ['admin'] },
   { name: 'Necessary Photos', pathSegment: '/photos', icon: Images, allowedRoles: ['admin'] },
+  { name: 'Custom Section', pathSegment: '/custom-section', icon: List, allowedRoles: ['admin'] },
   { name: 'Overview', pathSegment: '', icon: Home, allowedRoles: ['moderator', 'student'] },
   { name: 'Articles', pathSegment: '/articles', icon: FileText, allowedRoles: ['admin', 'moderator', 'student'] },
   { name: 'Collaborators', pathSegment: '/collaborators', icon: Users, allowedRoles: ['admin', 'moderator', 'student'] },
