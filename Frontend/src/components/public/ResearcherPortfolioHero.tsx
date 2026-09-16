@@ -223,7 +223,7 @@ export default function ResearcherPortfolioHero({ portfolio, media, articles }: 
         <aside className="order-4 min-w-0 rounded-[30px] border border-[#d7e6ee] bg-[#fffdfb]/94 p-5 shadow-[0_18px_52px_rgba(83,111,137,.08)] backdrop-blur-sm sm:p-6 lg:row-span-2">
           <div className="flex items-center justify-between gap-4 border-b border-[#dce7ee] pb-5">
             <h2 className="break-words font-serif text-2xl font-bold tracking-[-0.02em] text-slate-900">Recent publications</h2>
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#edf6ff] text-[#5e93a0]"><FileText className="h-4.5 w-4.5" /></span>
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#edf6ff] text-[#5e93a0]"><FileText className="h-[18px] w-[18px]" /></span>
           </div>
 
           <div className="mt-2 divide-y divide-[#e1eaf0] lg:max-h-[760px] lg:overflow-y-auto lg:pr-1">

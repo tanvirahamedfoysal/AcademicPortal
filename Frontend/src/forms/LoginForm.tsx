@@ -16,10 +16,8 @@ export default function LoginForm() {
     if (!username || !password) return;
 
     loginMutation.mutate({ username, password }, {
-      onSuccess: ({ user }) => {
-        if (user.role === 'ADMIN') router.push('/admin/portfolio');
-        else if (user.role === 'MODERATOR') router.push('/moderator');
-        else router.push('/student');
+      onSuccess: () => {
+        router.push('/');
         router.refresh();
       },
     });
