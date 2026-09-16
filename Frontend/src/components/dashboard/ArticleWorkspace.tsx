@@ -1,8 +1,21 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { BookOpen, Edit3, Eye, EyeOff, FileText, Loader2, Plus, Search, Trash2, X } from 'lucide-react';
+import {
+  BookOpen,
+  Edit3,
+  Eye,
+  EyeOff,
+  FileText,
+  Loader2,
+  Plus,
+  Search,
+  Trash2,
+  X,
+} from 'lucide-react';
 import { apiFetch } from '../../lib/client-api';
+import { hasMeaningfulArticleBody } from '../../lib/article-content';
+import PremiumArticleEditor from './PremiumArticleEditor';
 
 type ArticleSummary = {
   article_uuid: string;
@@ -23,6 +36,14 @@ type ArticleDetail = {
 
 type FormState = { title: string; body: string; status: string };
 const emptyForm: FormState = { title: '', body: '', status: 'DRAFT' };
+
+function formatDate(value?: string) {
+  if (!value) return 'Date unavailable';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? 'Date unavailable'
+    : new Intl.DateTimeFormat('en', { day: '2-digit', month: 'short', year: 'numeric' }).format(date);
+}
 
 export default function ArticleWorkspace({ roleLabel = 'Researcher' }: { roleLabel?: string }) {
   const [articles, setArticles] = useState<ArticleSummary[]>([]);
@@ -53,10 +74,19 @@ export default function ArticleWorkspace({ roleLabel = 'Researcher' }: { roleLab
     void loadArticles();
   }, []);
 
+  useEffect(() => {
+    if (!modalOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = previousOverflow; };
+  }, [modalOpen]);
+
   const filtered = useMemo(() => {
     const term = query.trim().toLowerCase();
     return term ? articles.filter((article) => article.article_title.toLowerCase().includes(term)) : articles;
   }, [articles, query]);
+
+  const canSave = form.title.trim().length > 0 && hasMeaningfulArticleBody(form.body);
 
   const openCreate = () => {
     setEditingId(null);
@@ -73,7 +103,11 @@ export default function ArticleWorkspace({ roleLabel = 'Researcher' }: { roleLab
       const payload = await response.json();
       const article = payload?.data as ArticleDetail;
       setEditingId(id);
-      setForm({ title: article?.title || '', body: article?.body || '', status: String(article?.status || 'DRAFT').toUpperCase() });
+      setForm({
+        title: article?.title || '',
+        body: article?.body || '',
+        status: String(article?.status || 'DRAFT').toUpperCase(),
+      });
       setModalOpen(true);
     } catch (error) {
       setFeedback(error instanceof Error ? error.message : 'Could not load the article.');
@@ -82,17 +116,27 @@ export default function ArticleWorkspace({ roleLabel = 'Researcher' }: { roleLab
     }
   };
 
+  const closeModal = () => {
+    if (isSaving) return;
+    setModalOpen(false);
+    setEditingId(null);
+    setForm(emptyForm);
+  };
+
   const saveArticle = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!form.title.trim() || !form.body.trim()) return;
+    if (!canSave) return;
     setIsSaving(true);
     setFeedback(null);
+
     try {
       let id = editingId;
+      const body = form.body.trim();
+
       if (editingId) {
         const update = await apiFetch(`/api/v1/articles/${editingId}`, {
           method: 'PATCH',
-          body: JSON.stringify({ title: form.title.trim(), body: form.body.trim() }),
+          body: JSON.stringify({ title: form.title.trim(), body }),
         });
         if (!update.ok) {
           const payload = await update.json().catch(() => null);
@@ -101,7 +145,7 @@ export default function ArticleWorkspace({ roleLabel = 'Researcher' }: { roleLab
       } else {
         const create = await apiFetch('/api/v1/articles', {
           method: 'POST',
-          body: JSON.stringify({ title: form.title.trim(), body: form.body.trim() }),
+          body: JSON.stringify({ title: form.title.trim(), body }),
         });
         if (!create.ok) {
           const payload = await create.json().catch(() => null);
@@ -112,7 +156,10 @@ export default function ArticleWorkspace({ roleLabel = 'Researcher' }: { roleLab
       }
 
       if (id) {
-        const currentStatus = articles.find((article) => article.article_uuid === id)?.article_status?.toUpperCase();
+        const currentStatus = editingId
+          ? articles.find((article) => article.article_uuid === id)?.article_status?.toUpperCase()
+          : 'DRAFT';
+
         if (form.status !== currentStatus) {
           const statusResponse = await apiFetch(`/api/v1/articles/${id}/status`, {
             method: 'PATCH',
@@ -125,10 +172,9 @@ export default function ArticleWorkspace({ roleLabel = 'Researcher' }: { roleLab
         }
       }
 
-      setModalOpen(false);
-      setForm(emptyForm);
-      setEditingId(null);
-      setFeedback(editingId ? 'Article updated successfully.' : 'Article created successfully.');
+      const message = editingId ? 'Article updated successfully.' : 'Article created successfully.';
+      closeModal();
+      setFeedback(message);
       await loadArticles();
     } catch (error) {
       setFeedback(error instanceof Error ? error.message : 'Could not save the article.');
@@ -180,55 +226,42 @@ export default function ArticleWorkspace({ roleLabel = 'Researcher' }: { roleLab
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 pb-12">
-      <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-        <div className="grid gap-6 bg-[linear-gradient(130deg,#fffdfb_0%,#edf6ff_52%,#dff7f6_100%)] px-6 py-8 text-slate-900 md:grid-cols-[1fr_auto] md:items-end md:px-8">
+      <section className="overflow-hidden rounded-[2rem] border border-[#dce7ee] bg-[#fffdfb] shadow-sm">
+        <div className="grid gap-6 bg-[linear-gradient(130deg,#fffdfb_0%,#edf6ff_58%,#dff7f6_100%)] px-5 py-7 text-slate-900 sm:px-7 md:grid-cols-[1fr_auto] md:items-end md:px-8 md:py-8">
           <div>
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-700">
-              <BookOpen className="h-3.5 w-3.5" /> {roleLabel} publishing desk
-            </div>
+            <div className="mb-3 inline-flex items-center gap-2 text-xs font-semibold text-[#527f8f]"><BookOpen className="h-4 w-4" /> {roleLabel} articles</div>
             <h1 className="font-serif text-3xl font-semibold tracking-tight md:text-4xl">Research Articles</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">Draft, refine, publish, and maintain long-form academic writing through the portal&apos;s existing article workflow.</p>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">Create, format and publish scholarly articles with media, tables and mathematical notation.</p>
           </div>
-          <button onClick={openCreate} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5f91a0] px-4 py-3 text-sm font-semibold text-[#ffffff] shadow-sm transition hover:bg-[#cde8ec]">
-            <Plus className="h-4 w-4" /> New article
-          </button>
+          <button onClick={openCreate} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#5f91a0] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#4f8294]"><Plus className="h-4 w-4" /> New article</button>
         </div>
 
-        <div className="flex flex-col gap-3 border-b border-slate-200 bg-slate-50/70 p-4 sm:flex-row sm:items-center sm:justify-between md:px-6">
-          <div className="relative w-full sm:max-w-md">
-            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search your article library" className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm outline-none focus:border-[#78bac5] focus:ring-2 focus:ring-[#78bac5]/15" />
-          </div>
-          <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">{articles.length} authored records</div>
+        <div className="flex flex-col gap-3 border-b border-slate-200 bg-[#f8fbfd] p-4 sm:flex-row sm:items-center sm:justify-between md:px-6">
+          <div className="relative w-full sm:max-w-md"><Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search articles" className="form-control py-2.5 pl-10" /></div>
+          <div className="text-xs font-semibold text-slate-400">{articles.length} {articles.length === 1 ? 'article' : 'articles'}</div>
         </div>
 
-        {feedback && <div className="border-b border-slate-200 bg-[#edf6ff] px-6 py-3 text-sm text-slate-700">{feedback}</div>}
+        {feedback && <div className="border-b border-[#dce7ee] bg-[#edf6ff] px-6 py-3 text-sm text-slate-700">{feedback}</div>}
 
         {isLoading ? (
           <div className="flex min-h-60 items-center justify-center"><Loader2 className="h-7 w-7 animate-spin text-[#5f91a0]" /></div>
         ) : filtered.length === 0 ? (
-          <div className="px-6 py-16 text-center"><FileText className="mx-auto h-9 w-9 text-slate-300" /><h2 className="mt-4 font-serif text-xl font-semibold text-slate-800">No articles found</h2><p className="mt-2 text-sm text-slate-500">Create a draft or adjust your search.</p></div>
+          <div className="px-6 py-16 text-center"><FileText className="mx-auto h-9 w-9 text-slate-300" /><h2 className="mt-4 font-serif text-xl font-semibold text-slate-800">No articles found</h2><p className="mt-2 text-sm text-slate-500">Create a new article or change the search term.</p></div>
         ) : (
           <div className="divide-y divide-slate-100">
             {filtered.map((article, index) => {
               const published = article.article_status?.toUpperCase() === 'PUBLISHED';
               return (
-                <article key={article.article_uuid} className="grid gap-4 px-5 py-5 transition hover:bg-slate-50/70 md:grid-cols-[1fr_auto] md:items-center md:px-6">
+                <article key={article.article_uuid} className="grid gap-4 px-5 py-5 transition hover:bg-[#f8fbfd] md:grid-cols-[1fr_auto] md:items-center md:px-6">
                   <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
-                      <span>Article {String(index + 1).padStart(2, '0')}</span><span>·</span><span>{new Date(article.updated_at || article.created_at).toLocaleDateString()}</span>
-                    </div>
-                    <h2 className="mt-1.5 truncate font-serif text-xl font-semibold text-slate-900">{article.article_title}</h2>
-                    <div className="mt-2 flex items-center gap-2 text-xs">
-                      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-semibold ${published ? 'bg-[#dff7f6] text-[#689aa6]' : 'bg-[#edf6ff] text-[#527f8f]'}`}>
-                        {published ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}{article.article_status || 'DRAFT'}
-                      </span>
-                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400"><span>Article {String(index + 1).padStart(2, '0')}</span><span aria-hidden>·</span><span>{formatDate(article.updated_at || article.created_at)}</span></div>
+                    <h2 className="mt-1.5 break-words font-serif text-xl font-semibold text-slate-900">{article.article_title}</h2>
+                    <div className="mt-2 flex items-center gap-2 text-xs"><span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-semibold ${published ? 'bg-[#dff7f6] text-[#527f8f]' : 'bg-[#edf6ff] text-[#527f8f]'}`}>{published ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}{article.article_status || 'DRAFT'}</span></div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => toggleStatus(article)} disabled={workingId === article.article_uuid} className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-500 transition hover:text-[#5f91a0] disabled:opacity-50" title={published ? 'Move to draft' : 'Publish'}>{workingId === article.article_uuid ? <Loader2 className="h-4 w-4 animate-spin" /> : published ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
-                    <button onClick={() => openEdit(article.article_uuid)} disabled={workingId === article.article_uuid} className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-500 transition hover:text-[#5f91a0]" title="Edit article"><Edit3 className="h-4 w-4" /></button>
-                    <button onClick={() => removeArticle(article)} disabled={workingId === article.article_uuid} className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-500 transition hover:border-[#cde3ea] hover:bg-[#edf6ff] hover:text-[#527f8f]" title="Delete article"><Trash2 className="h-4 w-4" /></button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button onClick={() => toggleStatus(article)} disabled={workingId === article.article_uuid} className="grid h-11 w-11 place-items-center rounded-xl border border-slate-200 bg-[#fffdfb] text-slate-500 transition hover:border-[#b8dce3] hover:text-[#5f91a0] disabled:opacity-50" title={published ? 'Move to draft' : 'Publish'} aria-label={published ? 'Move to draft' : 'Publish'}>{workingId === article.article_uuid ? <Loader2 className="h-4 w-4 animate-spin" /> : published ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
+                    <button onClick={() => openEdit(article.article_uuid)} disabled={workingId === article.article_uuid} className="grid h-11 w-11 place-items-center rounded-xl border border-slate-200 bg-[#fffdfb] text-slate-500 transition hover:border-[#b8dce3] hover:text-[#5f91a0]" title="Edit article" aria-label="Edit article"><Edit3 className="h-4 w-4" /></button>
+                    <button onClick={() => removeArticle(article)} disabled={workingId === article.article_uuid} className="grid h-11 w-11 place-items-center rounded-xl border border-slate-200 bg-[#fffdfb] text-slate-500 transition hover:border-[#b8dce3] hover:bg-[#edf6ff] hover:text-[#527f8f]" title="Delete article" aria-label="Delete article"><Trash2 className="h-4 w-4" /></button>
                   </div>
                 </article>
               );
@@ -238,18 +271,28 @@ export default function ArticleWorkspace({ roleLabel = 'Researcher' }: { roleLab
       </section>
 
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm">
-          <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-[1.75rem] border border-white/20 bg-white shadow-2xl">
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur">
-              <div><div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5f91a0]">Publishing desk</div><h2 className="font-serif text-2xl font-semibold text-slate-900">{editingId ? 'Edit article' : 'Create article'}</h2></div>
-              <button onClick={() => setModalOpen(false)} className="rounded-full border border-slate-200 p-2 text-slate-500 hover:bg-slate-50"><X className="h-4 w-4" /></button>
+        <div className="fixed inset-0 z-[70] flex items-end justify-center bg-slate-950/35 p-0 backdrop-blur-sm sm:items-center sm:p-4">
+          <div className="flex max-h-[100dvh] w-full max-w-6xl flex-col overflow-hidden rounded-t-[1.5rem] border border-[#dce7ee] bg-[#fffdfb] shadow-2xl sm:max-h-[96dvh] sm:rounded-[1.75rem]">
+            <div className="flex shrink-0 items-center justify-between gap-4 border-b border-[#dce7ee] bg-[#fffdfb] px-4 py-4 sm:px-6">
+              <div className="min-w-0"><p className="text-xs font-semibold text-[#527f8f]">{editingId ? 'Editing article' : 'New article'}</p><h2 className="truncate font-serif text-xl font-semibold text-slate-900 sm:text-2xl">{form.title.trim() || (editingId ? 'Edit article' : 'Untitled article')}</h2></div>
+              <button onClick={closeModal} disabled={isSaving} className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-slate-200 bg-[#fffdfb] text-slate-500 hover:bg-[#edf6ff]" aria-label="Close editor"><X className="h-4 w-4" /></button>
             </div>
-            <form onSubmit={saveArticle} className="space-y-5 p-6">
-              <div><label className="mb-2 block text-sm font-semibold text-slate-700">Title</label><input required value={form.title} onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#78bac5] focus:ring-2 focus:ring-[#78bac5]/15" placeholder="A clear, research-oriented title" /></div>
-              <div><label className="mb-2 block text-sm font-semibold text-slate-700">Article body</label><textarea required rows={14} value={form.body} onChange={(event) => setForm((current) => ({ ...current, body: event.target.value }))} className="w-full resize-y rounded-xl border border-slate-200 px-4 py-3 font-serif text-[15px] leading-7 outline-none focus:border-[#78bac5] focus:ring-2 focus:ring-[#78bac5]/15" placeholder="Write the article body…" /></div>
-              <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
-                <div><label className="mb-2 block text-sm font-semibold text-slate-700">Publication status</label><select value={form.status} onChange={(event) => setForm((current) => ({ ...current, status: event.target.value }))} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#78bac5]"><option value="DRAFT">Draft</option><option value="PUBLISHED">Published</option><option value="ARCHIVED">Archived</option></select></div>
-                <button type="submit" disabled={isSaving} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5f91a0] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#4f8294] disabled:opacity-60">{isSaving && <Loader2 className="h-4 w-4 animate-spin" />}{editingId ? 'Save changes' : 'Create article'}</button>
+
+            <form onSubmit={saveArticle} className="flex min-h-0 flex-1 flex-col">
+              <div className="min-h-0 flex-1 overflow-y-auto">
+                <div className="grid gap-4 border-b border-[#dce7ee] bg-[#f8fbfd] p-4 sm:p-5 lg:grid-cols-[1fr_220px]">
+                  <div><label className="mb-2 block text-sm font-semibold text-slate-700" htmlFor="article-title">Title</label><input id="article-title" required value={form.title} onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))} className="form-control" placeholder="Article title" /></div>
+                  <div><label className="mb-2 block text-sm font-semibold text-slate-700" htmlFor="article-status">Status</label><select id="article-status" value={form.status} onChange={(event) => setForm((current) => ({ ...current, status: event.target.value }))} className="form-control bg-[#fffdfb]"><option value="DRAFT">Draft</option><option value="PUBLISHED">Published</option><option value="ARCHIVED">Archived</option></select></div>
+                </div>
+
+                <div className="p-4 sm:p-5 lg:p-6">
+                  <PremiumArticleEditor value={form.body} disabled={isSaving} onChange={(body) => setForm((current) => ({ ...current, body }))} />
+                </div>
+              </div>
+
+              <div className="flex shrink-0 flex-col-reverse gap-3 border-t border-[#dce7ee] bg-[#fffdfb] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                <p className="text-xs leading-5 text-slate-500">Equations are rendered in the editor and stored as LaTeX source, so the published article remains editable.</p>
+                <button type="submit" disabled={isSaving || !canSave} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#5f91a0] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#4f8294] disabled:cursor-not-allowed disabled:opacity-60">{isSaving && <Loader2 className="h-4 w-4 animate-spin" />}{editingId ? 'Save changes' : 'Create article'}</button>
               </div>
             </form>
           </div>
