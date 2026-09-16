@@ -34,9 +34,8 @@ export default function GlobalError({
         
         <CardContent className="text-center pb-6">
           <p className="text-sm text-slate-600 mb-4">
-            We encountered an unexpected error while trying to load this page. 
+            This page could not be loaded. Please try again.
           </p>
-          {}
           {process.env.NODE_ENV === 'development' && (
             <div className="bg-slate-100 p-3 rounded-md text-left overflow-x-auto text-xs font-mono text-[#3f7081] border border-[#cde3ea]">
               {error.message || 'Unknown error occurred'}
