@@ -55,6 +55,14 @@ export interface PublicStudent {
   student_batch?: string | number | null;
 }
 
+export interface PublicLabMember extends PublicStudent {
+  bio?: string | null;
+  mobile_number?: string | null;
+  address?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
 export interface RepositoryDocument {
   id: string | number;
   name: string;
