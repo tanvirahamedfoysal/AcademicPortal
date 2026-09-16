@@ -235,7 +235,7 @@ export default function AccountProfileSettings() {
           <form onSubmit={savePassword} className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex items-center gap-3"><div className="rounded-xl bg-[#edf6ff] p-2.5 text-[#527f8f]"><KeyRound className="h-5 w-5" /></div><div><h2 className="font-serif text-xl font-semibold text-slate-900">Security</h2><p className="text-sm text-slate-500">Set a new account password.</p></div></div>
             <div className="mt-5 space-y-4"><input type="password" minLength={8} required value={password.next} onChange={(e) => setPassword({ ...password, next: e.target.value })} placeholder="New password" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#78bac5]" /><input type="password" minLength={8} required value={password.confirm} onChange={(e) => setPassword({ ...password, confirm: e.target.value })} placeholder="Confirm new password" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#78bac5]" /></div>
-            <button type="submit" disabled={saving} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:opacity-60"><KeyRound className="h-4 w-4" /> Update password</button>
+            <button type="submit" disabled={saving} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#5f91a0] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#4f8294] disabled:opacity-60"><KeyRound className="h-4 w-4" /> Update password</button>
           </form>
         </div>
       </div>

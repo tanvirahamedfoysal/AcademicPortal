@@ -78,7 +78,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, role }: SidebarPr
               const Icon = item.icon;
               return (
                 <Link key={`${role}-${item.name}`} href={href} onClick={() => setSidebarOpen(false)} className={`flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-semibold transition ${active ? 'bg-[#fffdfb] text-[#4f8294] shadow-sm ring-1 ring-[#cde3ea]' : 'text-slate-600 hover:bg-[#dff7f6]/70 hover:text-slate-900'}`}>
-                  <Icon className={`h-4.5 w-4.5 shrink-0 ${active ? 'text-[#5f91a0]' : 'text-[#6fa8b4]'}`} /> {item.name}
+                  <Icon className={`h-[18px] w-[18px] shrink-0 ${active ? 'text-[#5f91a0]' : 'text-[#6fa8b4]'}`} /> {item.name}
                 </Link>
               );
             })}
