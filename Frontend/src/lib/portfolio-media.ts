@@ -2,6 +2,7 @@ import type { PortfolioData } from '../types/public';
 
 export const PORTFOLIO_MEDIA_PREFIX = '__PORTFOLIO_MEDIA_V1__:';
 export const PORTFOLIO_GALLERY_LIMIT = 10;
+export const PORTFOLIO_CUSTOM_SECTION_LIMIT = 20;
 
 export type PortfolioGalleryItem = {
   id: string;
@@ -28,6 +29,18 @@ export type PortfolioQuickInfoItem = {
   source?: PortfolioQuickInfoSource | null;
 };
 
+export type PortfolioCustomSectionItem = {
+  id: string;
+  name: string;
+  description: string;
+  link: string;
+};
+
+export type PortfolioCustomSection = {
+  header: string;
+  items: PortfolioCustomSectionItem[];
+};
+
 export type PortfolioMedia = {
   portfolioPhoto: string;
   gallery: PortfolioGalleryItem[];
@@ -41,6 +54,7 @@ export type PortfolioMedia = {
   // null means an older portfolio that has never configured quick info.
   // [] means the owner intentionally removed every quick-info row.
   quickInfo: PortfolioQuickInfoItem[] | null;
+  customSection: PortfolioCustomSection;
 };
 
 export const emptyPortfolioMedia: PortfolioMedia = {
@@ -49,6 +63,7 @@ export const emptyPortfolioMedia: PortfolioMedia = {
   ownerUuid: '',
   researcherInfo: { fullName: '', occupation: '', designation: '', education: '' },
   quickInfo: null,
+  customSection: { header: '', items: [] },
 };
 
 export const QUICK_INFO_SOURCE_LABELS: Record<PortfolioQuickInfoSource, string> = {
@@ -120,6 +135,35 @@ function normalizeQuickInfo(value: unknown): PortfolioQuickInfoItem[] | null {
     .slice(0, 30);
 }
 
+function normalizeCustomSection(value: unknown): PortfolioCustomSection {
+  const candidate = value && typeof value === 'object' ? value as Partial<PortfolioCustomSection> : {};
+  const rawItems = Array.isArray(candidate.items) ? candidate.items : [];
+
+  const items = rawItems
+    .map((item, index) => {
+      const entry = item as Partial<PortfolioCustomSectionItem>;
+      const name = normalizeString(entry?.name);
+      if (!name) return null;
+
+      const rawLink = normalizeString(entry?.link);
+      const link = rawLink.startsWith('http://') || rawLink.startsWith('https://') ? rawLink : '';
+
+      return {
+        id: normalizeString(entry?.id) || `custom-${index}`,
+        name,
+        description: normalizeString(entry?.description),
+        link,
+      } satisfies PortfolioCustomSectionItem;
+    })
+    .filter((item): item is PortfolioCustomSectionItem => Boolean(item))
+    .slice(0, PORTFOLIO_CUSTOM_SECTION_LIMIT);
+
+  return {
+    header: normalizeString(candidate.header),
+    items,
+  };
+}
+
 export function isPortfolioMediaEntry(value: unknown): boolean {
   return typeof value === 'string' && value.startsWith(PORTFOLIO_MEDIA_PREFIX);
 }
@@ -163,6 +207,7 @@ export function parsePortfolioMedia(interests?: string[] | null): PortfolioMedia
         education: normalizeString(parsed.researcherInfo?.education),
       },
       quickInfo: normalizeQuickInfo(parsed.quickInfo),
+      customSection: normalizeCustomSection(parsed.customSection),
     };
   } catch {
     return { ...emptyPortfolioMedia, gallery: [], quickInfo: null };
@@ -232,6 +277,8 @@ export function withPortfolioMedia(interests: string[] | null | undefined, media
         }))
         .filter((item) => Boolean(item.label || item.value || item.source));
 
+  const normalizedCustomSection = normalizeCustomSection(media.customSection);
+
   const normalized: PortfolioMedia = {
     portfolioPhoto: normalizeString(media.portfolioPhoto),
     ownerUuid: normalizeString(media.ownerUuid),
@@ -242,6 +289,7 @@ export function withPortfolioMedia(interests: string[] | null | undefined, media
       education: normalizeString(media.researcherInfo?.education),
     },
     quickInfo: normalizedQuickInfo,
+    customSection: normalizedCustomSection,
     gallery: (Array.isArray(media.gallery) ? media.gallery : [])
       .filter((item) => Boolean(item?.url))
       .slice(0, PORTFOLIO_GALLERY_LIMIT)
