@@ -29,7 +29,7 @@ const navItems = [
   { href: '/articles', label: 'Publications', icon: BookOpenText },
   { href: '/repositories', label: 'Resources', icon: FileArchive },
   { href: '/collaborators', label: 'Collaborations', icon: Network },
-  { href: '/contributors', label: 'Community', icon: GraduationCap },
+  { href: '/lab-members', label: 'Lab Members', icon: GraduationCap },
   { href: '/contact', label: 'Contact', icon: MessageSquareText },
 ] as const;
 
@@ -175,7 +175,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Academic research portfolio</p>
               </div>
             </div>
-            <p className="max-w-xl text-sm leading-6 text-slate-600">A focused academic environment for communicating research, publishing scholarly writing, sharing resources, and building a learning community around evidence and collaboration.</p>
+            <p className="max-w-xl text-sm leading-6 text-slate-600">A focused academic environment for communicating research, publishing scholarly writing, sharing resources, and supporting the lab, research collaboration, and scholarly learning.</p>
           </div>
           <div>
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-[#527f8f]">Explore</p>
@@ -188,7 +188,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           <div>
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-[#527f8f]">Portal</p>
             <div className="grid gap-2 text-sm text-slate-600">
-              <Link href="/contributors" className="hover:text-slate-900">Learning community</Link>
+              <Link href="/lab-members" className="hover:text-slate-900">Lab members</Link>
               <Link href="/contact" className="hover:text-slate-900">Contact</Link>
               <Link href="/auth/login" className="hover:text-slate-900">Member sign in</Link>
             </div>

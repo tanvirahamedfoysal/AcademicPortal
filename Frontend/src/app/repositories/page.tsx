@@ -1,4 +1,4 @@
-import { Download, FileArchive, FileText, FolderOpen, ShieldCheck } from 'lucide-react';
+import { Download, FileText, FolderOpen } from 'lucide-react';
 import MainLayout from '../../components/MainLayout';
 import { getRepositoryDocuments } from '../../lib/public-api';
 
@@ -22,8 +22,8 @@ export default async function RepositoriesPage() {
             <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-500">A shared archive of documents and academic material supporting research, teaching, and independent learning.</p>
           </div>
           <div className="rounded-2xl border border-[#d4e5ed] bg-[#fffdfb]/78 p-5 shadow-sm">
-            <div className="flex items-center gap-3"><ShieldCheck className="h-5 w-5 text-[#78bac5]" /><p className="text-sm font-semibold">Backend-managed document library</p></div>
-            <p className="mt-2 text-xs leading-6 text-slate-500">Files shown here come directly from the existing repository API.</p>
+            <p className="text-sm font-semibold text-slate-800">{documents.length} shared {documents.length === 1 ? 'resource' : 'resources'}</p>
+            <p className="mt-2 text-xs leading-6 text-slate-500">Documents, notes, datasets and teaching material selected for this portfolio.</p>
           </div>
         </div>
       </section>
@@ -57,8 +57,8 @@ export default async function RepositoriesPage() {
         ) : (
           <div className="academic-card px-6 py-16 text-center">
             <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#dff7f6] text-[#5f91a0]"><FolderOpen className="h-6 w-6" /></span>
-            <h2 className="mt-6 font-serif text-2xl font-bold">Repository is ready for resources</h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-500">Documents uploaded through the existing backend endpoint will appear here automatically.</p>
+            <h2 className="mt-6 font-serif text-2xl font-bold">No resources have been shared yet</h2>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-500">Resources will appear here when they are added to the portfolio repository.</p>
           </div>
         )}
       </section>
