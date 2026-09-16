@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { CheckCircle, GraduationCap, Loader2, Mail, Search, Trash2, XCircle } from 'lucide-react';
+import { CheckCircle, GraduationCap, Loader2, Mail, Search, Tag, Trash2, XCircle } from 'lucide-react';
 import { apiFetch } from '../../../lib/client-api';
 
 interface Student {
@@ -11,6 +11,8 @@ interface Student {
   email: string;
   created_at?: string;
   status?: string;
+  student_batch?: string | number;
+  is_lab_member?: boolean;
 }
 
 export default function ModeratorStudentsPage() {
@@ -43,6 +45,27 @@ export default function ModeratorStudentsPage() {
   useEffect(() => {
     void fetchData();
   }, [activeTab]);
+
+  const handleLabMemberLabel = async (student: Student) => {
+    const nextValue = !student.is_lab_member;
+    setActionLoading(student.uuid);
+    try {
+      const res = await apiFetch(`/api/v1/students/${student.uuid}/lab-member`, {
+        method: 'PATCH',
+        body: JSON.stringify({ is_lab_member: nextValue }),
+      });
+      if (!res.ok) {
+        const payload = await res.json().catch(() => ({}));
+        throw new Error(payload.detail || 'Could not update the lab member label.');
+      }
+      setStudents((current) => current.map((row) => row.uuid === student.uuid ? { ...row, is_lab_member: nextValue } : row));
+      setFeedback(nextValue ? `${student.name} is now labelled as a lab member.` : `${student.name} was removed from the Lab Members page.`);
+    } catch (error) {
+      setFeedback(error instanceof Error ? error.message : 'Could not update the lab member label.');
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   const handleDelete = async (uuid: string, name: string) => {
     if (!confirm(`Permanently delete ${name}'s account?`)) return;
@@ -99,9 +122,14 @@ export default function ModeratorStudentsPage() {
     const busy = actionLoading === student.uuid;
     if (activeTab === 'active') {
       return (
-        <button onClick={() => handleDelete(student.uuid, student.name)} disabled={busy} className={`${fullWidth ? 'w-full' : ''} inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[#dce7ee] bg-[#fffdfb] px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-[#edf6ff] disabled:opacity-50`}>
-          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />} Delete
-        </button>
+        <div className={`flex items-center gap-2 ${fullWidth ? 'w-full' : ''}`}>
+          <button onClick={() => handleLabMemberLabel(student)} disabled={busy} className={`${fullWidth ? 'flex-1' : ''} inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold transition disabled:opacity-50 ${student.is_lab_member ? 'border-[#bcdbe4] bg-[#edf6ff] text-[#3f7081] hover:bg-[#dff7f6]' : 'border-[#cde3ea] bg-[#dff7f6] text-[#527f8f] hover:bg-[#cdeff0]'}`}>
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Tag className="h-4 w-4" />} {student.is_lab_member ? 'Unlabel' : 'Label'}
+          </button>
+          <button onClick={() => handleDelete(student.uuid, student.name)} disabled={busy} className={`${fullWidth ? 'flex-1' : ''} inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[#dce7ee] bg-[#fffdfb] px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-[#edf6ff] disabled:opacity-50`}>
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />} Delete
+          </button>
+        </div>
       );
     }
     return (
@@ -144,13 +172,13 @@ export default function ModeratorStudentsPage() {
             <div className="divide-y divide-slate-100 md:hidden">
               {filteredData.map((student) => (
                 <article key={student.uuid} className="p-5">
-                  <div className="flex items-start gap-3"><div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#dff7f6] font-serif text-lg font-bold text-[#527f8f]">{(student.name || student.username || 'S').charAt(0).toUpperCase()}</div><div className="min-w-0 flex-1"><h2 className="break-words font-semibold text-slate-900">{student.name || 'Student'}</h2><p className="mt-1 break-all text-sm text-slate-500">{student.email}</p>{student.username && <p className="mt-2 text-xs text-slate-400">@{student.username}</p>}</div></div>
+                  <div className="flex items-start gap-3"><div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#dff7f6] font-serif text-lg font-bold text-[#527f8f]">{(student.name || student.username || 'S').charAt(0).toUpperCase()}</div><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><h2 className="break-words font-semibold text-slate-900">{student.name || 'Student'}</h2>{student.is_lab_member && <span className="rounded-full bg-[#dff7f6] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#527f8f]">Lab member</span>}</div><p className="mt-1 break-all text-sm text-slate-500">{student.email}</p>{student.username && <p className="mt-2 text-xs text-slate-400">@{student.username}</p>}</div></div>
                   <div className="mt-5">{actionButtons(student, true)}</div>
                 </article>
               ))}
             </div>
             <div className="hidden overflow-x-auto md:block">
-              <table className="w-full min-w-[680px] border-collapse text-left"><thead><tr className="border-b border-slate-200 bg-[#f8fbfd] text-sm text-slate-600"><th className="px-6 py-4 font-semibold">Student</th><th className="px-6 py-4 font-semibold">Username</th><th className="px-6 py-4 text-right font-semibold">Actions</th></tr></thead><tbody>{filteredData.map((student) => <tr key={student.uuid} className="border-b border-slate-100 last:border-0 hover:bg-[#f8fbfd]"><td className="px-6 py-4"><div className="font-medium text-slate-900">{student.name || 'Student'}</div><div className="mt-1 flex items-center gap-1.5 text-sm text-slate-500"><Mail className="h-3.5 w-3.5" />{student.email}</div></td><td className="px-6 py-4 text-sm text-slate-600">{student.username ? `@${student.username}` : '—'}</td><td className="px-6 py-4"><div className="flex justify-end">{actionButtons(student)}</div></td></tr>)}</tbody></table>
+              <table className="w-full min-w-[680px] border-collapse text-left"><thead><tr className="border-b border-slate-200 bg-[#f8fbfd] text-sm text-slate-600"><th className="px-6 py-4 font-semibold">Student</th><th className="px-6 py-4 font-semibold">Username</th><th className="px-6 py-4 text-right font-semibold">Actions</th></tr></thead><tbody>{filteredData.map((student) => <tr key={student.uuid} className="border-b border-slate-100 last:border-0 hover:bg-[#f8fbfd]"><td className="px-6 py-4"><div className="flex flex-wrap items-center gap-2"><div className="font-medium text-slate-900">{student.name || 'Student'}</div>{student.is_lab_member && <span className="rounded-full bg-[#dff7f6] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#527f8f]">Lab member</span>}</div><div className="mt-1 flex items-center gap-1.5 text-sm text-slate-500"><Mail className="h-3.5 w-3.5" />{student.email}</div></td><td className="px-6 py-4 text-sm text-slate-600">{student.username ? `@${student.username}` : '—'}</td><td className="px-6 py-4"><div className="flex justify-end">{actionButtons(student)}</div></td></tr>)}</tbody></table>
             </div>
           </>
         )}
