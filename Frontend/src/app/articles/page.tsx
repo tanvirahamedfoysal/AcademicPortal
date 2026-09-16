@@ -64,7 +64,7 @@ export default async function ArticlesPage() {
           <div className="academic-card px-6 py-16 text-center">
             <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#dff7f6] text-[#5f91a0]"><FileText className="h-6 w-6" /></span>
             <h2 className="mt-6 font-serif text-2xl font-bold">No public articles yet</h2>
-            <p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-500">Articles marked as PUBLISHED in the existing backend will appear here automatically.</p>
+            <p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-500">Published articles will appear here when they are ready to share.</p>
           </div>
         )}
       </section>
