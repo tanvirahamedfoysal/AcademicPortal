@@ -53,6 +53,7 @@ export interface PublicStudent {
   image_url?: string | null;
   status?: string | null;
   student_batch?: string | number | null;
+  is_lab_member?: boolean | null;
 }
 
 export interface PublicLabMember extends PublicStudent {

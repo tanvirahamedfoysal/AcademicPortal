@@ -7,4 +7,5 @@ export interface Student {
   status: string;
   student_batch?: number | string;
   created_at?: string;
+  is_lab_member?: boolean;
 }
