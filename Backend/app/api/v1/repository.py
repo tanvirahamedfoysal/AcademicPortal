@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text, bindparam
 
@@ -6,16 +7,22 @@ from app.db import get_db
 from app.utility import limiter
 from app.schema.v1.repository import DeleteResourcePayload
 from app.utility.cloudinary import upload_asset, remove_asset
-
+from app.utility.auth import validate_user_access, validate_admin_access, validate_moderator_access
 
 router = APIRouter(prefix="/repository", tags=["repository"])
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
 @router.get("/documents")
 async def list_repository_documents(
+    token: str = Depends(oauth2_scheme),
     db: AsyncSession = Depends(get_db),
 ):
     """Return all documents stored in the repository."""
+    auth = validate_user_access(token)
+    if not auth["is_valid"]:
+        raise HTTPException(status_code=401, detail="Invalid token")
     try:
         query = text(
             """
@@ -39,9 +46,13 @@ async def list_repository_documents(
 
 @router.post("/documents", status_code=status.HTTP_201_CREATED)
 async def create_repository_document(
+    token: str = Depends(oauth2_scheme),
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
 ):
+    auth = validate_user_access(token)
+    if not auth["is_valid"]:
+        raise HTTPException(status_code=401, detail="Invalid token")
     result = await upload_asset(file)
     try:
         query = text(
@@ -73,8 +84,12 @@ async def create_repository_document(
 @router.delete("/documents", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_repository_document(
     payload: DeleteResourcePayload,
+    token: str = Depends(oauth2_scheme),
     db: AsyncSession = Depends(get_db)
 ):
+    auth = validate_user_access(token)
+    if not auth["is_valid"]:
+        raise HTTPException(status_code=401, detail="Invalid token")
     try:
         # 1. Fetch both public_id AND url from the database
         query = text("""
