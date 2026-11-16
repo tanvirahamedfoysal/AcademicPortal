@@ -1,4 +1,5 @@
 import random
+from uuid import UUID
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, HTTPException, status
@@ -12,7 +13,7 @@ from app.db import get_db
 from app.utility import limiter
 from app.utility.time import utc_now
 from app.core.config import settings
-from app.utility.auth import validate_user_access, hash_password
+from app.utility.auth import validate_user_access, hash_password, validate_moderator_access
 from app.schema.v1.profile import UpdateProfile, ChangeUsername, ChangeEmail
 from app.utility.brevo import send_email
 
@@ -554,4 +555,46 @@ async def get_me_last_update(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while processing your request",
+        )
+
+
+
+@router.get("/is-alumni/{uuid}")
+async def check_is_alumni(
+    uuid: UUID,
+    token: str = Depends(oauth2_scheme),
+    db: AsyncSession = Depends(get_db),
+):
+    response = validate_moderator_access(token)
+    if not response["is_valid"]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=response.get("message", "Invalid or expired token"),
+        )
+
+    try:
+        query = text("""
+            SELECT COALESCE(s.is_alumni, FALSE) AS is_alumni
+            FROM users u
+            INNER JOIN students s ON u.id = s.id
+            WHERE u.uuid = :uuid
+        """)
+        result = await db.execute(query, {"uuid": uuid})
+        row = result.mappings().first()
+
+        if not row:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Student not found",
+            )
+        return {
+            "uuid": str(uuid),
+            "is_alumni": row["is_alumni"],
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to check alumni status: {str(e)}",
         )
