@@ -51,11 +51,20 @@ export default function AdminStudentsPage() {
 
       const pendingData = await pendingRes.json();
       const activeData = await activeRes.json();
-      const pendingRows = Array.isArray(pendingData) ? pendingData : (pendingData.data || []);
-      const activeRows = Array.isArray(activeData) ? activeData : (activeData.data || []);
+      const pendingRows: Student[] = Array.isArray(pendingData)
+        ? pendingData as Student[]
+        : Array.isArray(pendingData?.data)
+          ? pendingData.data as Student[]
+          : [];
+      const activeRows: Student[] = Array.isArray(activeData)
+        ? activeData as Student[]
+        : Array.isArray(activeData?.data)
+          ? activeData.data as Student[]
+          : [];
       setPendingStudents(pendingRows);
-      const activeOnly = activeRows.filter((student: Student) => String(student.status || '').toUpperCase() === 'ACTIVE');
-      const activeWithAlumniStatus = await addAlumniStatusToStudents(activeOnly);
+      const activeOnly = activeRows.filter((student) => String(student.status || '').toUpperCase() === 'ACTIVE');
+      // Explicitly preserve the full Student shape while enriching the alumni flag.
+      const activeWithAlumniStatus = await addAlumniStatusToStudents<Student>(activeOnly);
       setActiveStudents(activeWithAlumniStatus);
     } catch (error) {
       console.error('Failed to fetch students data:', error);

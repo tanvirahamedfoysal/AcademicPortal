@@ -33,10 +33,14 @@ export default function ModeratorStudentsPage() {
       const res = await apiFetch(endpoint);
       if (!res.ok) throw new Error('Student records could not be loaded.');
       const data = await res.json();
-      const rows = Array.isArray(data) ? data : (data.data || []);
+      const rows: Student[] = Array.isArray(data)
+        ? data as Student[]
+        : Array.isArray(data?.data)
+          ? data.data as Student[]
+          : [];
       if (activeTab === 'active') {
-        const activeRows = rows.filter((student: Student) => String(student.status || '').toUpperCase() === 'ACTIVE');
-        setStudents(await addAlumniStatusToStudents(activeRows));
+        const activeRows = rows.filter((student) => String(student.status || '').toUpperCase() === 'ACTIVE');
+        setStudents(await addAlumniStatusToStudents<Student>(activeRows));
       } else {
         setPendingStudents(rows);
       }
