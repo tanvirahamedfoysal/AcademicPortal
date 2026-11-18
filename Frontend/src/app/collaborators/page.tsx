@@ -10,9 +10,9 @@ export default async function CollaboratorsPage() {
   return (
     <MainLayout>
       <section className="border-b border-slate-200 bg-[#fffdfb]">
-        <div className="page-shell py-16 lg:py-20">
+        <div className="page-shell py-8 sm:py-10 lg:py-12">
           <p className="eyebrow">Academic network</p>
-          <h1 className="mt-4 max-w-4xl font-serif text-5xl font-bold tracking-[-0.045em] sm:text-6xl">Research is a collaborative practice.</h1>
+          <h1 className="mt-4 max-w-4xl font-serif text-3xl font-bold tracking-[-0.045em] sm:text-4xl">Research is a collaborative practice.</h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600">People connected to the research program, shared work, and ongoing academic collaborations.</p>
         </div>
       </section>

@@ -21,11 +21,11 @@ export default async function ArticlesPage() {
   return (
     <MainLayout>
       <section className="border-b border-slate-200 bg-[#fffdfb]">
-        <div className="page-shell py-16 lg:py-20">
+        <div className="page-shell py-8 sm:py-10 lg:py-12">
           <div className="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
             <div className="max-w-4xl">
               <p className="eyebrow">Scholarly output</p>
-              <h1 className="mt-4 font-serif text-5xl font-bold tracking-[-0.045em] sm:text-6xl">Publications & research writing</h1>
+              <h1 className="mt-4 font-serif text-3xl font-bold tracking-[-0.045em] sm:text-4xl">Publications & research writing</h1>
               <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600">A public record of published articles and academic writing, organized for fast scanning and focused reading.</p>
             </div>
             <div className="rounded-2xl border border-[#cfe1ea] bg-[#dff7f6] px-5 py-4">
