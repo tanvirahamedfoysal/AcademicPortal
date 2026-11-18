@@ -233,7 +233,7 @@ export default function RegisterForm() {
 
           <Field label="Student batch" htmlFor="studentBatch" error={attempted ? fieldErrors.batch : ''}>
             <GraduationCap className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${iconClass}`} />
-            <input id="studentBatch" value={studentBatch} onChange={(e) => setStudentBatch(e.target.value)} className="form-control min-h-12 pl-10" placeholder="e.g. 2024" aria-invalid={Boolean(attempted && fieldErrors.batch)} />
+            <input id="studentBatch" value={studentBatch} onChange={(e) => setStudentBatch(e.target.value)} className="form-control min-h-12 pl-10" placeholder="Example : CSE 9th" aria-invalid={Boolean(attempted && fieldErrors.batch)} />
           </Field>
 
           <Field label="Password" htmlFor="password" error={attempted ? fieldErrors.password : ''}>
