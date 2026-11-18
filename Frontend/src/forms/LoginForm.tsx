@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertCircle, ArrowRight, Loader2 } from 'lucide-react';
 import { useLogin } from '../hooks/useAuth';
@@ -10,6 +10,11 @@ export default function LoginForm() {
   const loginMutation = useLogin();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [sessionExpired, setSessionExpired] = useState(false);
+
+  useEffect(() => {
+    setSessionExpired(new URLSearchParams(window.location.search).get('reason') === 'session-expired');
+  }, []);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -25,6 +30,13 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      {sessionExpired && (
+        <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <p>Your previous session expired or was rejected. Please sign in again before managing alumni status.</p>
+        </div>
+      )}
+
       {loginMutation.isError && (
         <div className="flex items-start gap-2 rounded-xl border border-[#cde3ea] bg-[#edf6ff] p-3 text-sm text-[#4f8294]">
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />

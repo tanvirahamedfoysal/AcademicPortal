@@ -29,8 +29,13 @@ export function useLogin() {
       setAuth(user, token);
       localStorage.setItem('user_name', user.email || user.username);
       localStorage.setItem('user_role', user.role);
-      document.cookie = `token=${token}; path=/; max-age=86400; samesite=lax`;
-      document.cookie = `user_role=${user.role}; path=/; max-age=86400; samesite=lax`;
+      // The supplied FastAPI configuration issues JWTs for 60 minutes. Keep
+      // middleware cookies aligned with that lifetime instead of advertising a
+      // 24-hour session after the backend token has already expired.
+      const cookieMaxAge = 60 * 60;
+      const secure = window.location.protocol === 'https:' ? '; secure' : '';
+      document.cookie = `token=${token}; path=/; max-age=${cookieMaxAge}; samesite=lax${secure}`;
+      document.cookie = `user_role=${user.role}; path=/; max-age=${cookieMaxAge}; samesite=lax${secure}`;
     },
   });
 }

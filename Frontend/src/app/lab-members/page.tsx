@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers';
 import LabMembersTabs from '../../components/public/LabMembersTabs';
 import MainLayout from '../../components/MainLayout';
 import { getLabMemberDirectory } from '../../lib/public-api';
@@ -8,7 +9,9 @@ export const metadata = {
 };
 
 export default async function LabMembersPage() {
-  const { members, alumni } = await getLabMemberDirectory();
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('token')?.value || null;
+  const { members, alumni } = await getLabMemberDirectory(accessToken);
 
   return (
     <MainLayout>

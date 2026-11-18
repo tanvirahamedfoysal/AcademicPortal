@@ -11,15 +11,17 @@ import type {
   RepositoryDocument,
 } from '../types/public';
 
-const API_ORIGIN = process.env.FASTAPI_BASE_URL || process.env.NEXT_PUBLIC_API_URL || 'https://academicportal.fastapicloud.dev';
-const API_PREFIX = process.env.FASTAPI_API_PREFIX || '/api/v1';
+const API_ORIGIN = (process.env.FASTAPI_BASE_URL || process.env.NEXT_PUBLIC_API_URL || 'https://academicportal.fastapicloud.dev').replace(/\/+$/, '');
+const API_PREFIX = `/${(process.env.FASTAPI_API_PREFIX || '/api/v1').replace(/^\/+|\/+$/g, '')}`;
 const API_BASE = `${API_ORIGIN}${API_PREFIX}`;
 
-async function getPublicJson<T>(path: string): Promise<T | null> {
+async function getPublicJson<T>(path: string, accessToken?: string | null): Promise<T | null> {
   try {
+    const headers = new Headers({ Accept: 'application/json' });
+    if (accessToken) headers.set('Authorization', `Bearer ${accessToken}`);
     const response = await fetch(`${API_BASE}${path}`, {
       cache: 'no-store',
-      headers: { Accept: 'application/json' },
+      headers,
     });
 
     if (!response.ok) return null;
@@ -64,12 +66,12 @@ export async function getStudents(): Promise<PublicStudent[]> {
   return rows.filter((student) => !student.status || String(student.status).toUpperCase() === 'ACTIVE');
 }
 
-async function getAlumniFlagForPublicProfile(uuid: string): Promise<boolean> {
-  const payload = await getPublicJson<unknown>(`/profile/is-alumni/${encodeURIComponent(uuid)}`);
+async function getAlumniFlagForPublicProfile(uuid: string, accessToken: string): Promise<boolean> {
+  const payload = await getPublicJson<unknown>(`/profile/is-alumni/${encodeURIComponent(uuid)}`, accessToken);
   return parseAlumniFlag(payload) ?? false;
 }
 
-async function getActiveStudents(): Promise<PublicLabMember[]> {
+async function getActiveStudents(accessToken?: string | null): Promise<PublicLabMember[]> {
   const payload = await getPublicJson<unknown>('/students');
   const rows = unwrapArray<PublicLabMember>(payload);
   const activeRows = rows.filter((student) => !student.status || String(student.status).toUpperCase() === 'ACTIVE');
@@ -79,12 +81,18 @@ async function getActiveStudents(): Promise<PublicLabMember[]> {
   return mapWithConcurrency(activeRows, 8, async (student) => {
     const fromList = parseAlumniFlag(student.is_alumni);
     if (fromList !== null) return { ...student, is_alumni: fromList };
-    return { ...student, is_alumni: await getAlumniFlagForPublicProfile(student.uuid) };
+
+    // In the provided FastAPI source, /students does not include is_alumni and
+    // /profile/is-alumni/{uuid} requires an Admin/Moderator JWT. Use the token
+    // from the current authenticated viewer when available. Anonymous visitors
+    // cannot obtain this protected flag without a backend public field/endpoint.
+    if (!accessToken) return { ...student, is_alumni: false };
+    return { ...student, is_alumni: await getAlumniFlagForPublicProfile(student.uuid, accessToken) };
   });
 }
 
-export async function getLabMemberDirectory(): Promise<{ members: PublicLabMember[]; alumni: PublicLabMember[] }> {
-  const rows = await getActiveStudents();
+export async function getLabMemberDirectory(accessToken?: string | null): Promise<{ members: PublicLabMember[]; alumni: PublicLabMember[] }> {
+  const rows = await getActiveStudents(accessToken);
   return {
     members: rows.filter((member) => member.is_alumni !== true),
     alumni: rows.filter((member) => member.is_alumni === true),

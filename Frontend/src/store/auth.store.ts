@@ -27,6 +27,12 @@ export const useAuthStore = create<AuthState>()(
       logout: () => {
         if (typeof window !== 'undefined') {
           localStorage.removeItem('token');
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('user_name');
+          localStorage.removeItem('user_role');
+          localStorage.removeItem('auth-storage');
+          document.cookie = 'token=; Max-Age=0; Path=/; SameSite=Lax';
+          document.cookie = 'user_role=; Max-Age=0; Path=/; SameSite=Lax';
         }
         set({ user: null, token: null, isAuthenticated: false });
       },
