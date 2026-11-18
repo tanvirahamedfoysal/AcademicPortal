@@ -4,7 +4,7 @@ const nextConfig = {
     return [
       {
         source: '/api/v1/:path*',
-        destination: 'https://academic-portal-16620c77.fastapicloud.dev/api/v1/:path*',
+        destination: 'https://academicportal.fastapicloud.dev/api/v1/:path*',
       },
     ];
   },
