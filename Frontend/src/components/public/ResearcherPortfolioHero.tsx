@@ -129,7 +129,7 @@ export default function ResearcherPortfolioHero({ portfolio, media, articles }: 
       <div className="absolute -left-32 bottom-0 h-[440px] w-[440px] rounded-full bg-[#edf6ff]/80 blur-2xl" />
 
       <div className="relative mx-auto grid w-full max-w-[1740px] gap-4 px-3 py-4 sm:px-5 sm:py-5 lg:grid-cols-[72px_270px_minmax(0,1fr)_330px] lg:gap-5 lg:px-6 lg:py-7 2xl:grid-cols-[76px_300px_minmax(0,1fr)_360px]">
-        <aside className="order-1 min-w-0 rounded-[24px] border border-[#d7e7ee] bg-[#edf6ff]/90 p-2.5 shadow-[0_12px_35px_rgba(83,111,137,.08)] backdrop-blur-sm lg:row-span-2">
+        <aside className="relative z-40 order-1 min-w-0 overflow-visible rounded-[24px] border border-[#d7e7ee] bg-[#edf6ff]/90 p-2.5 shadow-[0_12px_35px_rgba(83,111,137,.08)] backdrop-blur-sm lg:row-span-2">
           <div className="flex h-full min-w-0 items-center gap-2 overflow-x-auto pb-1 lg:flex-col lg:justify-start lg:overflow-visible lg:pb-0">
             {socialLinks.map(({ label, href, icon: Icon }) => (
               <a
@@ -137,12 +137,11 @@ export default function ResearcherPortfolioHero({ portfolio, media, articles }: 
                 href={href!}
                 target="_blank"
                 rel="noreferrer"
-                title={label}
                 aria-label={label}
-                className="group relative grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[#cde3ea] bg-[#fffdfb] text-[#547a8b] shadow-sm transition hover:-translate-y-0.5 hover:border-[#a9d7df] hover:bg-[#dff7f6] hover:text-[#3f7081]"
+                className="group relative z-50 grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[#cde3ea] bg-[#fffdfb] text-[#547a8b] shadow-sm transition hover:z-[200] hover:-translate-y-0.5 hover:border-[#a9d7df] hover:bg-[#dff7f6] hover:text-[#3f7081]"
               >
                 <Icon className="h-[18px] w-[18px]" />
-                <span className="pointer-events-none absolute left-[52px] z-20 hidden whitespace-nowrap rounded-lg bg-slate-800 px-2.5 py-1.5 text-[11px] font-semibold text-white shadow-xl group-hover:lg:block">{label}</span>
+                <span className="pointer-events-none absolute left-[52px] top-1/2 z-[300] hidden -translate-y-1/2 whitespace-nowrap rounded-lg bg-[#dff7f6] px-2.5 py-1.5 text-[11px] font-semibold text-[#527f8f] shadow-xl border border-[#cde3ea] group-hover:lg:block">{label}</span>
               </a>
             ))}
           </div>

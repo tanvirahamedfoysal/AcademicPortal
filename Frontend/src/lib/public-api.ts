@@ -55,9 +55,12 @@ export async function getStudents(): Promise<PublicStudent[]> {
 }
 
 export async function getLabMembers(): Promise<PublicLabMember[]> {
-  const payload = await getPublicJson<ApiEnvelope<PublicLabMember[]>>('/students/lab-members');
+  // Public Lab Members should represent approved/active students only.
+  // Pending registrations are intentionally excluded until an admin/moderator verifies them.
+  // The active students list is the source of truth; the separate label flag is not required.
+  const payload = await getPublicJson<ApiEnvelope<PublicLabMember[]>>('/students');
   const rows = Array.isArray(payload?.data) ? payload.data : [];
-  return rows.filter((member) => member.is_lab_member !== false && (!member.status || String(member.status).toUpperCase() === 'ACTIVE'));
+  return rows.filter((member) => !member.status || String(member.status).toUpperCase() === 'ACTIVE');
 }
 
 export async function getRepositoryDocuments(): Promise<RepositoryDocument[]> {
