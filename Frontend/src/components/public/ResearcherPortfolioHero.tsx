@@ -130,7 +130,7 @@ export default function ResearcherPortfolioHero({ portfolio, media, articles }: 
 
       <div className="relative mx-auto grid w-full max-w-[1740px] gap-4 px-3 py-4 sm:px-5 sm:py-5 lg:grid-cols-[72px_270px_minmax(0,1fr)_330px] lg:gap-5 lg:px-6 lg:py-7 2xl:grid-cols-[76px_300px_minmax(0,1fr)_360px]">
         <aside className="relative z-40 order-1 min-w-0 overflow-visible rounded-[24px] border border-[#d7e7ee] bg-[#edf6ff]/90 p-2.5 shadow-[0_12px_35px_rgba(83,111,137,.08)] backdrop-blur-sm lg:row-span-2">
-          <div className="flex h-full min-w-0 items-center gap-2 overflow-x-auto pb-1 lg:flex-col lg:justify-start lg:overflow-visible lg:pb-0">
+          <div className="portfolio-social-strip flex h-full min-w-0 touch-pan-x items-center gap-2 overflow-x-auto pb-1 lg:flex-col lg:justify-start lg:overflow-visible lg:pb-0">
             {socialLinks.map(({ label, href, icon: Icon }) => (
               <a
                 key={label}
@@ -147,10 +147,10 @@ export default function ResearcherPortfolioHero({ portfolio, media, articles }: 
           </div>
         </aside>
 
-        <div className="order-2 min-w-0 space-y-4 lg:row-span-2">
-          <section className="relative min-h-[330px] overflow-hidden rounded-[28px] border border-[#d6e7ef] bg-[linear-gradient(145deg,#edf6ff,#dff7f6)] shadow-[0_18px_48px_rgba(78,106,131,.10)] sm:min-h-[420px] lg:min-h-[355px]">
+        <div className="order-2 min-w-0 space-y-4 md:grid md:grid-cols-[minmax(220px,.8fr)_minmax(0,1.2fr)] md:items-start md:gap-4 md:space-y-0 lg:row-span-2 lg:block lg:space-y-4">
+          <section className="relative mx-auto aspect-square w-full max-w-[380px] min-h-0 overflow-hidden rounded-[28px] border border-[#d6e7ef] bg-[linear-gradient(145deg,#edf6ff,#dff7f6)] shadow-[0_18px_48px_rgba(78,106,131,.10)] md:mx-0 md:aspect-auto md:h-[360px] md:max-w-none md:self-start lg:h-auto lg:min-h-[355px]">
             {media.portfolioPhoto ? (
-              <img src={media.portfolioPhoto} alt={`${fullName} portfolio`} className="absolute inset-0 h-full w-full object-contain p-2 sm:p-3 lg:object-cover lg:p-0" />
+              <img src={media.portfolioPhoto} alt={`${fullName} portfolio`} className="absolute inset-0 h-full w-full object-cover p-0" />
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-[radial-gradient(circle_at_50%_25%,rgba(223,247,246,.88),transparent_42%),linear-gradient(145deg,#edf6ff,#dff7f6)] px-7 text-center">
                 <div className="grid h-24 w-24 place-items-center rounded-full border border-[#b8dce3] bg-[#fffdfb]/90 font-serif text-4xl font-bold text-[#527f8f]">TI</div>
@@ -159,7 +159,7 @@ export default function ResearcherPortfolioHero({ portfolio, media, articles }: 
             )}
           </section>
 
-          <section className="rounded-[28px] border border-[#d7e7ee] bg-[#edf6ff]/72 p-5 shadow-[0_14px_40px_rgba(85,125,137,.06)] backdrop-blur-sm">
+          <section className="min-w-0 rounded-[28px] border border-[#d7e7ee] bg-[#edf6ff]/72 p-5 shadow-[0_14px_40px_rgba(85,125,137,.06)] backdrop-blur-sm md:h-full lg:h-auto">
             <h1 className="break-words font-serif text-3xl font-bold tracking-[-0.03em] text-slate-900">{fullName}</h1>
             {(occupation || designation) && <p className="mt-1.5 text-sm font-semibold text-slate-600">{[occupation, designation].filter(Boolean).join(' · ')}</p>}
             {quickInfo.length > 0 && (

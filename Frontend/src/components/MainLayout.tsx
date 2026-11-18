@@ -82,7 +82,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       <header className="sticky top-0 z-50 border-b border-[#dce7ee] bg-[#fffdfb]/94 backdrop-blur-xl">
-        <div className="mx-auto flex h-[76px] max-w-[1480px] items-center justify-between gap-4 px-4 sm:px-8 lg:px-12">
+        <div className="mx-auto flex h-16 max-w-[1480px] items-center justify-between gap-3 px-4 sm:h-[68px] sm:px-5 md:px-6 xl:h-[76px] xl:gap-4 xl:px-12">
           <Link href="/" className="group flex min-w-0 items-center gap-3">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#edf6ff] text-[#527f8f] shadow-[0_8px_24px_rgba(95,145,160,.14)]">
               <ShieldCheck className="h-5 w-5" />
@@ -110,42 +110,71 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             })}
           </nav>
 
-          <div className="hidden items-center gap-2 md:flex">
-            {user ? (
-              <>
-                <Link href={dashboardHref} className="rounded-full border border-[#dce7ee] bg-[#fffaf7] px-4 py-2 text-sm font-semibold text-slate-700 hover:border-[#b8dce3] hover:text-[#4f7e8c]">
-                  Dashboard
+          <nav aria-label="Quick navigation" className={`${mobileOpen ? 'hidden' : 'hidden min-w-0 flex-1 items-center justify-center gap-0.5 md:flex xl:hidden'}`}>
+            {navItems.filter(({ href }) => ['/', '/articles', '/lab-members'].includes(href)).map(({ href, label }) => {
+              const active = pathname === href || (href !== '/' && pathname.startsWith(href));
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`whitespace-nowrap rounded-full px-2 py-2 text-[11px] font-semibold transition ${active ? 'bg-[#edf6ff] text-[#4f7e8c]' : 'text-slate-600 hover:bg-[#edf6ff]/70 hover:text-slate-900'}`}
+                >
+                  {label}
                 </Link>
-                <button onClick={signOut} className="grid h-10 w-10 place-items-center rounded-full bg-[#5f91a0] text-white transition hover:bg-[#4f8294]" aria-label="Sign out">
-                  <LogOut className="h-4 w-4" />
-                </button>
-              </>
-            ) : (
-              <>
-                <Link href="/auth/login" className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-slate-700 hover:text-[#527f8f]">
-                  <LogIn className="h-4 w-4" /> Sign in
-                </Link>
-                <Link href="/auth/register" className="rounded-full bg-[#5f91a0] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#4f8294]">
-                  Join the portal
-                </Link>
-              </>
-            )}
-          </div>
+              );
+            })}
+          </nav>
 
-          <button onClick={() => setMobileOpen((v) => !v)} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[#dce7ee] bg-[#edf6ff] text-slate-700 xl:hidden" aria-label="Toggle navigation">
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          <div className="ml-auto flex shrink-0 items-center gap-2 xl:ml-0">
+            <div className={mobileOpen ? 'hidden' : 'hidden items-center gap-2 md:flex'}>
+              {user ? (
+                <>
+                  <Link href={dashboardHref} className="rounded-full border border-[#dce7ee] bg-[#fffaf7] px-4 py-2 text-sm font-semibold text-slate-700 hover:border-[#b8dce3] hover:text-[#4f7e8c]">
+                    Dashboard
+                  </Link>
+                  <button onClick={signOut} className="grid h-10 w-10 place-items-center rounded-full bg-[#5f91a0] text-white transition hover:bg-[#4f8294]" aria-label="Sign out">
+                    <LogOut className="h-4 w-4" />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href="/auth/login" className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-slate-700 hover:text-[#527f8f]">
+                    <LogIn className="h-4 w-4" /> Sign in
+                  </Link>
+                  <Link href="/auth/register" className="rounded-full bg-[#5f91a0] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#4f8294]">
+                    Join the portal
+                  </Link>
+                </>
+              )}
+            </div>
+            <button
+              onClick={() => setMobileOpen((v) => !v)}
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[#dce7ee] bg-[#edf6ff] text-slate-700 transition hover:border-[#b8dce3] hover:bg-[#dff7f6] xl:hidden"
+              aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'}
+              aria-expanded={mobileOpen}
+              aria-controls="portfolio-mobile-navigation"
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
 
         {mobileOpen && (
-          <div className="border-t border-[#dce7ee] bg-[#fffdfb] px-4 py-5 xl:hidden">
-            <div className="mx-auto grid max-w-[1480px] gap-2 sm:grid-cols-2">
-              {navItems.map(({ href, label, icon: Icon }) => (
-                <Link key={href} href={href} className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-[#dff7f6] hover:text-[#4f7e8c]">
-                  <Icon className="h-4 w-4" /> {label}
-                </Link>
-              ))}
-              <div className="mt-2 flex flex-col gap-2 border-t border-[#dce7ee] pt-4 min-[420px]:flex-row sm:col-span-2">
+          <div id="portfolio-mobile-navigation" className="max-h-[min(72vh,620px)] overflow-y-auto border-t border-[#dce7ee] bg-[#fffdfb] px-4 py-4 sm:px-5 md:px-6 xl:hidden">
+            <div className="mx-auto grid max-w-[1480px] gap-2 sm:grid-cols-2 md:grid-cols-3">
+              {navItems.map(({ href, label, icon: Icon }) => {
+                const active = pathname === href || (href !== '/' && pathname.startsWith(href));
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={`flex min-h-12 w-full items-center gap-3 rounded-xl border px-3 py-3 text-sm font-semibold transition ${active ? 'border-[#c6e3e8] bg-[#edf6ff] text-[#4f7e8c]' : 'border-transparent bg-[#f7fbfc] text-slate-700 hover:border-[#d4e8eb] hover:bg-[#dff7f6] hover:text-[#4f7e8c]'}`}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" /> {label}
+                  </Link>
+                );
+              })}
+              <div className="mt-2 flex flex-col gap-2 border-t border-[#dce7ee] pt-4 min-[420px]:flex-row sm:col-span-2 md:col-span-3">
                 {user ? (
                   <>
                     <Link href={dashboardHref} className="flex-1 rounded-xl bg-[#5f91a0] px-4 py-3 text-center text-sm font-semibold text-white">Dashboard</Link>

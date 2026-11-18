@@ -193,6 +193,19 @@
   }
 }
 
+/* Keep the horizontal social rail clean on touch layouts. */
+@media (max-width: 1023px) {
+  .portfolio-social-strip {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overscroll-behavior-x: contain;
+  }
+
+  .portfolio-social-strip::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     scroll-behavior: auto !important;
