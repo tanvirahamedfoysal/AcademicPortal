@@ -54,6 +54,7 @@ export interface PublicStudent {
   status?: string | null;
   student_batch?: string | number | null;
   is_lab_member?: boolean | null;
+  is_alumni?: boolean | null;
 }
 
 export interface PublicLabMember extends PublicStudent {

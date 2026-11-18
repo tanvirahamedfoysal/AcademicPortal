@@ -54,13 +54,20 @@ export async function getStudents(): Promise<PublicStudent[]> {
   return rows.filter((student) => !student.status || String(student.status).toUpperCase() === 'ACTIVE');
 }
 
-export async function getLabMembers(): Promise<PublicLabMember[]> {
-  // Public Lab Members should represent approved/active students only.
-  // Pending registrations are intentionally excluded until an admin/moderator verifies them.
-  // The active students list is the source of truth; the separate label flag is not required.
+async function getActiveStudents(): Promise<PublicLabMember[]> {
   const payload = await getPublicJson<ApiEnvelope<PublicLabMember[]>>('/students');
   const rows = Array.isArray(payload?.data) ? payload.data : [];
-  return rows.filter((member) => !member.status || String(member.status).toUpperCase() === 'ACTIVE');
+  return rows.filter((student) => !student.status || String(student.status).toUpperCase() === 'ACTIVE');
+}
+
+export async function getLabMemberDirectory(): Promise<{ members: PublicLabMember[]; alumni: PublicLabMember[] }> {
+  const rows = await getActiveStudents();
+  return {
+    // Alumni are shown separately from current student profiles.
+    members: rows.filter((member) => member.is_alumni !== true),
+    // The public Alumni tab is driven by the persisted students.is_alumni flag.
+    alumni: rows.filter((member) => member.is_alumni === true),
+  };
 }
 
 export async function getRepositoryDocuments(): Promise<RepositoryDocument[]> {

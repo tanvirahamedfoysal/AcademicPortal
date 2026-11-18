@@ -41,6 +41,15 @@ The frontend continues to use the existing `/api/v1` routes. This version also a
 - Profile and password updates (`/profile/me`)
 - Image upload/delete (`/images`)
 
+## Alumni management API contract
+
+Admin and Moderator student pages use the persisted `students.is_alumni` flag. The frontend expects this authenticated FastAPI operation to update another student selected by UUID:
+
+- `PATCH /api/v1/students/{uuid}/alumni`
+- JSON body: `{ "is_alumni": true }` to mark as alumni, or `{ "is_alumni": false }` to undo it.
+
+The documented `GET /api/v1/profile/is-alumni/{uuid}` operation is read-only (`Check Is Alumni`) and cannot perform this update. Add/enable the PATCH operation in FastAPI before expecting the Make Alumni button to persist changes. The public Lab Members page reads `is_alumni` from the `/api/v1/students` response and separates alumni from current students.
+
 ## Local setup
 
 ```bash
@@ -102,7 +111,7 @@ The project is pinned to Next.js 15.5.25 with React 19.0.0. If dependencies were
 
 ## Lab Members developer credits and labels
 
-The public **Lab Members** page has a static **Special Thanks** section for the two portal developers, followed by dynamically labelled student lab members.
+The public **Lab Members** page has dynamically loaded current student profiles, a separate Alumni tab, and a static **Special Thanks** section for the two portal developers.
 
 Developer photos are loaded from:
 
@@ -111,7 +120,7 @@ Developer photos are loaded from:
 
 If either photo is missing, the UI uses an initials placeholder. Add the real files using those exact names before deployment.
 
-Admin and Moderator can label/unlabel active students from **Students**. The public page only loads students with `is_lab_member = true`.
+Admin and Moderator can mark/unmark active students as alumni from **Students**. The public Alumni tab lists active profiles where `is_alumni = true`; those profiles are removed from the current-student view. The older `is_lab_member` field is not changed by the new alumni action.
 
 ## v5.4.0 – Custom landing section
 

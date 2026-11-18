@@ -10,13 +10,13 @@ import {
   Mail,
   Search,
   ShieldAlert,
-  Tag,
   Trash2,
   UserCheck,
   X,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { apiFetch } from '../../../lib/client-api';
+import { updateStudentAlumni } from '../../../lib/alumni-api';
 
 interface Student {
   uuid: string;
@@ -26,7 +26,7 @@ interface Student {
   email: string;
   student_batch?: string;
   created_at?: string;
-  is_lab_member?: boolean;
+  is_alumni?: boolean;
 }
 
 export default function AdminStudentsPage() {
@@ -67,22 +67,15 @@ export default function AdminStudentsPage() {
     void fetchData();
   }, []);
 
-  const handleLabMemberLabel = async (student: Student) => {
-    const nextValue = !student.is_lab_member;
+  const handleAlumniToggle = async (student: Student) => {
+    const nextValue = !student.is_alumni;
     setActionLoading(student.uuid);
     try {
-      const res = await apiFetch(`/api/v1/students/${student.uuid}/lab-member`, {
-        method: 'PATCH',
-        body: JSON.stringify({ is_lab_member: nextValue }),
-      });
-      if (!res.ok) {
-        const payload = await res.json().catch(() => ({}));
-        throw new Error(payload.detail || 'Could not update the lab member label.');
-      }
-      setActiveStudents((current) => current.map((row) => row.uuid === student.uuid ? { ...row, is_lab_member: nextValue } : row));
-      setFeedback(nextValue ? `${student.name} is now labelled as a lab member.` : `${student.name} was removed from the Lab Members page.`);
+      await updateStudentAlumni(student.uuid, nextValue);
+      setActiveStudents((current) => current.map((row) => row.uuid === student.uuid ? { ...row, is_alumni: nextValue } : row));
+      setFeedback(nextValue ? `${student.name} is now an alumnus/alumna and will appear in the Alumni tab.` : `${student.name} was removed from the Alumni tab.`);
     } catch (error) {
-      setFeedback(error instanceof Error ? error.message : 'Could not update the lab member label.');
+      setFeedback(error instanceof Error ? error.message : 'Could not update this student’s alumni status.');
     } finally {
       setActionLoading(null);
     }
@@ -180,8 +173,8 @@ export default function AdminStudentsPage() {
         <button onClick={() => handlePromoteToModerator(student.uuid, student.name)} disabled={busy} className={`${compact ? 'min-w-[120px] flex-1' : ''} inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[#cde3ea] bg-[#dff7f6] px-3 py-2 text-sm font-semibold text-[#527f8f] transition hover:bg-[#cdeff0] disabled:opacity-50`}>
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUpCircle className="h-4 w-4" />} Promote
         </button>
-        <button onClick={() => handleLabMemberLabel(student)} disabled={busy} className={`${compact ? 'min-w-[120px] flex-1' : ''} inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold transition disabled:opacity-50 ${student.is_lab_member ? 'border-[#bcdbe4] bg-[#edf6ff] text-[#3f7081] hover:bg-[#dff7f6]' : 'border-[#cde3ea] bg-[#fffdfb] text-[#527f8f] hover:bg-[#edf6ff]'}`}>
-          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Tag className="h-4 w-4" />} {student.is_lab_member ? 'Unlabel' : 'Label'}
+        <button onClick={() => handleAlumniToggle(student)} disabled={busy} className={`${compact ? 'min-w-[140px] flex-1' : ''} inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold transition disabled:opacity-50 ${student.is_alumni ? 'border-[#bcdbe4] bg-[#edf6ff] text-[#3f7081] hover:bg-[#dff7f6]' : 'border-[#cde3ea] bg-[#fffdfb] text-[#527f8f] hover:bg-[#edf6ff]'}`}>
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <GraduationCap className="h-4 w-4" />} {student.is_alumni ? 'Remove Alumni' : 'Make Alumni'}
         </button>
         <button onClick={() => handleDeleteActive(student.uuid)} disabled={busy} className={`${compact ? 'w-full' : ''} inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[#dce7ee] bg-[#fffdfb] px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-[#edf6ff] disabled:opacity-50`}>
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />} Delete
@@ -235,7 +228,7 @@ export default function AdminStudentsPage() {
                         <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-500">
                           {student.username && <span className="rounded-full bg-[#edf6ff] px-2.5 py-1">@{student.username}</span>}
                           <span className="rounded-full bg-[#edf6ff] px-2.5 py-1">{student.student_batch ? `Batch ${student.student_batch}` : 'Batch not set'}</span>
-                          {student.is_lab_member && <span className="rounded-full bg-[#dff7f6] px-2.5 py-1 font-semibold text-[#527f8f]">Lab member</span>}
+                          {student.is_alumni && <span className="rounded-full bg-[#dff7f6] px-2.5 py-1 font-semibold text-[#527f8f]">Alumni</span>}
                         </div>
                       </div>
                     </div>
@@ -259,7 +252,7 @@ export default function AdminStudentsPage() {
                   <AnimatePresence initial={false}>
                     {filteredData.map((student) => (
                       <motion.tr key={student.uuid} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="border-b border-slate-100 last:border-0 hover:bg-[#f8fbfd]">
-                        <td className="px-6 py-4"><div className="flex flex-wrap items-center gap-2"><div className="font-medium text-slate-900">{student.name}</div>{student.is_lab_member && <span className="rounded-full bg-[#dff7f6] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#527f8f]">Lab member</span>}</div><div className="mt-1 flex items-center gap-1.5 text-sm text-slate-500"><Mail className="h-3.5 w-3.5" />{student.email}</div></td>
+                        <td className="px-6 py-4"><div className="flex flex-wrap items-center gap-2"><div className="font-medium text-slate-900">{student.name}</div>{student.is_alumni && <span className="rounded-full bg-[#dff7f6] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#527f8f]">Alumni</span>}</div><div className="mt-1 flex items-center gap-1.5 text-sm text-slate-500"><Mail className="h-3.5 w-3.5" />{student.email}</div></td>
                         <td className="px-6 py-4 text-sm text-slate-600">{student.username ? `@${student.username}` : '—'}</td>
                         <td className="px-6 py-4"><span className="inline-flex rounded-full bg-[#edf6ff] px-2.5 py-1 text-xs font-medium text-slate-700">{student.student_batch || 'Not set'}</span></td>
                         <td className="px-6 py-4"><div className="flex justify-end">{renderActions(student)}</div></td>
