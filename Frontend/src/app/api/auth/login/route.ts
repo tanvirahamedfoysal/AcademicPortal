@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     formData.append('username', body.username);
     formData.append('password', body.password);
 
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://academic-portal-16620c77.fastapicloud.dev";
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://academicportal.fastapicloud.dev";
     
     const backendRes = await fetch(`${backendUrl}/api/v1/auth/login`, {
       method: 'POST',

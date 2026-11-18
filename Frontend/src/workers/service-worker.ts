@@ -65,7 +65,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  if (url.origin === 'https://academic-portal-16620c77.fastapicloud.dev') {
+  if (url.origin === 'https://academicportal.fastapicloud.dev') {
     event.respondWith(
       fetch(request)
         .then((response) => {

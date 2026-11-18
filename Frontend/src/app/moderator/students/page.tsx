@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { CheckCircle, GraduationCap, Loader2, Mail, Search, Trash2, XCircle } from 'lucide-react';
 import { apiFetch } from '../../../lib/client-api';
-import { updateStudentAlumni } from '../../../lib/alumni-api';
+import { addAlumniStatusToStudents, updateStudentAlumni } from '../../../lib/alumni-api';
 
 interface Student {
   uuid: string;
@@ -34,8 +34,12 @@ export default function ModeratorStudentsPage() {
       if (!res.ok) throw new Error('Student records could not be loaded.');
       const data = await res.json();
       const rows = Array.isArray(data) ? data : (data.data || []);
-      if (activeTab === 'active') setStudents(rows.filter((student: Student) => String(student.status || '').toUpperCase() === 'ACTIVE'));
-      else setPendingStudents(rows);
+      if (activeTab === 'active') {
+        const activeRows = rows.filter((student: Student) => String(student.status || '').toUpperCase() === 'ACTIVE');
+        setStudents(await addAlumniStatusToStudents(activeRows));
+      } else {
+        setPendingStudents(rows);
+      }
     } catch (error) {
       setFeedback(error instanceof Error ? error.message : 'Student records could not be loaded.');
     } finally {

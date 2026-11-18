@@ -31,7 +31,7 @@ export default function RepositoryClient() {
 
     if (ok) {
       const token = localStorage.getItem('token') || '';
-      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://academic-portal-16620c77.fastapicloud.dev'}/api/v1/repository/documents`, {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://academicportal.fastapicloud.dev'}/api/v1/repository/documents`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       })
         .then(r => r.json())

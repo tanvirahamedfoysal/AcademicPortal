@@ -1,3 +1,4 @@
+import { mapWithConcurrency, parseAlumniFlag } from './alumni-utils';
 import type {
   ApiEnvelope,
   ContactMeta,
@@ -10,7 +11,7 @@ import type {
   RepositoryDocument,
 } from '../types/public';
 
-const API_ORIGIN = process.env.FASTAPI_BASE_URL || process.env.NEXT_PUBLIC_API_URL || 'https://academic-portal-16620c77.fastapicloud.dev';
+const API_ORIGIN = process.env.FASTAPI_BASE_URL || process.env.NEXT_PUBLIC_API_URL || 'https://academicportal.fastapicloud.dev';
 const API_PREFIX = process.env.FASTAPI_API_PREFIX || '/api/v1';
 const API_BASE = `${API_ORIGIN}${API_PREFIX}`;
 
@@ -26,6 +27,15 @@ async function getPublicJson<T>(path: string): Promise<T | null> {
   } catch {
     return null;
   }
+}
+
+function unwrapArray<T>(payload: unknown): T[] {
+  if (Array.isArray(payload)) return payload as T[];
+  if (payload && typeof payload === 'object') {
+    const data = (payload as { data?: unknown }).data;
+    if (Array.isArray(data)) return data as T[];
+  }
+  return [];
 }
 
 export async function getPortfolio(): Promise<PortfolioData | null> {
@@ -49,23 +59,34 @@ export async function getCollaborators(): Promise<PublicCollaborator[]> {
 }
 
 export async function getStudents(): Promise<PublicStudent[]> {
-  const payload = await getPublicJson<ApiEnvelope<PublicStudent[]>>('/students');
-  const rows = Array.isArray(payload?.data) ? payload.data : [];
+  const payload = await getPublicJson<unknown>('/students');
+  const rows = unwrapArray<PublicStudent>(payload);
   return rows.filter((student) => !student.status || String(student.status).toUpperCase() === 'ACTIVE');
 }
 
+async function getAlumniFlagForPublicProfile(uuid: string): Promise<boolean> {
+  const payload = await getPublicJson<unknown>(`/profile/is-alumni/${encodeURIComponent(uuid)}`);
+  return parseAlumniFlag(payload) ?? false;
+}
+
 async function getActiveStudents(): Promise<PublicLabMember[]> {
-  const payload = await getPublicJson<ApiEnvelope<PublicLabMember[]>>('/students');
-  const rows = Array.isArray(payload?.data) ? payload.data : [];
-  return rows.filter((student) => !student.status || String(student.status).toUpperCase() === 'ACTIVE');
+  const payload = await getPublicJson<unknown>('/students');
+  const rows = unwrapArray<PublicLabMember>(payload);
+  const activeRows = rows.filter((student) => !student.status || String(student.status).toUpperCase() === 'ACTIVE');
+
+  // Normalize booleans/strings/numbers consistently. If /students omits the
+  // field, fall back to the documented profile check endpoint where public access permits it.
+  return mapWithConcurrency(activeRows, 8, async (student) => {
+    const fromList = parseAlumniFlag(student.is_alumni);
+    if (fromList !== null) return { ...student, is_alumni: fromList };
+    return { ...student, is_alumni: await getAlumniFlagForPublicProfile(student.uuid) };
+  });
 }
 
 export async function getLabMemberDirectory(): Promise<{ members: PublicLabMember[]; alumni: PublicLabMember[] }> {
   const rows = await getActiveStudents();
   return {
-    // Alumni are shown separately from current student profiles.
     members: rows.filter((member) => member.is_alumni !== true),
-    // The public Alumni tab is driven by the persisted students.is_alumni flag.
     alumni: rows.filter((member) => member.is_alumni === true),
   };
 }

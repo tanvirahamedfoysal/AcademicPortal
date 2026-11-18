@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://academic-portal-16620c77.fastapicloud.dev';
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://academicportal.fastapicloud.dev';
     
     const res = await fetch(`${backendUrl}/api/v1/auth/register`, {
       method: 'POST',

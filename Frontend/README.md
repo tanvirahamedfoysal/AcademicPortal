@@ -128,3 +128,14 @@ Admin and Moderator can mark/unmark active students as alumni from **Students**.
 - Added Admin > Custom Section for a custom header and ordered content items.
 - Each item supports a name plus description, link, or both; description items open in a modal and link-only items open directly.
 - Custom-section data is stored through the existing portfolio metadata payload, so no additional backend endpoint is required.
+
+
+## Alumni status integration
+
+The Admin and Moderator student screens use the FastAPI alumni endpoints:
+
+- `GET /api/v1/profile/is-alumni/{uuid}` reads the saved status when it is not included in the student list response.
+- `POST /api/v1/profile/make-alumni/{uuid}` sets alumni status to true.
+- `POST /api/v1/profile/remove-alumni/{uuid}` sets alumni status to false.
+
+The make/remove operations are POST requests with the profile UUID in the URL and no request body, matching the Swagger endpoint definitions. The shared frontend API helper attaches the currently logged-in Bearer token from local storage. The public Lab Members page separates active profiles using `is_alumni`; it also attempts the public check endpoint only when the `/students` response omits that field. For best public-page behavior, the `/students` response should include the persisted `is_alumni` field.

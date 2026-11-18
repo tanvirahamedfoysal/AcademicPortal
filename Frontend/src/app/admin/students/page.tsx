@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { apiFetch } from '../../../lib/client-api';
-import { updateStudentAlumni } from '../../../lib/alumni-api';
+import { addAlumniStatusToStudents, updateStudentAlumni } from '../../../lib/alumni-api';
 
 interface Student {
   uuid: string;
@@ -54,7 +54,9 @@ export default function AdminStudentsPage() {
       const pendingRows = Array.isArray(pendingData) ? pendingData : (pendingData.data || []);
       const activeRows = Array.isArray(activeData) ? activeData : (activeData.data || []);
       setPendingStudents(pendingRows);
-      setActiveStudents(activeRows.filter((student: Student) => String(student.status || '').toUpperCase() === 'ACTIVE'));
+      const activeOnly = activeRows.filter((student: Student) => String(student.status || '').toUpperCase() === 'ACTIVE');
+      const activeWithAlumniStatus = await addAlumniStatusToStudents(activeOnly);
+      setActiveStudents(activeWithAlumniStatus);
     } catch (error) {
       console.error('Failed to fetch students data:', error);
       setFeedback(error instanceof Error ? error.message : 'Student records could not be loaded.');
