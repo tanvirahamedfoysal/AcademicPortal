@@ -598,3 +598,124 @@ async def check_is_alumni(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to check alumni status: {str(e)}",
         )
+
+
+
+@router.post("/make-alumni/{uuid}")
+async def make_alumni(
+    uuid: UUID,
+    token: str = Depends(oauth2_scheme),
+    db: AsyncSession = Depends(get_db),
+):
+    response = validate_moderator_access(token)
+    if not response["is_valid"]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=response.get("message", "Invalid or expired token"),
+        )
+
+    try:
+        query = text("""
+            UPDATE students AS s
+            SET
+                is_alumni = TRUE,
+                updated_at = :updated_at
+            FROM users AS u
+            WHERE
+                s.id = u.id
+                AND u.uuid = :uuid
+            RETURNING s.id, s.is_alumni
+        """)
+        result = await db.execute(
+            query,
+            {"uuid": uuid, "updated_at": utc_now()},
+        )
+        student = result.mappings().first()
+
+        if not student:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Student not found",
+            )
+
+        await db.commit()
+        return {
+            "message": "Student marked as alumni successfully",
+            "uuid": str(uuid),
+            "is_alumni": student["is_alumni"],
+        }
+    except HTTPException:
+        await db.rollback()
+        raise
+    except SQLAlchemyError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="A database error occurred while updating alumni status.",
+        )
+    except Exception:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred.",
+        )
+
+
+@router.post("/remove-alumni/{uuid}")
+async def remove_alumni(
+    uuid: UUID,
+    token: str = Depends(oauth2_scheme),
+    db: AsyncSession = Depends(get_db),
+):
+    response = validate_moderator_access(token)
+    if not response["is_valid"]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=response.get("message", "Invalid or expired token"),
+        )
+
+    try:
+        query = text("""
+            UPDATE students AS s
+            SET
+                is_alumni = FALSE,
+                updated_at = :updated_at
+            FROM users AS u
+            WHERE
+                s.id = u.id
+                AND u.uuid = :uuid
+            RETURNING s.id, s.is_alumni
+        """)
+        result = await db.execute(
+            query,
+            {"uuid": uuid, "updated_at": utc_now()},
+        )
+        student = result.mappings().first()
+
+        if not student:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Student not found",
+            )
+
+        await db.commit()
+        return {
+            "message": "Alumni status removed successfully",
+            "uuid": str(uuid),
+            "is_alumni": student["is_alumni"],
+        }
+    except HTTPException:
+        await db.rollback()
+        raise
+    except SQLAlchemyError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="A database error occurred while updating alumni status.",
+        )
+    except Exception:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred.",
+        )
