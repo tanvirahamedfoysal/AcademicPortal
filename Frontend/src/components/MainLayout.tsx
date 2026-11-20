@@ -88,8 +88,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
               <ShieldCheck className="h-5 w-5" />
             </span>
             <span className="min-w-0">
-              <span className="block truncate font-serif text-lg font-bold tracking-[-0.02em] text-slate-900">Dr. Tania Islam</span>
-              <span className="hidden text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 sm:block">Academic research portfolio</span>
+              <span className="block truncate font-serif text-lg font-bold tracking-[-0.02em] text-slate-900">ICAI Lab</span>
+              <span className="hidden text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 sm:block">Intelligent Computing and AI Research Lab</span>
             </span>
           </Link>
 

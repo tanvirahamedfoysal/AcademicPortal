@@ -106,7 +106,7 @@ export default function ResearcherPortfolioHero({ portfolio, media, articles }: 
 
   const recentArticles = articles.slice(0, 6);
   const customSection = media.customSection;
-  const fullName = media.researcherInfo.fullName || 'Dr. Tania Islam';
+  const fullName = media.researcherInfo.fullName || 'ICAI Lab';
   const occupation = media.researcherInfo.occupation || '';
   const designation = media.researcherInfo.designation || '';
   const aboutMe = portfolio?.public_bio?.trim() || '';

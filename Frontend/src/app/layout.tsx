@@ -5,11 +5,11 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Dr. Tania Islam',
-    default: 'Dr. Tania Islam | Academic Research Portfolio',
+    template: '%s | ICAI Lab',
+    default: 'ICAI Lab | Intelligent Computing and AI Research Lab',
   },
   description: 'Research portfolio, publications, scholarly resources, collaboration network, and lab members.',
-  applicationName: 'Dr. Tania Islam',
+  applicationName: 'ICAI Lab',
   manifest: '/manifest.json',
   other: {
     'color-scheme': 'light',
