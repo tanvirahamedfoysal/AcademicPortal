@@ -7,6 +7,15 @@ export function middleware(request: NextRequest) {
   const userRole = request.cookies.get('user_role')?.value?.toUpperCase();
   const isAuthenticated = Boolean(token);
 
+  // Publications and the research repository are hidden from anonymous
+  // visitors and protected against direct URL access as well as navigation.
+  if ((pathname === '/articles' || pathname.startsWith('/articles/') || pathname === '/repositories' || pathname.startsWith('/repositories/')) && !isAuthenticated) {
+    const loginUrl = new URL('/auth/login', request.url);
+    loginUrl.searchParams.set('reason', 'restricted');
+    loginUrl.searchParams.set('next', pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
   if (pathname.startsWith('/auth')) {
     if (!isAuthenticated) return NextResponse.next();
     return NextResponse.redirect(new URL('/', request.url));
@@ -30,4 +39,4 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-export const config = { matcher: ['/admin/:path*', '/moderator/:path*', '/student/:path*', '/auth/:path*'] };
+export const config = { matcher: ['/admin/:path*', '/moderator/:path*', '/student/:path*', '/auth/:path*', '/articles', '/articles/:path*', '/repositories', '/repositories/:path*'] };

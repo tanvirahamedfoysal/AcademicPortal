@@ -47,6 +47,13 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
   useEffect(() => setMobileOpen(false), [pathname]);
 
+  // Publications and Resources are member-only destinations. Keep them out of
+  // every navigation variant until a signed-in account has been detected.
+  const visibleNavItems = useMemo(
+    () => user ? navItems : navItems.filter(({ href }) => href !== '/articles' && href !== '/repositories'),
+    [user],
+  );
+
   const dashboardHref = useMemo(() => {
     const role = user?.role?.toUpperCase();
     if (role === 'ADMIN') return '/admin/portfolio';
@@ -94,7 +101,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           </Link>
 
           <nav className="hidden items-center gap-1 xl:flex">
-            {navItems.map(({ href, label }) => {
+            {visibleNavItems.map(({ href, label }) => {
               const active = pathname === href || (href !== '/' && pathname.startsWith(href));
               return (
                 <Link
@@ -111,7 +118,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           </nav>
 
           <nav aria-label="Quick navigation" className={`${mobileOpen ? 'hidden' : 'hidden min-w-0 flex-1 items-center justify-center gap-0.5 md:flex xl:hidden'}`}>
-            {navItems.filter(({ href }) => ['/', '/articles', '/lab-members'].includes(href)).map(({ href, label }) => {
+            {visibleNavItems.filter(({ href }) => ['/', '/articles', '/repositories', '/lab-members'].includes(href)).map(({ href, label }) => {
               const active = pathname === href || (href !== '/' && pathname.startsWith(href));
               return (
                 <Link
@@ -162,7 +169,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         {mobileOpen && (
           <div id="portfolio-mobile-navigation" className="max-h-[min(72vh,620px)] overflow-y-auto border-t border-[#dce7ee] bg-[#fffdfb] px-4 py-4 sm:px-5 md:px-6 xl:hidden">
             <div className="mx-auto grid max-w-[1480px] gap-2 sm:grid-cols-2 md:grid-cols-3">
-              {navItems.map(({ href, label, icon: Icon }) => {
+              {visibleNavItems.map(({ href, label, icon: Icon }) => {
                 const active = pathname === href || (href !== '/' && pathname.startsWith(href));
                 return (
                   <Link
@@ -209,8 +216,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           <div>
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-[#527f8f]">Explore</p>
             <div className="grid gap-2 text-sm text-slate-600">
-              <Link href="/articles" className="hover:text-slate-900">Publications</Link>
-              <Link href="/repositories" className="hover:text-slate-900">Research resources</Link>
+              {user && <Link href="/articles" className="hover:text-slate-900">Publications</Link>}
+              {user && <Link href="/repositories" className="hover:text-slate-900">Research resources</Link>}
               <Link href="/collaborators" className="hover:text-slate-900">Collaborations</Link>
             </div>
           </div>

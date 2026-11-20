@@ -41,6 +41,20 @@ export type PortfolioCustomSection = {
   items: PortfolioCustomSectionItem[];
 };
 
+/**
+ * Public collaborator details are mirrored into the existing portfolio media
+ * metadata record because the supplied FastAPI GET /collaborators response
+ * only exposes uuid, name, and image_url. This keeps the implementation
+ * frontend-only while allowing the public directory to read the full profile.
+ */
+export type PortfolioCollaboratorProfile = {
+  uuid: string;
+  name: string;
+  bio: string;
+  organization: string;
+  website_url: string;
+};
+
 export type PortfolioMedia = {
   portfolioPhoto: string;
   gallery: PortfolioGalleryItem[];
@@ -55,6 +69,7 @@ export type PortfolioMedia = {
   // [] means the owner intentionally removed every quick-info row.
   quickInfo: PortfolioQuickInfoItem[] | null;
   customSection: PortfolioCustomSection;
+  collaborators: PortfolioCollaboratorProfile[];
 };
 
 export const emptyPortfolioMedia: PortfolioMedia = {
@@ -64,6 +79,7 @@ export const emptyPortfolioMedia: PortfolioMedia = {
   researcherInfo: { fullName: '', occupation: '', designation: '', education: '' },
   quickInfo: null,
   customSection: { header: '', items: [] },
+  collaborators: [],
 };
 
 export const QUICK_INFO_SOURCE_LABELS: Record<PortfolioQuickInfoSource, string> = {
@@ -164,6 +180,28 @@ function normalizeCustomSection(value: unknown): PortfolioCustomSection {
   };
 }
 
+function normalizeCollaborators(value: unknown): PortfolioCollaboratorProfile[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((item) => {
+      const candidate = item as Partial<PortfolioCollaboratorProfile>;
+      const uuid = normalizeString(candidate?.uuid);
+      const name = normalizeString(candidate?.name);
+      if (!uuid || !name) return null;
+
+      return {
+        uuid,
+        name,
+        bio: normalizeString(candidate?.bio),
+        organization: normalizeString(candidate?.organization),
+        website_url: normalizeString(candidate?.website_url),
+      } satisfies PortfolioCollaboratorProfile;
+    })
+    .filter((item): item is PortfolioCollaboratorProfile => Boolean(item))
+    .slice(0, 250);
+}
+
 export function isPortfolioMediaEntry(value: unknown): boolean {
   return typeof value === 'string' && value.startsWith(PORTFOLIO_MEDIA_PREFIX);
 }
@@ -208,6 +246,7 @@ export function parsePortfolioMedia(interests?: string[] | null): PortfolioMedia
       },
       quickInfo: normalizeQuickInfo(parsed.quickInfo),
       customSection: normalizeCustomSection(parsed.customSection),
+      collaborators: normalizeCollaborators(parsed.collaborators),
     };
   } catch {
     return { ...emptyPortfolioMedia, gallery: [], quickInfo: null };
@@ -290,6 +329,7 @@ export function withPortfolioMedia(interests: string[] | null | undefined, media
     },
     quickInfo: normalizedQuickInfo,
     customSection: normalizedCustomSection,
+    collaborators: normalizeCollaborators(media.collaborators),
     gallery: (Array.isArray(media.gallery) ? media.gallery : [])
       .filter((item) => Boolean(item?.url))
       .slice(0, PORTFOLIO_GALLERY_LIMIT)

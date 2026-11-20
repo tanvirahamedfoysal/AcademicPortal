@@ -41,6 +41,19 @@ The frontend continues to use the existing `/api/v1` routes. This version also a
 - Profile and password updates (`/profile/me`)
 - Image upload/delete (`/images`)
 
+
+## Member-only Publications and Resources
+
+- The public navigation hides **Publications** and **Resources** until a signed-in account is detected.
+- The `/articles`, `/articles/[id]`, and `/repositories` routes are also guarded by Next.js middleware, so anonymous visitors who enter those URLs directly are redirected to sign in.
+- After sign-in, a visitor is returned to the protected URL they originally requested.
+
+## Collaborator profiles
+
+- The dashboard now accepts a local image file and uploads it through the existing `POST /api/v1/images` multipart endpoint. The returned image URL is then sent to the existing collaborator create/update endpoint.
+- The supplied FastAPI `GET /api/v1/collaborators` implementation returns only `uuid`, `name`, and `image_url`; it does not return `bio`, `organization`, or `website_url`. To keep the backend unchanged, the frontend mirrors those three public details into the existing portfolio media metadata record stored in `research_interests`. This uses the same existing metadata mechanism already used for the portfolio gallery and custom section, and it is available to the public Collaborations page through `GET /api/v1/portfolio`.
+- Collaborator cards display the saved bio and open the supplied website URL in a new tab when one is available. Existing collaborator records created before this frontend update may need their bio and website URL re-entered once in the dashboard because those values are not included in the existing collaborators list response.
+
 ## Alumni management API contract
 
 Admin and Moderator student pages use the persisted `students.is_alumni` flag. The frontend expects this authenticated FastAPI operation to update another student selected by UUID:

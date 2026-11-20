@@ -22,7 +22,11 @@ export default function LoginForm() {
 
     loginMutation.mutate({ username, password }, {
       onSuccess: () => {
-        router.push('/');
+        const requestedPath = new URLSearchParams(window.location.search).get('next');
+        const safePath = requestedPath && requestedPath.startsWith('/') && !requestedPath.startsWith('//')
+          ? requestedPath
+          : '/';
+        router.push(safePath);
         router.refresh();
       },
     });
