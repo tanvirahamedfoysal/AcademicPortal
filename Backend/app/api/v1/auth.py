@@ -192,7 +192,7 @@ async def request_registration_otp(
 
     if existing_user:
         try:
-            await send_email(payload.email, "Password Reset",
+            await send_email(payload.email, "Registration OTP",
                 f"""
                     <!DOCTYPE html>
                     <html>
