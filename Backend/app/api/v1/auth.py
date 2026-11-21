@@ -192,7 +192,27 @@ async def request_registration_otp(
 
     if existing_user:
         try:
-            await send_email(payload.email, "Password Reset", f"Your OTP is {otp}")
+            await send_email(payload.email, "Password Reset",
+                f"""
+                    <!DOCTYPE html>
+                    <html>
+                    <body style="font-family: Arial, sans-serif;">
+                        <h2>Email Verification</h2>
+
+                        <p>Your verification code is:</p>
+
+                        <h1 style="letter-spacing: 8px;">
+                            {otp}
+                        </h1>
+
+                        <p>This code expires in 2 minutes.</p>
+
+                        <p>If you did not request this code,
+                        please ignore this email.</p>
+                    </body>
+                    </html>
+                """
+            )
         except Exception:
             raise HTTPException(status_code=500, detail="Failed to send OTP email")
     return {"is_successful": True, "message": "If email exists, OTP sent"}
@@ -362,7 +382,27 @@ async def request_password_reset_otp(
 
     if existing_user:
         try:
-            await send_email(payload.email, "Password Reset", f"Your OTP is {otp}")
+            await send_email(payload.email, "Password Reset", 
+                f"""
+                <!DOCTYPE html>
+                <html>
+                <body style="font-family: Arial, sans-serif;">
+                    <h2>Email Verification</h2>
+
+                    <p>Your verification code is:</p>
+
+                    <h1 style="letter-spacing: 8px;">
+                        {otp}
+                    </h1>
+
+                    <p>This code expires in 2 minutes.</p>
+
+                    <p>If you did not request this code,
+                    please ignore this email.</p>
+                </body>
+                </html>
+                """
+            )
         except Exception:
             raise HTTPException(status_code=500, detail="Failed to send OTP email")
     return {"is_successful": True, "message": "If email exists, OTP sent"}
